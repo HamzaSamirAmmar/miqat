@@ -96,8 +96,8 @@ get past the first-launch warning.
 ```bash
 xcodegen generate          # requires: brew install xcodegen
 xcodebuild -project Miqat.xcodeproj -scheme Miqat -configuration Release \
-  -derivedDataPath build SYMROOT=build/Release build
-cp -R build/Release/Release/Miqat.app /Applications/
+  -derivedDataPath build build
+cp -R build/Build/Products/Release/Miqat.app /Applications/
 ```
 
 ## Privacy
