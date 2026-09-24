@@ -52,6 +52,20 @@ final class CityDatabaseTests: XCTestCase {
 
     // MARK: - Manual coordinates (fully offline place construction)
 
+    func testCountryFlagEmoji() {
+        XCTAssertEqual(CountryFlag.emoji(for: "MA"), "🇲🇦")
+        XCTAssertEqual(CountryFlag.emoji(for: "US"), "🇺🇸")
+        XCTAssertEqual(CountryFlag.emoji(for: nil), "📍")
+        XCTAssertEqual(CountryFlag.emoji(for: "USA"), "📍")
+        XCTAssertEqual(CountryFlag.emoji(for: "ma"), "📍", "non-uppercase input falls back")
+    }
+
+    func testPlaceFromCityCarriesCountryCode() {
+        let casablanca = CityDatabase.search("casablanca").first!
+        XCTAssertEqual(casablanca.flagEmoji, "🇲🇦")
+        XCTAssertEqual(CityDatabase.place(from: casablanca).countryCode, "MA")
+    }
+
     func testManualPlaceUsesNearestCityTimeZoneAndLabel() {
         // Istanbul coordinates, on a Mac set to any system timezone.
         let place = CityDatabase.manualPlace(name: nil, latitude: 41.0082, longitude: 28.9784)

@@ -23,7 +23,8 @@ final class PlacePersistenceTests: XCTestCase {
             name: "Casablanca, Morocco",
             latitude: 33.5731,
             longitude: -7.5898,
-            timeZoneIdentifier: "Africa/Casablanca"
+            timeZoneIdentifier: "Africa/Casablanca",
+            countryCode: "MA"
         )
 
         let stored = place.persistedValue
@@ -31,6 +32,18 @@ final class PlacePersistenceTests: XCTestCase {
 
         let restored = stored.flatMap(Place.init(persistedValue:))
         XCTAssertEqual(restored, place)
+        XCTAssertEqual(place.flagEmoji, "🇲🇦")
+    }
+
+    /// Places saved by versions before `countryCode` existed must keep
+    /// loading after upgrade (decodeIfPresent → nil).
+    func testLegacyPersistedPlaceStillDecodes() {
+        let legacy = #"{"name":"Casablanca","latitude":33.5731,"longitude":-7.5898,"timeZoneIdentifier":"Africa/Casablanca"}"#
+        let place = Place(persistedValue: legacy)
+        XCTAssertEqual(place?.name, "Casablanca")
+        XCTAssertEqual(place?.timeZoneIdentifier, "Africa/Casablanca")
+        XCTAssertNil(place?.countryCode)
+        XCTAssertEqual(place?.flagEmoji, "📍")
     }
 
     func testGarbagePersistedValueIsRejected() {

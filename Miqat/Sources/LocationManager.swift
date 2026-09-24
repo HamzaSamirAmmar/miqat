@@ -135,7 +135,8 @@ private extension LocationManager {
             name: name.isEmpty ? "Current location" : name,
             latitude: location.coordinate.latitude,
             longitude: location.coordinate.longitude,
-            timeZoneIdentifier: (placemark.timeZone ?? .current).identifier
+            timeZoneIdentifier: (placemark.timeZone ?? .current).identifier,
+            countryCode: placemark.isoCountryCode
         )
     }
 

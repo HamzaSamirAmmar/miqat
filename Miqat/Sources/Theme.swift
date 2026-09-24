@@ -4,7 +4,7 @@ import Foundation
 enum TitleStyle: String, CaseIterable, Identifiable {
     /// "Asr 1:23" — prayer name plus countdown.
     case labeled
-    /// "🕌 1:23" — mosque glyph plus countdown.
+    /// "⌂ 1:23" — Miqat mihrab glyph plus countdown.
     case compact
 
     var id: String { rawValue }

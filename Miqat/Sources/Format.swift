@@ -33,4 +33,11 @@ enum Format {
         timeFormatter.timeZone = timeZone ?? .current
         return timeFormatter.string(from: date)
     }
+
+    /// Compact coordinates for display, e.g. "33.57°N, 7.59°W".
+    static func coordinate(_ latitude: Double, _ longitude: Double) -> String {
+        let lat = String(format: "%.2f°%@", abs(latitude), latitude >= 0 ? "N" : "S")
+        let lon = String(format: "%.2f°%@", abs(longitude), longitude >= 0 ? "E" : "W")
+        return "\(lat), \(lon)"
+    }
 }

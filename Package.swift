@@ -19,7 +19,7 @@ let package = Package(
                 .product(name: "Adhan", package: "adhan-swift")
             ],
             path: "Miqat",
-            exclude: ["Info.plist"],
+            exclude: ["Info.plist", "Assets.xcassets"],
             sources: ["Sources"],
             resources: [.copy("Resources")]
         ),

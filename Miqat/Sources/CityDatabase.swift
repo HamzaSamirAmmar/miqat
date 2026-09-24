@@ -1,5 +1,20 @@
 import Foundation
 
+/// ISO 3166-1 alpha-2 code → regional-indicator flag emoji ("MA" → 🇲🇦).
+/// Falls back to 📍 for anything that isn't a two-letter uppercase code.
+enum CountryFlag {
+    static func emoji(for countryCode: String?) -> String {
+        guard let code = countryCode,
+              code.count == 2,
+              code.allSatisfy({ $0.isASCII && $0.isUppercase }) else {
+            return "📍"
+        }
+
+        let scalars = code.unicodeScalars.map { Unicode.Scalar(0x1F1E6 + $0.value - 65)! }
+        return String(String.UnicodeScalarView(scalars))
+    }
+}
+
 /// A bundled city, used for offline search and nearest-city lookups.
 ///
 /// Generated from GeoNames (CC BY 4.0) by `scripts/build_cities.py`.
@@ -17,6 +32,7 @@ struct City: Identifiable, Equatable {
     var id: String { "\(name)|\(country)" }
     var displayName: String { "\(name), \(country)" }
     var timeZone: TimeZone? { TimeZone(identifier: timeZoneIdentifier) }
+    var flagEmoji: String { CountryFlag.emoji(for: country) }
 }
 
 extension City: Codable {
@@ -151,7 +167,8 @@ enum CityDatabase {
             name: city.displayName,
             latitude: city.latitude,
             longitude: city.longitude,
-            timeZoneIdentifier: city.timeZoneIdentifier
+            timeZoneIdentifier: city.timeZoneIdentifier,
+            countryCode: city.country
         )
     }
 
@@ -170,7 +187,8 @@ enum CityDatabase {
             name: label,
             latitude: latitude,
             longitude: longitude,
-            timeZoneIdentifier: timeZone
+            timeZoneIdentifier: timeZone,
+            countryCode: nearby?.country
         )
     }
 
@@ -190,7 +208,8 @@ enum CityDatabase {
             name: "Near \(nearby.displayName)",
             latitude: latitude,
             longitude: longitude,
-            timeZoneIdentifier: nearby.timeZoneIdentifier
+            timeZoneIdentifier: nearby.timeZoneIdentifier,
+            countryCode: nearby.country
         )
     }
 

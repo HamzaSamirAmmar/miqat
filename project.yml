@@ -22,6 +22,7 @@ targets:
     platform: macOS
     sources:
       - path: Miqat/Sources
+      - path: Miqat/Assets.xcassets
       - path: Miqat/Resources
     dependencies:
       - package: Adhan
@@ -40,6 +41,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: personal.hamza.miqat
         PRODUCT_NAME: Miqat
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         MARKETING_VERSION: "1.0.0"
         CURRENT_PROJECT_VERSION: "1"
 

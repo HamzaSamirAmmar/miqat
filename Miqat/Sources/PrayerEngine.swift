@@ -39,11 +39,40 @@ struct Place: Codable, Equatable, Identifiable {
     let latitude: Double
     let longitude: Double
     let timeZoneIdentifier: String
+    /// ISO 3166-1 alpha-2 code when known ("MA"), used for the flag emoji.
+    let countryCode: String?
 
     var id: String { "\(latitude),\(longitude)" }
 
     var timeZone: TimeZone {
         TimeZone(identifier: timeZoneIdentifier) ?? .current
+    }
+
+    var flagEmoji: String {
+        CountryFlag.emoji(for: countryCode)
+    }
+
+    init(name: String, latitude: Double, longitude: Double, timeZoneIdentifier: String, countryCode: String? = nil) {
+        self.name = name
+        self.latitude = latitude
+        self.longitude = longitude
+        self.timeZoneIdentifier = timeZoneIdentifier
+        self.countryCode = countryCode
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case name, latitude, longitude, timeZoneIdentifier, countryCode
+    }
+
+    /// Decodes with `countryCode` optional so places persisted by earlier
+    /// versions of the app keep loading after upgrade.
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        name = try container.decode(String.self, forKey: .name)
+        latitude = try container.decode(Double.self, forKey: .latitude)
+        longitude = try container.decode(Double.self, forKey: .longitude)
+        timeZoneIdentifier = try container.decode(String.self, forKey: .timeZoneIdentifier)
+        countryCode = try container.decodeIfPresent(String.self, forKey: .countryCode)
     }
 }
 

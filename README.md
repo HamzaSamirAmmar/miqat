@@ -14,7 +14,7 @@ Asr 1:23
 
 - **Live countdown to the next prayer** in the menu bar, always visible
   - *Labeled* — `Asr 1:23`
-  - *Compact* — `🕌 1:23`
+  - *Compact* — mihrab icon + `1:23`
 - **Today's full schedule** — Fajr, Shuruq, Dhuhr, Asr, Maghrib, Isha — with
   the next prayer highlighted and the Gregorian + Hijri dates
 - **Fully offline** — a bundled database of ~12,400 cities (GeoNames,

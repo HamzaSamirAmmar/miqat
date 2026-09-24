@@ -17,8 +17,10 @@
 		A36AE020A56C904B5D319338 /* PlacePersistenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40D06787CC59BB3A09C84FC4 /* PlacePersistenceTests.swift */; };
 		A9F0C5B9DCC8ADF208F5806D /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 533BFDA590F16139194F83A8 /* LocationManager.swift */; };
 		B56D1AAA49601245A64ADFE3 /* CityDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92974D058F8ECF34C76DB03C /* CityDatabase.swift */; };
+		B8E125A95124BCAA14AA782F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B500B0686F7CF62A58FF8483 /* Assets.xcassets */; };
 		BCBE21575FC70EB0BCC4314B /* Adhan in Frameworks */ = {isa = PBXBuildFile; productRef = C0BACB9536B41F69009A45E8 /* Adhan */; };
 		C6F8280FFFACAA49AE107C92 /* PrayerEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E2E9012CD715069E5F68503 /* PrayerEngine.swift */; };
+		DC9EDC82FFB0E081E9B23DCA /* MenuBarIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = C87DDC9BA54BE5D8414747B5 /* MenuBarIcon.swift */; };
 		E14CB2AB16B50749CA0A2ADF /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D08EA7589CB460D3E0CC42 /* MenuBarView.swift */; };
 		E4ADE97DEC0836ED690F0CB8 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC16E9E47650EEB874667644 /* Theme.swift */; };
 		ED5D18BF5EA582A6F2B88B0E /* StatusItemController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBC582F97510279AD91D1E64 /* StatusItemController.swift */; };
@@ -48,6 +50,8 @@
 		8E2E9012CD715069E5F68503 /* PrayerEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerEngine.swift; sourceTree = "<group>"; };
 		92974D058F8ECF34C76DB03C /* CityDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CityDatabase.swift; sourceTree = "<group>"; };
 		B3D08EA7589CB460D3E0CC42 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
+		B500B0686F7CF62A58FF8483 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		C87DDC9BA54BE5D8414747B5 /* MenuBarIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarIcon.swift; sourceTree = "<group>"; };
 		DF90AA48406F3E3088F428E8 /* Format.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Format.swift; sourceTree = "<group>"; };
 		EC16E9E47650EEB874667644 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		FBC582F97510279AD91D1E64 /* StatusItemController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusItemController.swift; sourceTree = "<group>"; };
@@ -82,6 +86,7 @@
 				DF90AA48406F3E3088F428E8 /* Format.swift */,
 				533BFDA590F16139194F83A8 /* LocationManager.swift */,
 				76D282867C27CE19A42A20EA /* LoginItemManager.swift */,
+				C87DDC9BA54BE5D8414747B5 /* MenuBarIcon.swift */,
 				B3D08EA7589CB460D3E0CC42 /* MenuBarView.swift */,
 				8E2E9012CD715069E5F68503 /* PrayerEngine.swift */,
 				2D313837F13D833CD15B2971 /* PrayerScheduleStore.swift */,
@@ -121,6 +126,7 @@
 		CB9F4367BC4700501F2D1E66 /* Miqat */ = {
 			isa = PBXGroup;
 			children = (
+				B500B0686F7CF62A58FF8483 /* Assets.xcassets */,
 				BA45F0DA479937D631E44949 /* Resources */,
 				8966537BA2C1CAF310EBDD15 /* Sources */,
 			);
@@ -207,6 +213,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B8E125A95124BCAA14AA782F /* Assets.xcassets in Resources */,
 				72636DDB3D199C5E9E495B95 /* cities.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -223,6 +230,7 @@
 				01FF2E6D3D0F31BF0B7E931B /* Format.swift in Sources */,
 				A9F0C5B9DCC8ADF208F5806D /* LocationManager.swift in Sources */,
 				15A06829AA4C142407B95AB0 /* LoginItemManager.swift in Sources */,
+				DC9EDC82FFB0E081E9B23DCA /* MenuBarIcon.swift in Sources */,
 				E14CB2AB16B50749CA0A2ADF /* MenuBarView.swift in Sources */,
 				C6F8280FFFACAA49AE107C92 /* PrayerEngine.swift in Sources */,
 				5FF4128399FBC268D90A3103 /* PrayerScheduleStore.swift in Sources */,

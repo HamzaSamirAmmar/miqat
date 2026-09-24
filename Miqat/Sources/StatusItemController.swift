@@ -47,7 +47,9 @@ final class StatusItemController: NSObject {
         let font = NSFont.monospacedSystemFont(ofSize: NSFont.systemFontSize, weight: .regular)
 
         guard let next = store.next else {
-            button.attributedTitle = NSAttributedString(string: "🕌 –:–", attributes: [.font: font])
+            button.image = MenuBarIcon.image
+            button.imagePosition = .imageLeft
+            button.attributedTitle = NSAttributedString(string: " –:–", attributes: [.font: font])
             return
         }
 
@@ -56,8 +58,11 @@ final class StatusItemController: NSObject {
         switch store.titleStyle {
         case .labeled:
             title = "\(next.key.displayName) \(countdown)"
+            button.image = nil
         case .compact:
-            title = "🕌 \(countdown)"
+            title = " \(countdown)"
+            button.image = MenuBarIcon.image
+            button.imagePosition = .imageLeft
         }
 
         button.attributedTitle = NSAttributedString(string: title, attributes: [.font: font])

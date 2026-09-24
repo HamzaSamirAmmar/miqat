@@ -5,7 +5,7 @@ struct MenuBarView: View {
     @ObservedObject var store: PrayerScheduleStore
     @ObservedObject var location: LocationManager
 
-    @State private var showsLocationEditor = false
+    @State private var showingLocationPicker = false
     @State private var searchQuery = ""
     @State private var showsManualEntry = false
     @State private var manualLatitude = ""
@@ -30,17 +30,14 @@ struct MenuBarView: View {
 
             if store.place == nil {
                 onboarding
+            } else if showingLocationPicker {
+                locationPicker
             } else {
                 scheduleSection
 
                 Divider()
 
-                if showsLocationEditor {
-                    locationEditor
-                } else {
-                    locationRow
-                }
-
+                locationCard
                 settingsSection
             }
 
@@ -49,7 +46,15 @@ struct MenuBarView: View {
             footer
         }
         .padding(16)
-        .frame(width: 330)
+        .frame(width: 340)
+        .onChange(of: store.place) { _ in
+            // A place arriving (detect, pick, manual) closes the picker.
+            if showingLocationPicker, store.place != nil {
+                showingLocationPicker = false
+                location.clearSearch()
+                searchQuery = ""
+            }
+        }
     }
 
     // MARK: - Header
@@ -119,39 +124,71 @@ struct MenuBarView: View {
 
     // MARK: - Location
 
-    private var locationRow: some View {
-        HStack {
-            Image(systemName: "mappin.and.ellipse")
-                .foregroundStyle(Color.accentColor)
-            Text(store.place?.name ?? "—")
-                .lineLimit(1)
-                .truncationMode(.middle)
-            Spacer()
-            Button("Change…") {
-                location.clearSearch()
-                searchQuery = ""
-                showsLocationEditor = true
+    /// Compact summary card on the main panel — tap to open the picker.
+    private var locationCard: some View {
+        Button {
+            location.clearSearch()
+            searchQuery = ""
+            showingLocationPicker = true
+        } label: {
+            HStack(spacing: 10) {
+                Text(store.place?.flagEmoji ?? "📍")
+                    .font(.title3)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(store.place?.name ?? "Set location")
+                        .font(.callout.weight(.medium))
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+
+                    if let place = store.place {
+                        Text("\(place.timeZoneIdentifier) · \(Format.coordinate(place.latitude, place.longitude))")
+                            .font(.caption2)
+                            .foregroundStyle(.tertiary)
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                    }
+                }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.tertiary)
             }
-            .controlSize(.small)
+            .padding(10)
+            .background(.quaternary.opacity(0.5), in: RoundedRectangle(cornerRadius: 8))
+            .contentShape(Rectangle())
         }
-        .font(.callout)
+        .buttonStyle(.plain)
     }
 
-    private var locationEditor: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            locationSearchSection
+    /// Full-popover location picker: offline search, detect, or manual
+    /// coordinates — gets the whole popover instead of a cramped strip.
+    private var locationPicker: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            ZStack {
+                Text("Location")
+                    .font(.headline)
 
-            manualEntrySection
-
-            HStack {
-                detectButton
-                Spacer()
-                Button("Done") {
-                    location.clearSearch()
-                    searchQuery = ""
-                    showsLocationEditor = false
+                HStack {
+                    Button {
+                        location.clearSearch()
+                        searchQuery = ""
+                        showingLocationPicker = false
+                    } label: {
+                        Label("Back", systemImage: "chevron.left")
+                    }
+                    .controlSize(.small)
+                    Spacer()
                 }
             }
+
+            locationSearchSection
+
+            detectButton
+
+            manualEntrySection
         }
     }
 
@@ -159,8 +196,20 @@ struct MenuBarView: View {
         Button {
             location.detect()
         } label: {
-            Label(location.isLocating ? "Locating…" : "Use My Location", systemImage: "location.fill")
+            HStack(spacing: 8) {
+                if location.isLocating {
+                    ProgressView()
+                        .controlSize(.small)
+                } else {
+                    Image(systemName: "location.fill")
+                }
+                Text(location.isLocating ? "Locating…" : "Use My Location")
+                Spacer()
+            }
+            .padding(.vertical, 2)
         }
+        .controlSize(.large)
+        .buttonStyle(.borderedProminent)
         .disabled(location.isLocating)
     }
 
@@ -174,13 +223,19 @@ struct MenuBarView: View {
                     .onChange(of: searchQuery) { query in
                         location.search(query)
                     }
+                if !searchQuery.isEmpty {
+                    Button {
+                        searchQuery = ""
+                        location.clearSearch()
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundStyle(.tertiary)
+                    }
+                    .buttonStyle(.plain)
+                }
             }
-            .padding(6)
-            .background(.quaternary, in: RoundedRectangle(cornerRadius: 6))
-
-            Text("Offline search — \(CityDatabase.cities.count.formatted()) cities bundled")
-                .font(.caption2)
-                .foregroundStyle(.tertiary)
+            .padding(8)
+            .background(.quaternary, in: RoundedRectangle(cornerRadius: 8))
 
             if let error = location.lastError {
                 Text(error)
@@ -188,46 +243,76 @@ struct MenuBarView: View {
                     .foregroundStyle(.secondary)
             }
 
-            ForEach(location.searchResults) { city in
-                Button {
-                    store.place = CityDatabase.place(from: city)
-                    location.clearSearch()
-                    searchQuery = ""
-                    showsLocationEditor = false
-                } label: {
-                    HStack {
-                        Image(systemName: "mappin")
-                            .foregroundStyle(Color.accentColor)
-                        Text(city.displayName)
-                            .lineLimit(1)
-                            .truncationMode(.middle)
-                        Spacer()
-                        Text(city.timeZone?.abbreviation() ?? "")
-                            .foregroundStyle(.secondary)
+            if !location.searchResults.isEmpty {
+                ScrollView {
+                    VStack(spacing: 2) {
+                        ForEach(location.searchResults) { city in
+                            cityRow(city)
+                        }
                     }
-                    .contentShape(Rectangle())
+                    .padding(3)
                 }
-                .buttonStyle(.plain)
+                .frame(maxHeight: 196)
+                .background(.quaternary.opacity(0.3), in: RoundedRectangle(cornerRadius: 8))
+            } else if City.fold(searchQuery.trimmingCharacters(in: .whitespaces)).count >= 2 {
+                Text("No cities match “\(searchQuery)”")
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
+            } else {
+                Text("Offline search · \(CityDatabase.cities.count.formatted()) cities bundled")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
             }
         }
         .font(.callout)
     }
 
+    private func cityRow(_ city: City) -> some View {
+        Button {
+            pick(city)
+        } label: {
+            HStack(spacing: 10) {
+                Text(city.flagEmoji)
+                    .font(.body)
+
+                Text(city.displayName)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+
+                Spacer()
+
+                Text(city.timeZone?.abbreviation() ?? "")
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
+            }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 5)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .modifier(HoverHighlight())
+    }
+
+    private func pick(_ city: City) {
+        store.place = CityDatabase.place(from: city)
+        location.clearSearch()
+        searchQuery = ""
+        showingLocationPicker = false
+    }
+
     /// Fully-offline manual coordinates: the nearest bundled city supplies
     /// the time zone and a "Near …" label unless a custom name is given.
     private var manualEntrySection: some View {
-        DisclosureGroup("Enter coordinates manually", isExpanded: $showsManualEntry) {
-            VStack(alignment: .leading, spacing: 6) {
+        DisclosureGroup(isExpanded: $showsManualEntry) {
+            VStack(alignment: .leading, spacing: 8) {
                 HStack(spacing: 8) {
-                    TextField("Latitude (e.g. 33.5731)", text: $manualLatitude)
-                    TextField("Longitude (e.g. -7.5898)", text: $manualLongitude)
+                    labeledField("Latitude", text: $manualLatitude, placeholder: "33.5731")
+                    labeledField("Longitude", text: $manualLongitude, placeholder: "-7.5898")
                 }
-                .textFieldStyle(.roundedBorder)
-                .font(.callout)
 
-                TextField("Name (optional)", text: $manualName)
-                    .textFieldStyle(.roundedBorder)
-                    .font(.callout)
+                labeledField("Name (optional)", text: $manualName, placeholder: "Dar")
 
                 if let manualError {
                     Text(manualError)
@@ -235,14 +320,31 @@ struct MenuBarView: View {
                         .foregroundStyle(.secondary)
                 }
 
-                Button("Use Coordinates") {
+                Button {
                     applyManualCoordinates()
+                } label: {
+                    Text("Use Coordinates")
+                        .frame(maxWidth: .infinity)
                 }
+                .controlSize(.large)
+                .buttonStyle(.bordered)
                 .disabled(manualLatitude.isEmpty || manualLongitude.isEmpty)
             }
-            .padding(.top, 4)
+            .padding(.top, 6)
+        } label: {
+            Label("Enter coordinates manually", systemImage: "mappin.and.ellipse")
         }
         .font(.callout)
+    }
+
+    private func labeledField(_ title: String, text: Binding<String>, placeholder: String) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(title)
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+            TextField(placeholder, text: text)
+                .textFieldStyle(.roundedBorder)
+        }
     }
 
     private func applyManualCoordinates() {
@@ -270,7 +372,7 @@ struct MenuBarView: View {
         manualError = nil
         location.clearSearch()
         searchQuery = ""
-        showsLocationEditor = false
+        showingLocationPicker = false
     }
 
     /// Accepts both "." and "," decimal separators.
@@ -282,20 +384,34 @@ struct MenuBarView: View {
     // MARK: - Onboarding (first run, no place yet)
 
     private var onboarding: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("Set your location to see today's prayer times and a live countdown to the next prayer.")
-                .font(.callout)
-                .foregroundStyle(.secondary)
-
-            detectButton
-                .frame(maxWidth: .infinity)
-
-            Text("or search for a city")
-                .font(.caption)
-                .foregroundStyle(.tertiary)
-                .frame(maxWidth: .infinity)
+        VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("🕌")
+                    .font(.system(size: 30))
+                Text("Welcome to Miqat")
+                    .font(.headline)
+                Text("Pick your city to see today's prayer times and a live countdown. Everything works offline.")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+            }
 
             locationSearchSection
+
+            orDivider
+
+            detectButton
+
+            manualEntrySection
+        }
+    }
+
+    private var orDivider: some View {
+        HStack(spacing: 8) {
+            Divider()
+            Text("or")
+                .font(.caption)
+                .foregroundStyle(.tertiary)
+            Divider()
         }
     }
 
@@ -352,5 +468,19 @@ struct MenuBarView: View {
 
     private static var versionString: String {
         Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0.0"
+    }
+}
+
+/// Soft row highlight on hover, echoing the native list feel.
+private struct HoverHighlight: ViewModifier {
+    @State private var isHovered = false
+
+    func body(content: Content) -> some View {
+        content
+            .background(
+                RoundedRectangle(cornerRadius: 6)
+                    .fill(isHovered ? Color.primary.opacity(0.08) : Color.clear)
+            )
+            .onHover { isHovered = $0 }
     }
 }
