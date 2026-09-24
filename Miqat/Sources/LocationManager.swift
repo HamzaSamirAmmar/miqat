@@ -40,7 +40,7 @@ final class LocationManager: NSObject, ObservableObject {
         case .authorizedAlways, .authorizedWhenInUse:
             startFix()
         default:
-            lastError = "Location access is denied — search for a city instead. You can change this in System Settings › Privacy & Security › Location Services."
+            lastError = Localization.shared.string("error.deniedSettings")
         }
     }
 
@@ -76,7 +76,7 @@ extension LocationManager: CLLocationManagerDelegate {
         case .denied, .restricted:
             awaitingAuthorization = false
             isLocating = false
-            lastError = "Location access was denied — search for a city instead."
+            lastError = Localization.shared.string("error.denied")
         case .notDetermined:
             break
         @unknown default:
@@ -145,11 +145,11 @@ private extension LocationManager {
         case .network:
             // Macs locate themselves via Wi-Fi positioning, which queries
             // Apple's database online — so even the fix needs internet.
-            return "Network unavailable — Macs locate via Wi-Fi positioning, which needs an internet connection. Try again once you're online."
+            Localization.shared.string("error.network")
         case .denied:
-            return "Location access was denied — search for a city instead."
+            Localization.shared.string("error.denied")
         default:
-            return error.localizedDescription
+            error.localizedDescription
         }
     }
 }

@@ -88,7 +88,7 @@ final class PrayerScheduleStore: ObservableObject {
             madhab = restored
         }
         if let stored = UserDefaults.standard.string(forKey: Keys.titleStyle),
-           let restored = TitleStyle(rawValue: stored) {
+           let restored = TitleStyle.migrate(stored) {
             titleStyle = restored
         }
 

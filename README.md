@@ -12,9 +12,14 @@ Asr 1:23
 
 ## Features
 
-- **Live countdown to the next prayer** in the menu bar, always visible
+- **Live countdown to the next prayer** in the menu bar, always visible —
+  three themes:
+  - *Icon* — just the mihrab glyph, Control Center style (countdown in the tooltip)
+  - *Countdown* — `1:23`
   - *Labeled* — `Asr 1:23`
-  - *Compact* — mihrab icon + `1:23`
+- **Arabic & English interface** — in-app language switcher (System /
+  English / العربية), localized prayer, method, and madhab names, Arabic
+  Hijri/Gregorian dates, and full right-to-left layout
 - **Today's full schedule** — Fajr, Shuruq, Dhuhr, Asr, Maghrib, Isha — with
   the next prayer highlighted and the Gregorian + Hijri dates
 - **Fully offline** — a bundled database of ~12,400 cities (GeoNames,

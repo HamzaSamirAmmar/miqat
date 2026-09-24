@@ -11,7 +11,8 @@ final class StatusItemController: NSObject {
     private let store: PrayerScheduleStore
     private let statusItem: NSStatusItem
     private let popover = NSPopover()
-    private var cancellable: AnyCancellable?
+    private var storeCancellable: AnyCancellable?
+    private var localizationCancellable: AnyCancellable?
 
     init(store: PrayerScheduleStore, locationManager: LocationManager) {
         self.store = store
@@ -24,13 +25,17 @@ final class StatusItemController: NSObject {
         )
 
         if let button = statusItem.button {
-            button.toolTip = "Miqat — prayer times"
             button.setAccessibilityLabel("Miqat prayer times")
             button.target = self
             button.action = #selector(togglePopover(_:))
         }
 
-        cancellable = store.objectWillChange
+        storeCancellable = store.objectWillChange
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in self?.renderTitle() }
+
+        // Prayer names in the title are localized — re-render on language change.
+        localizationCancellable = Localization.shared.objectWillChange
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in self?.renderTitle() }
 
@@ -44,28 +49,37 @@ final class StatusItemController: NSObject {
 
         // Fully monospaced font + fixed-width countdown → the item's width
         // never changes while ticking, so menu bar neighbors never shift.
+        // Arabic prayer names render through the font cascade.
         let font = NSFont.monospacedSystemFont(ofSize: NSFont.systemFontSize, weight: .regular)
+        let base = Localization.shared.string("tooltip.base")
 
         guard let next = store.next else {
             button.image = MenuBarIcon.image
             button.imagePosition = .imageLeft
             button.attributedTitle = NSAttributedString(string: " –:–", attributes: [.font: font])
+            button.toolTip = base
             return
         }
 
-        let countdown = Format.countdown(next.date.timeIntervalSince(store.now))
-        let title: String
+        let interval = next.date.timeIntervalSince(store.now)
+        let countdown = Format.countdown(interval)
+
         switch store.titleStyle {
-        case .labeled:
-            title = "\(next.key.displayName) \(countdown)"
-            button.image = nil
-        case .compact:
-            title = " \(countdown)"
+        case .icon:
             button.image = MenuBarIcon.image
-            button.imagePosition = .imageLeft
+            button.attributedTitle = NSAttributedString(string: "", attributes: [.font: font])
+        case .countdown:
+            button.image = nil
+            button.attributedTitle = NSAttributedString(string: countdown, attributes: [.font: font])
+        case .labeled:
+            button.image = nil
+            button.attributedTitle = NSAttributedString(
+                string: "\(next.key.displayName) \(countdown)",
+                attributes: [.font: font]
+            )
         }
 
-        button.attributedTitle = NSAttributedString(string: title, attributes: [.font: font])
+        button.toolTip = "\(base) — \(next.key.displayName) \(Format.remaining(interval))"
     }
 
     // MARK: - Popover

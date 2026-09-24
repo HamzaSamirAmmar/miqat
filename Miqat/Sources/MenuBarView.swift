@@ -4,6 +4,7 @@ import SwiftUI
 struct MenuBarView: View {
     @ObservedObject var store: PrayerScheduleStore
     @ObservedObject var location: LocationManager
+    @ObservedObject private var localization = Localization.shared
 
     @State private var showingLocationPicker = false
     @State private var searchQuery = ""
@@ -47,6 +48,8 @@ struct MenuBarView: View {
         }
         .padding(16)
         .frame(width: 340)
+        .environment(\.locale, localization.locale)
+        .environment(\.layoutDirection, localization.layoutDirection)
         .onChange(of: store.place) { _ in
             // A place arriving (detect, pick, manual) closes the picker.
             if showingLocationPicker, store.place != nil {
@@ -69,16 +72,19 @@ struct MenuBarView: View {
         }
     }
 
-    /// "Sep 24, 2026 · Rabiʻ II 13, 1448 AH"
+    /// "Sep 24, 2026 · Rabiʻ II 13, 1448 AH" (Arabic: "٢٤ سبتمبر ٢٠٢٦ · ١٤ ربيع الآخر ١٤٤٨ هـ")
     private static func dateLine(for date: Date, timeZone: TimeZone?) -> String {
+        let locale = Localization.shared.locale
+
         let gregorian = DateFormatter()
+        gregorian.locale = locale
         gregorian.dateStyle = .medium
         gregorian.timeStyle = .none
         gregorian.timeZone = timeZone ?? .current
 
         let hijri = DateFormatter()
         hijri.calendar = Calendar(identifier: .islamicCivil)
-        hijri.locale = Locale(identifier: "en")
+        hijri.locale = locale
         hijri.dateStyle = .long
         hijri.timeZone = timeZone ?? .current
 
@@ -108,7 +114,7 @@ struct MenuBarView: View {
                 .foregroundStyle(isNext ? .primary : .secondary)
 
             if isNext {
-                Text("in \(Format.remaining(entry.date.timeIntervalSince(store.now)))")
+                Text(localization.string("next.prefix", Format.remaining(entry.date.timeIntervalSince(store.now))))
                     .font(.caption)
                     .foregroundStyle(Color.accentColor)
             }
@@ -168,7 +174,7 @@ struct MenuBarView: View {
     private var locationPicker: some View {
         VStack(alignment: .leading, spacing: 10) {
             ZStack {
-                Text("Location")
+                Text(localization.string("location.title"))
                     .font(.headline)
 
                 HStack {
@@ -177,7 +183,7 @@ struct MenuBarView: View {
                         searchQuery = ""
                         showingLocationPicker = false
                     } label: {
-                        Label("Back", systemImage: "chevron.left")
+                        Label(localization.string("location.back"), systemImage: "chevron.left")
                     }
                     .controlSize(.small)
                     Spacer()
@@ -203,7 +209,7 @@ struct MenuBarView: View {
                 } else {
                     Image(systemName: "location.fill")
                 }
-                Text(location.isLocating ? "Locating…" : "Use My Location")
+                Text(localization.string(location.isLocating ? "location.locating" : "location.detect"))
                 Spacer()
             }
             .padding(.vertical, 2)
@@ -218,7 +224,7 @@ struct MenuBarView: View {
             HStack(spacing: 8) {
                 Image(systemName: "magnifyingglass")
                     .foregroundStyle(.secondary)
-                TextField("Search city…", text: $searchQuery)
+                TextField(localization.string("location.search"), text: $searchQuery)
                     .textFieldStyle(.plain)
                     .onChange(of: searchQuery) { query in
                         location.search(query)
@@ -255,13 +261,13 @@ struct MenuBarView: View {
                 .frame(maxHeight: 196)
                 .background(.quaternary.opacity(0.3), in: RoundedRectangle(cornerRadius: 8))
             } else if City.fold(searchQuery.trimmingCharacters(in: .whitespaces)).count >= 2 {
-                Text("No cities match “\(searchQuery)”")
+                Text(localization.string("location.noMatches", searchQuery))
                     .font(.caption)
                     .foregroundStyle(.tertiary)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 8)
             } else {
-                Text("Offline search · \(CityDatabase.cities.count.formatted()) cities bundled")
+                Text(localization.string("location.offlineHint", CityDatabase.cities.count.formatted()))
                     .font(.caption2)
                     .foregroundStyle(.tertiary)
             }
@@ -308,11 +314,11 @@ struct MenuBarView: View {
         DisclosureGroup(isExpanded: $showsManualEntry) {
             VStack(alignment: .leading, spacing: 8) {
                 HStack(spacing: 8) {
-                    labeledField("Latitude", text: $manualLatitude, placeholder: "33.5731")
-                    labeledField("Longitude", text: $manualLongitude, placeholder: "-7.5898")
+                    labeledField(localization.string("location.latitude"), text: $manualLatitude, placeholder: "33.5731")
+                    labeledField(localization.string("location.longitude"), text: $manualLongitude, placeholder: "-7.5898")
                 }
 
-                labeledField("Name (optional)", text: $manualName, placeholder: "Dar")
+                labeledField(localization.string("location.nameOptional"), text: $manualName, placeholder: "Dar")
 
                 if let manualError {
                     Text(manualError)
@@ -323,7 +329,7 @@ struct MenuBarView: View {
                 Button {
                     applyManualCoordinates()
                 } label: {
-                    Text("Use Coordinates")
+                    Text(localization.string("location.useCoordinates"))
                         .frame(maxWidth: .infinity)
                 }
                 .controlSize(.large)
@@ -332,7 +338,7 @@ struct MenuBarView: View {
             }
             .padding(.top, 6)
         } label: {
-            Label("Enter coordinates manually", systemImage: "mappin.and.ellipse")
+            Label(localization.string("location.manual"), systemImage: "mappin.and.ellipse")
         }
         .font(.callout)
     }
@@ -352,11 +358,11 @@ struct MenuBarView: View {
         let longitude = Self.parseCoordinate(manualLongitude)
 
         guard let latitude, (-90...90).contains(latitude) else {
-            manualError = "Latitude must be a number between -90 and 90."
+            manualError = localization.string("error.latitude")
             return
         }
         guard let longitude, (-180...180).contains(longitude) else {
-            manualError = "Longitude must be a number between -180 and 180."
+            manualError = localization.string("error.longitude")
             return
         }
 
@@ -388,9 +394,9 @@ struct MenuBarView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text("🕌")
                     .font(.system(size: 30))
-                Text("Welcome to Miqat")
+                Text(localization.string("welcome.title"))
                     .font(.headline)
-                Text("Pick your city to see today's prayer times and a live countdown. Everything works offline.")
+                Text(localization.string("welcome.subtitle"))
                     .font(.callout)
                     .foregroundStyle(.secondary)
             }
@@ -408,7 +414,7 @@ struct MenuBarView: View {
     private var orDivider: some View {
         HStack(spacing: 8) {
             Divider()
-            Text("or")
+            Text(localization.string("onboarding.or"))
                 .font(.caption)
                 .foregroundStyle(.tertiary)
             Divider()
@@ -419,21 +425,27 @@ struct MenuBarView: View {
 
     private var settingsSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Picker("Method", selection: $store.method) {
+            Picker(localization.string("settings.language"), selection: $localization.language) {
+                ForEach(AppLanguage.allCases) { language in
+                    Text(language.displayName).tag(language)
+                }
+            }
+
+            Picker(localization.string("settings.method"), selection: $store.method) {
                 ForEach(CalculationMethodChoice.allCases) { method in
                     Text(method.displayName).tag(method)
                 }
             }
 
             HStack(spacing: 12) {
-                Picker("Asr", selection: $store.madhab) {
+                Picker(localization.string("settings.asr"), selection: $store.madhab) {
                     ForEach(AsrMadhab.allCases) { madhab in
                         Text(madhab.displayName).tag(madhab)
                     }
                 }
                 .pickerStyle(.segmented)
 
-                Picker("Title", selection: $store.titleStyle) {
+                Picker(localization.string("settings.menubar"), selection: $store.titleStyle) {
                     ForEach(TitleStyle.allCases) { style in
                         Text(style.displayName).tag(style)
                     }
@@ -448,12 +460,12 @@ struct MenuBarView: View {
 
     private var footer: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Toggle("Start at Login", isOn: loginBinding)
+            Toggle(localization.string("settings.login"), isOn: loginBinding)
 
             Button(role: .destructive) {
                 NSApplication.shared.terminate(nil)
             } label: {
-                Text("Quit Miqat")
+                Text(localization.string("settings.quit"))
                     .frame(maxWidth: .infinity)
             }
             .controlSize(.large)

@@ -13,14 +13,7 @@ enum PrayerKey: String, CaseIterable, Identifiable {
     var id: String { rawValue }
 
     var displayName: String {
-        switch self {
-        case .fajr: return "Fajr"
-        case .sunrise: return "Shuruq"
-        case .dhuhr: return "Dhuhr"
-        case .asr: return "Asr"
-        case .maghrib: return "Maghrib"
-        case .isha: return "Isha"
-        }
+        Localization.shared.string("prayer.\(rawValue)")
     }
 }
 
@@ -115,20 +108,7 @@ enum CalculationMethodChoice: String, CaseIterable, Identifiable {
     var id: String { rawValue }
 
     var displayName: String {
-        switch self {
-        case .muslimWorldLeague: return "Muslim World League"
-        case .egyptian: return "Egyptian General Authority"
-        case .karachi: return "Karachi (Islamic Sciences)"
-        case .ummAlQura: return "Umm al-Qura, Makkah"
-        case .dubai: return "Dubai (UAE)"
-        case .qatar: return "Qatar"
-        case .kuwait: return "Kuwait"
-        case .moonsightingCommittee: return "Moonsighting Committee"
-        case .singapore: return "Singapore & Malaysia"
-        case .turkey: return "Turkey (Diyanet)"
-        case .tehran: return "Tehran"
-        case .northAmerica: return "ISNA (North America)"
-        }
+        Localization.shared.string("method.\(rawValue)")
     }
 
     var adhanParameters: CalculationParameters {
@@ -159,10 +139,7 @@ enum AsrMadhab: String, CaseIterable, Identifiable {
     var id: String { rawValue }
 
     var displayName: String {
-        switch self {
-        case .shafi: return "Shafi"
-        case .hanafi: return "Hanafi"
-        }
+        Localization.shared.string("madhab.\(rawValue)")
     }
 }
 
