@@ -1,0 +1,3 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024"><defs><mask id="cm"><rect width="1024" height="1024" fill="#fff"/><circle cx="608" cy="346" r="206" fill="#000"/></mask></defs>
+<circle cx="512" cy="410" r="240" mask="url(#cm)"/>
+<path d="M190 730 Q351 640 512 730 T834 730" fill="none" stroke="#000" stroke-width="80" stroke-linecap="round"/></svg>

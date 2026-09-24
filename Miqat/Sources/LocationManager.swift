@@ -1,24 +1,23 @@
 import CoreLocation
 import Foundation
 
-/// One-shot location detection and city search, both via system services.
+/// One-shot location detection and city search.
 ///
-/// CoreLocation provides the fix; CLGeocoder turns coordinates ↔ city names.
-/// Computation of prayer times happens locally — nothing leaves the Mac except
-/// the geocoder's own lookup request.
+/// City search runs entirely against the bundled `CityDatabase` — offline and
+/// instant. CoreLocation is only used for the optional "Use My Location" fix
+/// (Macs locate via Wi-Fi positioning, which needs internet); when the
+/// geocoder can't name the fix offline, the nearest bundled city does.
 final class LocationManager: NSObject, ObservableObject {
 
     /// Called with the detected place once a one-shot fix resolves.
     var onPlaceDetected: ((Place) -> Void)?
 
     @Published private(set) var isLocating = false
-    @Published private(set) var isSearching = false
-    @Published private(set) var searchResults: [Place] = []
+    @Published private(set) var searchResults: [City] = []
     @Published private(set) var lastError: String?
 
     private let manager = CLLocationManager()
     private let geocoder = CLGeocoder()
-    private var searchDebounce: DispatchWorkItem?
     /// True while waiting for the user to answer the permission prompt.
     private var awaitingAuthorization = false
 
@@ -50,52 +49,14 @@ final class LocationManager: NSObject, ObservableObject {
         manager.requestLocation()
     }
 
-    // MARK: - City search
+    // MARK: - City search (offline, bundled database)
 
-    /// Debounced forward geocoding; fires ~300 ms after typing settles.
     func search(_ query: String) {
-        searchDebounce?.cancel()
         lastError = nil
-
-        let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard trimmed.count >= 2 else {
-            searchResults = []
-            isSearching = false
-            return
-        }
-
-        let work = DispatchWorkItem { [weak self] in
-            self?.performSearch(trimmed)
-        }
-        searchDebounce = work
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: work)
-    }
-
-    private func performSearch(_ query: String) {
-        isSearching = true
-        geocoder.geocodeAddressString(query) { [weak self] placemarks, error in
-            DispatchQueue.main.async {
-                guard let self else { return }
-                self.isSearching = false
-
-                if let error {
-                    self.searchResults = []
-                    self.lastError = Self.message(for: error)
-                    return
-                }
-
-                self.searchResults = (placemarks ?? []).compactMap(Self.place(from:))
-                if self.searchResults.isEmpty {
-                    self.lastError = "No cities found for “\(query)”."
-                }
-            }
-        }
+        searchResults = CityDatabase.search(query)
     }
 
     func clearSearch() {
-        searchDebounce?.cancel()
-        searchDebounce = nil
-        isSearching = false
         searchResults = []
         lastError = nil
     }
@@ -131,13 +92,22 @@ extension LocationManager: CLLocationManagerDelegate {
             DispatchQueue.main.async {
                 guard let self else { return }
 
-                // A geocoding failure still leaves a perfectly usable place:
-                // raw coordinates plus the system time zone.
-                if let error {
-                    NSLog("Miqat: reverse geocode failed — \(error.localizedDescription)")
+                // Geocoder wins when reachable (exact locality name). Offline,
+                // the nearest bundled city names the place and supplies the
+                // time zone — detection still works without internet.
+                if let geocoded = placemarks?.first.flatMap(Self.place(from:)) {
+                    self.onPlaceDetected?(geocoded)
+                } else {
+                    if let error {
+                        NSLog("Miqat: reverse geocode failed — \(error.localizedDescription)")
+                    }
+                    self.onPlaceDetected?(
+                        CityDatabase.nearestCityPlace(
+                            latitude: location.coordinate.latitude,
+                            longitude: location.coordinate.longitude
+                        )
+                    )
                 }
-                let detected = placemarks?.first.flatMap(Self.place(from:)) ?? Self.fallbackPlace(for: location)
-                self.onPlaceDetected?(detected)
             }
         }
     }
@@ -148,7 +118,7 @@ extension LocationManager: CLLocationManagerDelegate {
     }
 }
 
-// MARK: - Place construction
+// MARK: - Helpers
 
 private extension LocationManager {
 
@@ -166,15 +136,6 @@ private extension LocationManager {
             latitude: location.coordinate.latitude,
             longitude: location.coordinate.longitude,
             timeZoneIdentifier: (placemark.timeZone ?? .current).identifier
-        )
-    }
-
-    static func fallbackPlace(for location: CLLocation) -> Place {
-        Place(
-            name: "Current location",
-            latitude: location.coordinate.latitude,
-            longitude: location.coordinate.longitude,
-            timeZoneIdentifier: TimeZone.current.identifier
         )
     }
 

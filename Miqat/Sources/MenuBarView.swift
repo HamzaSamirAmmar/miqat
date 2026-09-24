@@ -7,6 +7,11 @@ struct MenuBarView: View {
 
     @State private var showsLocationEditor = false
     @State private var searchQuery = ""
+    @State private var showsManualEntry = false
+    @State private var manualLatitude = ""
+    @State private var manualLongitude = ""
+    @State private var manualName = ""
+    @State private var manualError: String?
 
     private var loginBinding: Binding<Bool> {
         Binding(
@@ -136,11 +141,14 @@ struct MenuBarView: View {
         VStack(alignment: .leading, spacing: 8) {
             locationSearchSection
 
+            manualEntrySection
+
             HStack {
                 detectButton
                 Spacer()
                 Button("Done") {
                     location.clearSearch()
+                    searchQuery = ""
                     showsLocationEditor = false
                 }
             }
@@ -166,13 +174,13 @@ struct MenuBarView: View {
                     .onChange(of: searchQuery) { query in
                         location.search(query)
                     }
-                if location.isSearching {
-                    ProgressView()
-                        .controlSize(.small)
-                }
             }
             .padding(6)
             .background(.quaternary, in: RoundedRectangle(cornerRadius: 6))
+
+            Text("Offline search — \(CityDatabase.cities.count.formatted()) cities bundled")
+                .font(.caption2)
+                .foregroundStyle(.tertiary)
 
             if let error = location.lastError {
                 Text(error)
@@ -180,9 +188,9 @@ struct MenuBarView: View {
                     .foregroundStyle(.secondary)
             }
 
-            ForEach(location.searchResults.prefix(5)) { place in
+            ForEach(location.searchResults) { city in
                 Button {
-                    store.place = place
+                    store.place = CityDatabase.place(from: city)
                     location.clearSearch()
                     searchQuery = ""
                     showsLocationEditor = false
@@ -190,11 +198,11 @@ struct MenuBarView: View {
                     HStack {
                         Image(systemName: "mappin")
                             .foregroundStyle(Color.accentColor)
-                        Text(place.name)
+                        Text(city.displayName)
                             .lineLimit(1)
                             .truncationMode(.middle)
                         Spacer()
-                        Text(place.timeZone.abbreviation() ?? "")
+                        Text(city.timeZone?.abbreviation() ?? "")
                             .foregroundStyle(.secondary)
                     }
                     .contentShape(Rectangle())
@@ -203,6 +211,72 @@ struct MenuBarView: View {
             }
         }
         .font(.callout)
+    }
+
+    /// Fully-offline manual coordinates: the nearest bundled city supplies
+    /// the time zone and a "Near …" label unless a custom name is given.
+    private var manualEntrySection: some View {
+        DisclosureGroup("Enter coordinates manually", isExpanded: $showsManualEntry) {
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(spacing: 8) {
+                    TextField("Latitude (e.g. 33.5731)", text: $manualLatitude)
+                    TextField("Longitude (e.g. -7.5898)", text: $manualLongitude)
+                }
+                .textFieldStyle(.roundedBorder)
+                .font(.callout)
+
+                TextField("Name (optional)", text: $manualName)
+                    .textFieldStyle(.roundedBorder)
+                    .font(.callout)
+
+                if let manualError {
+                    Text(manualError)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                Button("Use Coordinates") {
+                    applyManualCoordinates()
+                }
+                .disabled(manualLatitude.isEmpty || manualLongitude.isEmpty)
+            }
+            .padding(.top, 4)
+        }
+        .font(.callout)
+    }
+
+    private func applyManualCoordinates() {
+        let latitude = Self.parseCoordinate(manualLatitude)
+        let longitude = Self.parseCoordinate(manualLongitude)
+
+        guard let latitude, (-90...90).contains(latitude) else {
+            manualError = "Latitude must be a number between -90 and 90."
+            return
+        }
+        guard let longitude, (-180...180).contains(longitude) else {
+            manualError = "Longitude must be a number between -180 and 180."
+            return
+        }
+
+        store.place = CityDatabase.manualPlace(
+            name: manualName,
+            latitude: latitude,
+            longitude: longitude
+        )
+
+        manualLatitude = ""
+        manualLongitude = ""
+        manualName = ""
+        manualError = nil
+        location.clearSearch()
+        searchQuery = ""
+        showsLocationEditor = false
+    }
+
+    /// Accepts both "." and "," decimal separators.
+    private static func parseCoordinate(_ string: String) -> Double? {
+        Double(string.trimmingCharacters(in: .whitespaces)
+            .replacingOccurrences(of: ",", with: "."))
     }
 
     // MARK: - Onboarding (first run, no place yet)

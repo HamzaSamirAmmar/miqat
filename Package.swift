@@ -18,7 +18,10 @@ let package = Package(
             dependencies: [
                 .product(name: "Adhan", package: "adhan-swift")
             ],
-            path: "Miqat/Sources"
+            path: "Miqat",
+            exclude: ["Info.plist"],
+            sources: ["Sources"],
+            resources: [.copy("Resources")]
         ),
         .testTarget(
             name: "MiqatTests",

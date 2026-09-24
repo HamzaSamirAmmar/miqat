@@ -22,6 +22,7 @@ targets:
     platform: macOS
     sources:
       - path: Miqat/Sources
+      - path: Miqat/Resources
     dependencies:
       - package: Adhan
     info:

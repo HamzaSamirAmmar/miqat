@@ -17,8 +17,13 @@ Asr 1:23
   - *Compact* — `🕌 1:23`
 - **Today's full schedule** — Fajr, Shuruq, Dhuhr, Asr, Maghrib, Isha — with
   the next prayer highlighted and the Gregorian + Hijri dates
-- **Location** — auto-detected once via CoreLocation, or search any city with
-  the built-in geocoder (no API keys)
+- **Fully offline** — a bundled database of ~12,400 cities (GeoNames,
+  population ≥ 50k) powers instant city search, with no internet at any point:
+  - pick a city from the bundled list
+  - enter coordinates manually — the nearest notable bundled city supplies
+    the time zone and a "Near …" label
+  - auto-detect (the only online path) names the fix via the nearest city
+    even when Apple's geocoder is unreachable
 - **12 calculation methods** — Muslim World League, Umm al-Qura (Makkah),
   ISNA, Egyptian, Karachi, Dubai, Qatar, Kuwait, Moonsighting Committee,
   Singapore/Malaysia, Turkey (Diyanet), Tehran
@@ -30,10 +35,11 @@ Asr 1:23
 
 ## Privacy
 
-Location is used once to resolve your city and never leaves the Mac. Note that
-Macs locate themselves via Wi-Fi positioning (an Apple online lookup), so both
-detection and city search need a brief internet connection — everything else
-(time calculation, countdown) is pure local math and works fully offline.
+Location is used once to resolve your city and never leaves the Mac. Only
+"Use My Location" can ever touch the network (Macs locate via Wi-Fi
+positioning, an online Apple lookup — offline, the fix itself fails and the
+error says so). City search, manual coordinates, and all time calculations
+are pure local math and work fully offline.
 
 ## Credits
 
@@ -42,6 +48,9 @@ detection and city search need a brief internet connection — everything else
   (MIT), based on *Astronomical Algorithms* by Jean Meeus
 - Reference test data: Umm al-Qura University official timetable
   (ummulqura.org.sa), as compiled in the adhan test suite
+- City database: [GeoNames](https://www.geonames.org), licensed
+  [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) — regenerate the
+  bundled subset with `python3 scripts/build_cities.py`
 
 ## Building
 

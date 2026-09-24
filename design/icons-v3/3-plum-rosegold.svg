@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024"><defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#43207A"/><stop offset="1" stop-color="#1A0B38"/></linearGradient>
+<mask id="cm"><rect width="1024" height="1024" fill="#fff"/><circle cx="538" cy="580" r="54" fill="#000"/></mask></defs>
+<rect x="100" y="100" width="824" height="824" rx="185" fill="url(#bg)"/><path d="M222 810 L222 500.0 Q222 314.0 512 190 Q802 314.0 802 500.0 L802 810Z" fill="#F2B8A2"/><path d="M250 810 L250 514.0 Q250 336.4 512 218 Q774 336.4 774 514.0 L774 810Z" fill="#150826"/><path d="M284 810 L284 534.0 Q284 368.4 512 258 Q740 368.4 740 534.0 L740 810Z" fill="#8A4FD6"/><path d="M340 810 L340 566.0 Q340 419.6 512 322 Q684 419.6 684 566.0 L684 810Z" fill="#5A2FA0"/><path d="M394 810 L394 601.0 Q394 475.6 512 392 Q630 475.6 630 601.0 L630 810Z" fill="#FCE9E0"/>
+<circle cx="512" cy="600" r="64" fill="#5A2FA0" mask="url(#cm)"/>
+<rect x="212" y="810" width="600" height="34" rx="17" fill="#F2B8A2"/></svg>
