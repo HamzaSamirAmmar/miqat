@@ -1,0 +1,39 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  release:
+    runs-on: macos-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Install xcodegen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Build Release
+        run: |
+          xcodebuild -project Miqat.xcodeproj -scheme Miqat -configuration Release \
+            -derivedDataPath build SYMROOT=build/Release build
+
+      - name: Zip app bundle
+        run: |
+          cd build/Release/Release
+          ditto -c -k --keepParent Miqat.app "Miqat-${GITHUB_REF_NAME}.zip"
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            "build/Release/Release/Miqat-${GITHUB_REF_NAME}.zip" \
+            --title "Miqat ${{ github.ref_name }}" \
+            --generate-notes

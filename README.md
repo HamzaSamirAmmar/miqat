@@ -10,6 +10,10 @@ Asr 1:23
 ![Swift 5.9](https://img.shields.io/badge/Swift-5.9-orange)
 ![License: MIT](https://img.shields.io/badge/License-MIT-green)
 
+<p align="center">
+  <img src="Docs/hero.png" width="420" alt="Miqat for macOS" />
+</p>
+
 ## Features
 
 - **Live countdown to the next prayer** in the menu bar, always visible —
@@ -37,6 +41,64 @@ Asr 1:23
   [adhan-swift](https://github.com/batoulapps/adhan-swift) (MIT) — works fully
   offline once your city is set; the day rolls over at the *location's*
   midnight, in the location's time zone
+
+## Screenshots
+
+### Native Menu Bar
+
+Compact, monospaced countdown that never causes neighboring icons to jitter:
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="Docs/menubar-dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="Docs/menubar-light.png">
+  <img alt="Miqat in macOS Menu Bar" src="Docs/menubar-dark.png" width="220">
+</picture>
+
+### Detailed Popover
+
+Click the item anytime for the full schedule, Hijri date, location, and settings:
+
+<p align="center">
+  <img src="Docs/dropdown-dark.png" width="340" alt="Miqat Dropdown — Dark Mode" />
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="Docs/dropdown-light.png" width="340" alt="Miqat Dropdown — Light Mode" />
+</p>
+
+### Three Menu Bar Themes
+
+Icon (Control Center style), Countdown, or Labeled:
+
+<p align="center">
+  <img src="Docs/themes.png" width="200" alt="Miqat Menu Bar Themes" />
+</p>
+
+## Install
+
+### Homebrew
+
+```bash
+brew install --cask HamzaSamirAmmar/tap/miqat
+xattr -d com.apple.quarantine /Applications/Miqat.app
+```
+
+Miqat is ad-hoc signed (not notarized), so macOS blocks the downloaded copy
+on first launch — the `xattr` line clears that once and works on every
+Homebrew version. (Right-click → **Open** → **Open** in Finder works too.)
+
+### From a release
+
+Download `Miqat.zip` from the [Releases](../../releases) page, unzip, and drag
+`Miqat.app` to `/Applications`. Right-click the app → **Open** → **Open** to
+get past the first-launch warning.
+
+### From source
+
+```bash
+xcodegen generate          # requires: brew install xcodegen
+xcodebuild -project Miqat.xcodeproj -scheme Miqat -configuration Release \
+  -derivedDataPath build SYMROOT=build/Release build
+cp -R build/Release/Release/Miqat.app /Applications/
+```
 
 ## Privacy
 

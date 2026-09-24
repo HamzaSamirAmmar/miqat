@@ -19,6 +19,26 @@
             "target": "Miqat",
             "configuration": "release",
             "preLaunchTask": "swift: Build Release Miqat"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:Miqat}",
+            "name": "Debug MiqatDocs",
+            "target": "MiqatDocs",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug MiqatDocs"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:Miqat}",
+            "name": "Release MiqatDocs",
+            "target": "MiqatDocs",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release MiqatDocs"
         }
     ]
 }
