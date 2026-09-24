@@ -66,6 +66,12 @@ final class LocalizationTests: XCTestCase {
         XCTAssertEqual(Format.remaining(600), "10د")
     }
 
+    /// Explicit UI copy requested for the Arabic interface.
+    func testArabicQuitLabel() {
+        Localization.shared.language = .arabic
+        XCTAssertEqual(Localization.shared.string("settings.quit"), "إغلاق التطبيق")
+    }
+
     /// The pre-multitheme "compact" style (icon + countdown) maps to
     /// `countdown` so existing users keep a live readout after upgrade.
     func testCompactThemeMigratesToCountdown() {

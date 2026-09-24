@@ -198,7 +198,7 @@ final class Localization: ObservableObject {
         "settings.asr": "العصر",
         "settings.menubar": "شريط القائمة",
         "settings.login": "التشغيل عند تسجيل الدخول",
-        "settings.quit": "إنهاء مِيقَات",
+        "settings.quit": "إغلاق التطبيق",
         "language.system": "حسب النظام",
 
         // Menu bar themes

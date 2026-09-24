@@ -23,6 +23,12 @@ struct MenuBarView: View {
         )
     }
 
+    /// Directional SF Symbols must be picked per layout direction — SwiftUI
+    /// does not mirror `chevron.right`-style glyphs on its own.
+    private func directionalIcon(ltr: String, rtl: String) -> String {
+        localization.isRTL ? rtl : ltr
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             header
@@ -69,6 +75,8 @@ struct MenuBarView: View {
             Text(Self.dateLine(for: store.now, timeZone: store.displayTimeZone))
                 .font(.caption)
                 .foregroundStyle(.secondary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
         }
     }
 
@@ -105,7 +113,9 @@ struct MenuBarView: View {
         let isNext = entry.id == store.next?.id
 
         return HStack(spacing: 6) {
-            Image(systemName: isNext ? "arrow.right.circle.fill" : "circle")
+            Image(systemName: isNext
+                  ? directionalIcon(ltr: "arrow.right.circle.fill", rtl: "arrow.left.circle.fill")
+                  : "circle")
                 .font(.caption2)
                 .foregroundStyle(isNext ? Color.accentColor : .clear)
                 .frame(width: 12)
@@ -158,7 +168,7 @@ struct MenuBarView: View {
 
                 Spacer()
 
-                Image(systemName: "chevron.right")
+                Image(systemName: directionalIcon(ltr: "chevron.right", rtl: "chevron.left"))
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.tertiary)
             }
@@ -183,7 +193,8 @@ struct MenuBarView: View {
                         searchQuery = ""
                         showingLocationPicker = false
                     } label: {
-                        Label(localization.string("location.back"), systemImage: "chevron.left")
+                        Label(localization.string("location.back"),
+                              systemImage: directionalIcon(ltr: "chevron.left", rtl: "chevron.right"))
                     }
                     .controlSize(.small)
                     Spacer()
@@ -437,21 +448,21 @@ struct MenuBarView: View {
                 }
             }
 
-            HStack(spacing: 12) {
-                Picker(localization.string("settings.asr"), selection: $store.madhab) {
-                    ForEach(AsrMadhab.allCases) { madhab in
-                        Text(madhab.displayName).tag(madhab)
-                    }
+            // Full-width segmented rows — side-by-side segments overflow the
+            // popover once Arabic labels (شافعي/حنفي · عدّ تنازلي) get involved.
+            Picker(localization.string("settings.asr"), selection: $store.madhab) {
+                ForEach(AsrMadhab.allCases) { madhab in
+                    Text(madhab.displayName).tag(madhab)
                 }
-                .pickerStyle(.segmented)
-
-                Picker(localization.string("settings.menubar"), selection: $store.titleStyle) {
-                    ForEach(TitleStyle.allCases) { style in
-                        Text(style.displayName).tag(style)
-                    }
-                }
-                .pickerStyle(.segmented)
             }
+            .pickerStyle(.segmented)
+
+            Picker(localization.string("settings.menubar"), selection: $store.titleStyle) {
+                ForEach(TitleStyle.allCases) { style in
+                    Text(style.displayName).tag(style)
+                }
+            }
+            .pickerStyle(.segmented)
         }
         .font(.callout)
     }
