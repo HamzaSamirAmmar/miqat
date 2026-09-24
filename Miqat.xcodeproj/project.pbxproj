@@ -1,0 +1,463 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		01FF2E6D3D0F31BF0B7E931B /* Format.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF90AA48406F3E3088F428E8 /* Format.swift */; };
+		15A06829AA4C142407B95AB0 /* LoginItemManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76D282867C27CE19A42A20EA /* LoginItemManager.swift */; };
+		4ACC5BDE39FFD7330E4C3DF7 /* PrayerEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4C26866D2F56AC10117FCA /* PrayerEngineTests.swift */; };
+		5FF4128399FBC268D90A3103 /* PrayerScheduleStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D313837F13D833CD15B2971 /* PrayerScheduleStore.swift */; };
+		6889B4377AFC785403D63CA3 /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47595CB6A45844F4401F20D1 /* App.swift */; };
+		A9F0C5B9DCC8ADF208F5806D /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 533BFDA590F16139194F83A8 /* LocationManager.swift */; };
+		BCBE21575FC70EB0BCC4314B /* Adhan in Frameworks */ = {isa = PBXBuildFile; productRef = C0BACB9536B41F69009A45E8 /* Adhan */; };
+		C6F8280FFFACAA49AE107C92 /* PrayerEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E2E9012CD715069E5F68503 /* PrayerEngine.swift */; };
+		E14CB2AB16B50749CA0A2ADF /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D08EA7589CB460D3E0CC42 /* MenuBarView.swift */; };
+		E4ADE97DEC0836ED690F0CB8 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC16E9E47650EEB874667644 /* Theme.swift */; };
+		ED5D18BF5EA582A6F2B88B0E /* StatusItemController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBC582F97510279AD91D1E64 /* StatusItemController.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		14ED1893254B2EECCCE4809C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E4BDD7CC97B1D9F3E1286097 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E740860435D5F8D4411211AA;
+			remoteInfo = Miqat;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		2C4C26866D2F56AC10117FCA /* PrayerEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerEngineTests.swift; sourceTree = "<group>"; };
+		2D313837F13D833CD15B2971 /* PrayerScheduleStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerScheduleStore.swift; sourceTree = "<group>"; };
+		47595CB6A45844F4401F20D1 /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
+		533BFDA590F16139194F83A8 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
+		54BBFA229BFC2E1C7E9B3353 /* Miqat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Miqat.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7417A1225854B39BDA08B219 /* MiqatTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MiqatTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		76D282867C27CE19A42A20EA /* LoginItemManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginItemManager.swift; sourceTree = "<group>"; };
+		8E2E9012CD715069E5F68503 /* PrayerEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerEngine.swift; sourceTree = "<group>"; };
+		B3D08EA7589CB460D3E0CC42 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
+		DF90AA48406F3E3088F428E8 /* Format.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Format.swift; sourceTree = "<group>"; };
+		EC16E9E47650EEB874667644 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		FBC582F97510279AD91D1E64 /* StatusItemController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusItemController.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		16A81D6F083665B65635D4E3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BCBE21575FC70EB0BCC4314B /* Adhan in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		017AD97CE239CAEA0F70E555 = {
+			isa = PBXGroup;
+			children = (
+				CB9F4367BC4700501F2D1E66 /* Miqat */,
+				AC9F9D4497F5AC0D2BB64F3E /* MiqatTests */,
+				C3F6DA8B3B7386294A5C0261 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		8966537BA2C1CAF310EBDD15 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				47595CB6A45844F4401F20D1 /* App.swift */,
+				DF90AA48406F3E3088F428E8 /* Format.swift */,
+				533BFDA590F16139194F83A8 /* LocationManager.swift */,
+				76D282867C27CE19A42A20EA /* LoginItemManager.swift */,
+				B3D08EA7589CB460D3E0CC42 /* MenuBarView.swift */,
+				8E2E9012CD715069E5F68503 /* PrayerEngine.swift */,
+				2D313837F13D833CD15B2971 /* PrayerScheduleStore.swift */,
+				FBC582F97510279AD91D1E64 /* StatusItemController.swift */,
+				EC16E9E47650EEB874667644 /* Theme.swift */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		AC9F9D4497F5AC0D2BB64F3E /* MiqatTests */ = {
+			isa = PBXGroup;
+			children = (
+				2C4C26866D2F56AC10117FCA /* PrayerEngineTests.swift */,
+			);
+			path = MiqatTests;
+			sourceTree = "<group>";
+		};
+		C3F6DA8B3B7386294A5C0261 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				54BBFA229BFC2E1C7E9B3353 /* Miqat.app */,
+				7417A1225854B39BDA08B219 /* MiqatTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		CB9F4367BC4700501F2D1E66 /* Miqat */ = {
+			isa = PBXGroup;
+			children = (
+				8966537BA2C1CAF310EBDD15 /* Sources */,
+			);
+			path = Miqat;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		72F427C0B7F12005C6CC4EB0 /* MiqatTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 22917AEBDB57483F11E78474 /* Build configuration list for PBXNativeTarget "MiqatTests" */;
+			buildPhases = (
+				6DEA7C5D84EA060950BE9CE0 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				992AFF6DFD35137427EBF746 /* PBXTargetDependency */,
+			);
+			name = MiqatTests;
+			packageProductDependencies = (
+			);
+			productName = MiqatTests;
+			productReference = 7417A1225854B39BDA08B219 /* MiqatTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		E740860435D5F8D4411211AA /* Miqat */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 61916BB2DEC736C2DDBDF120 /* Build configuration list for PBXNativeTarget "Miqat" */;
+			buildPhases = (
+				0DB080C2F83BB1AE5875E385 /* Sources */,
+				16A81D6F083665B65635D4E3 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Miqat;
+			packageProductDependencies = (
+				C0BACB9536B41F69009A45E8 /* Adhan */,
+			);
+			productName = Miqat;
+			productReference = 54BBFA229BFC2E1C7E9B3353 /* Miqat.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		E4BDD7CC97B1D9F3E1286097 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = 4568F91B4522FF8406F0BFDA /* Build configuration list for PBXProject "Miqat" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 017AD97CE239CAEA0F70E555;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				FA7A4A16527F7045C697B9F5 /* XCRemoteSwiftPackageReference "adhan-swift" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = C3F6DA8B3B7386294A5C0261 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				E740860435D5F8D4411211AA /* Miqat */,
+				72F427C0B7F12005C6CC4EB0 /* MiqatTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		0DB080C2F83BB1AE5875E385 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6889B4377AFC785403D63CA3 /* App.swift in Sources */,
+				01FF2E6D3D0F31BF0B7E931B /* Format.swift in Sources */,
+				A9F0C5B9DCC8ADF208F5806D /* LocationManager.swift in Sources */,
+				15A06829AA4C142407B95AB0 /* LoginItemManager.swift in Sources */,
+				E14CB2AB16B50749CA0A2ADF /* MenuBarView.swift in Sources */,
+				C6F8280FFFACAA49AE107C92 /* PrayerEngine.swift in Sources */,
+				5FF4128399FBC268D90A3103 /* PrayerScheduleStore.swift in Sources */,
+				ED5D18BF5EA582A6F2B88B0E /* StatusItemController.swift in Sources */,
+				E4ADE97DEC0836ED690F0CB8 /* Theme.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6DEA7C5D84EA060950BE9CE0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4ACC5BDE39FFD7330E4C3DF7 /* PrayerEngineTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		992AFF6DFD35137427EBF746 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E740860435D5F8D4411211AA /* Miqat */;
+			targetProxy = 14ED1893254B2EECCCE4809C /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		0560247F93938F213D0C19EA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = personal.hamza.MiqatTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Miqat.app/Contents/MacOS/Miqat";
+			};
+			name = Debug;
+		};
+		2279C7F96A01DF03858809A2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				INFOPLIST_FILE = Miqat/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = personal.hamza.miqat;
+				PRODUCT_NAME = Miqat;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		6DA684F68E0BC2DE18B7DCB9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_HARDENED_RUNTIME = NO;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+		81EE371789ADEEE798DF75A7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_HARDENED_RUNTIME = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+		DE093D982DCA87D7C6D3DEB4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				INFOPLIST_FILE = Miqat/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = personal.hamza.miqat;
+				PRODUCT_NAME = Miqat;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		F658930229AA6B11AD24FD6C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = personal.hamza.MiqatTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Miqat.app/Contents/MacOS/Miqat";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		22917AEBDB57483F11E78474 /* Build configuration list for PBXNativeTarget "MiqatTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0560247F93938F213D0C19EA /* Debug */,
+				F658930229AA6B11AD24FD6C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		4568F91B4522FF8406F0BFDA /* Build configuration list for PBXProject "Miqat" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				81EE371789ADEEE798DF75A7 /* Debug */,
+				6DA684F68E0BC2DE18B7DCB9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		61916BB2DEC736C2DDBDF120 /* Build configuration list for PBXNativeTarget "Miqat" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2279C7F96A01DF03858809A2 /* Debug */,
+				DE093D982DCA87D7C6D3DEB4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		FA7A4A16527F7045C697B9F5 /* XCRemoteSwiftPackageReference "adhan-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/batoulapps/adhan-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.5.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		C0BACB9536B41F69009A45E8 /* Adhan */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FA7A4A16527F7045C697B9F5 /* XCRemoteSwiftPackageReference "adhan-swift" */;
+			productName = Adhan;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = E4BDD7CC97B1D9F3E1286097 /* Project object */;
+}
