@@ -1,27 +1,24 @@
 import AppKit
 import SwiftUI
 
+enum ActiveScreen {
+    case schedule
+    case locationPicker
+    case settings
+}
+
 struct MenuBarView: View {
     @ObservedObject var store: PrayerScheduleStore
     @ObservedObject var location: LocationManager
     @ObservedObject private var localization = Localization.shared
 
-    @State private var showingLocationPicker = false
+    @State private var activeScreen: ActiveScreen = .schedule
     @State private var searchQuery = ""
     @State private var showsManualEntry = false
     @State private var manualLatitude = ""
     @State private var manualLongitude = ""
     @State private var manualName = ""
     @State private var manualError: String?
-
-    private var loginBinding: Binding<Bool> {
-        Binding(
-            get: { LoginItemManager.isEnabled },
-            set: { enabled in
-                _ = LoginItemManager.setEnabled(enabled)
-            }
-        )
-    }
 
     /// Directional SF Symbols must be picked per layout direction — SwiftUI
     /// does not mirror `chevron.right`-style glyphs on its own.
@@ -30,157 +27,239 @@ struct MenuBarView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            header
-
-            Divider()
-
+        VStack(alignment: .leading, spacing: 12) {
             if store.place == nil {
                 onboarding
-            } else if showingLocationPicker {
-                locationPicker
             } else {
-                scheduleSection
-
-                Divider()
-
-                locationCard
-                settingsSection
+                switch activeScreen {
+                case .settings:
+                    SettingsView(store: store) {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            activeScreen = .schedule
+                        }
+                    }
+                case .locationPicker:
+                    locationPicker
+                case .schedule:
+                    mainScheduleContent
+                }
             }
-
-            Divider()
-
-            footer
         }
         .padding(16)
         .frame(width: 340)
         .environment(\.locale, localization.locale)
         .environment(\.layoutDirection, localization.layoutDirection)
         .onChange(of: store.place) { _ in
-            // A place arriving (detect, pick, manual) closes the picker.
-            if showingLocationPicker, store.place != nil {
-                showingLocationPicker = false
+            // A place arriving (detect, pick, manual) returns to schedule.
+            if activeScreen == .locationPicker, store.place != nil {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    activeScreen = .schedule
+                }
                 location.clearSearch()
                 searchQuery = ""
             }
         }
     }
 
-    // MARK: - Header
+    // MARK: - Main Schedule Content
 
-    private var header: some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text("Miqat")
-                .font(.title3.weight(.semibold))
-            Text(Self.dateLine(for: store.now, timeZone: store.displayTimeZone))
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .lineLimit(1)
-                .minimumScaleFactor(0.8)
+    private var mainScheduleContent: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            header
+
+            PrayerHeroCard(store: store)
+
+            scheduleSection
+
+            footer
         }
     }
 
-    /// "Sep 24, 2026 · Rabiʻ II 13, 1448 AH" (Arabic: "٢٤ سبتمبر ٢٠٢٦ · ١٤ ربيع الآخر ١٤٤٨ هـ")
-    private static func dateLine(for date: Date, timeZone: TimeZone?) -> String {
-        let locale = Localization.shared.locale
+    // MARK: - Header
 
-        let gregorian = DateFormatter()
-        gregorian.locale = locale
-        gregorian.dateStyle = .medium
-        gregorian.timeStyle = .none
-        gregorian.timeZone = timeZone ?? .current
+    private var header: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(alignment: .center) {
+                Text("Miqat")
+                    .font(.title3.weight(.bold))
 
-        let hijri = DateFormatter()
-        hijri.calendar = Calendar(identifier: .islamicCivil)
-        hijri.locale = locale
-        hijri.dateStyle = .long
-        hijri.timeZone = timeZone ?? .current
+                Spacer()
 
-        return "\(gregorian.string(from: date)) · \(hijri.string(from: date))"
+                // Location pill button
+                Button {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        location.clearSearch()
+                        searchQuery = ""
+                        activeScreen = .locationPicker
+                    }
+                } label: {
+                    HStack(spacing: 5) {
+                        Text(store.place?.flagEmoji ?? "📍")
+                            .font(.subheadline)
+                        Text(store.place?.name ?? localization.string("location.title"))
+                            .font(.caption.weight(.medium))
+                            .lineLimit(1)
+                            .truncationMode(.tail)
+                        Image(systemName: directionalIcon(ltr: "chevron.right", rtl: "chevron.left"))
+                            .font(.system(size: 9, weight: .bold))
+                            .foregroundStyle(.tertiary)
+                    }
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(.quaternary.opacity(0.6), in: Capsule())
+                }
+                .buttonStyle(.plain)
+
+                // Settings button
+                Button {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        activeScreen = .settings
+                    }
+                } label: {
+                    Image(systemName: "gearshape")
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+                        .padding(4)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .help(localization.string("nav.settings"))
+            }
+
+            // Dual Date Line (Gregorian & Hijri)
+            HStack(spacing: 6) {
+                Text(Self.gregorianDateString(for: store.now, timeZone: store.displayTimeZone))
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(.primary)
+
+                Text("·")
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
+
+                Text(Self.hijriDateString(for: store.now, timeZone: store.displayTimeZone))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            .lineLimit(1)
+            .minimumScaleFactor(0.8)
+        }
+    }
+
+    private static func gregorianDateString(for date: Date, timeZone: TimeZone?) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Localization.shared.locale
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .none
+        formatter.timeZone = timeZone ?? .current
+        return formatter.string(from: date)
+    }
+
+    private static func hijriDateString(for date: Date, timeZone: TimeZone?) -> String {
+        let formatter = DateFormatter()
+        formatter.calendar = Calendar(identifier: .islamicCivil)
+        formatter.locale = Localization.shared.locale
+        formatter.dateStyle = .long
+        formatter.timeZone = timeZone ?? .current
+        return formatter.string(from: date)
     }
 
     // MARK: - Schedule
 
     private var scheduleSection: some View {
-        VStack(spacing: 6) {
-            ForEach(store.today) { entry in
-                scheduleRow(entry)
+        VStack(alignment: .leading, spacing: 6) {
+            HStack {
+                Text(localization.string("hero.today"))
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+
+                Spacer()
+            }
+            .padding(.top, 2)
+
+            VStack(spacing: 3) {
+                ForEach(store.today) { entry in
+                    scheduleRow(entry)
+                }
             }
         }
     }
 
     private func scheduleRow(_ entry: PrayerEntry) -> some View {
         let isNext = entry.id == store.next?.id
+        let isPassed = !isNext && entry.date < store.now
 
-        return HStack(spacing: 6) {
-            Image(systemName: isNext
-                  ? directionalIcon(ltr: "arrow.right.circle.fill", rtl: "arrow.left.circle.fill")
-                  : "circle")
-                .font(.caption2)
-                .foregroundStyle(isNext ? Color.accentColor : .clear)
-                .frame(width: 12)
+        return HStack(spacing: 10) {
+            Group {
+                if isNext {
+                    Image(systemName: entry.key.symbolName)
+                        .foregroundStyle(Color.accentColor)
+                } else if isPassed {
+                    Image(systemName: entry.key.symbolName)
+                        .foregroundStyle(.tertiary)
+                } else {
+                    Image(systemName: entry.key.symbolName)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .font(.callout)
+            .frame(width: 20)
 
             Text(entry.key.displayName)
-                .foregroundStyle(isNext ? .primary : .secondary)
+                .font(isNext ? .callout.weight(.semibold) : .callout)
+                .foregroundStyle(isNext ? Color.primary : (isPassed ? Color.secondary : Color.primary))
 
-            if isNext {
+            if isPassed {
+                Text(localization.string("prayer.passed"))
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+            } else if isNext {
                 Text(localization.string("next.prefix", Format.remaining(entry.date.timeIntervalSince(store.now))))
-                    .font(.caption)
+                    .font(.caption2.weight(.medium))
                     .foregroundStyle(Color.accentColor)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(Color.accentColor.opacity(0.12), in: Capsule())
             }
 
             Spacer()
 
             Text(Format.time(entry.date, timeZone: store.displayTimeZone))
                 .monospacedDigit()
-                .foregroundStyle(isNext ? .primary : .secondary)
+                .font(isNext ? .callout.weight(.semibold) : .callout)
+                .foregroundStyle(isNext ? Color.primary : (isPassed ? Color.secondary.opacity(0.6) : Color.primary))
         }
-        .font(isNext ? .callout.weight(.semibold) : .callout)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 5)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(isNext ? Color.accentColor.opacity(0.12) : Color.clear)
+        )
+        .modifier(HoverHighlight())
     }
 
-    // MARK: - Location
+    // MARK: - Footer
 
-    /// Compact summary card on the main panel — tap to open the picker.
-    private var locationCard: some View {
-        Button {
-            location.clearSearch()
-            searchQuery = ""
-            showingLocationPicker = true
-        } label: {
-            HStack(spacing: 10) {
-                Text(store.place?.flagEmoji ?? "📍")
-                    .font(.title3)
+    private var footer: some View {
+        HStack {
+            Text("\(store.method.displayName) · \(store.madhab.displayName)")
+                .font(.caption2)
+                .foregroundStyle(.tertiary)
+                .lineLimit(1)
+                .truncationMode(.tail)
 
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(store.place?.name ?? "Set location")
-                        .font(.callout.weight(.medium))
-                        .lineLimit(1)
-                        .truncationMode(.middle)
+            Spacer()
 
-                    if let place = store.place {
-                        Text("\(place.timeZoneIdentifier) · \(Format.coordinate(place.latitude, place.longitude))")
-                            .font(.caption2)
-                            .foregroundStyle(.tertiary)
-                            .lineLimit(1)
-                            .truncationMode(.middle)
-                    }
-                }
-
-                Spacer()
-
-                Image(systemName: directionalIcon(ltr: "chevron.right", rtl: "chevron.left"))
-                    .font(.caption.weight(.semibold))
+            if let place = store.place {
+                Text(place.timeZoneIdentifier)
+                    .font(.caption2)
                     .foregroundStyle(.tertiary)
             }
-            .padding(10)
-            .background(.quaternary.opacity(0.5), in: RoundedRectangle(cornerRadius: 8))
-            .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .padding(.top, 4)
     }
 
-    /// Full-popover location picker: offline search, detect, or manual
-    /// coordinates — gets the whole popover instead of a cramped strip.
+    // MARK: - Location Picker
+
     private var locationPicker: some View {
         VStack(alignment: .leading, spacing: 10) {
             ZStack {
@@ -189,12 +268,16 @@ struct MenuBarView: View {
 
                 HStack {
                     Button {
-                        location.clearSearch()
-                        searchQuery = ""
-                        showingLocationPicker = false
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            location.clearSearch()
+                            searchQuery = ""
+                            activeScreen = .schedule
+                        }
                     } label: {
-                        Label(localization.string("location.back"),
-                              systemImage: directionalIcon(ltr: "chevron.left", rtl: "chevron.right"))
+                        Label(
+                            localization.string("location.back"),
+                            systemImage: directionalIcon(ltr: "chevron.left", rtl: "chevron.right")
+                        )
                     }
                     .controlSize(.small)
                     Spacer()
@@ -316,11 +399,11 @@ struct MenuBarView: View {
         store.place = CityDatabase.place(from: city)
         location.clearSearch()
         searchQuery = ""
-        showingLocationPicker = false
+        withAnimation(.easeInOut(duration: 0.2)) {
+            activeScreen = .schedule
+        }
     }
 
-    /// Fully-offline manual coordinates: the nearest bundled city supplies
-    /// the time zone and a "Near …" label unless a custom name is given.
     private var manualEntrySection: some View {
         DisclosureGroup(isExpanded: $showsManualEntry) {
             VStack(alignment: .leading, spacing: 8) {
@@ -389,10 +472,11 @@ struct MenuBarView: View {
         manualError = nil
         location.clearSearch()
         searchQuery = ""
-        showingLocationPicker = false
+        withAnimation(.easeInOut(duration: 0.2)) {
+            activeScreen = .schedule
+        }
     }
 
-    /// Accepts both "." and "," decimal separators.
     private static func parseCoordinate(_ string: String) -> Double? {
         Double(string.trimmingCharacters(in: .whitespaces)
             .replacingOccurrences(of: ",", with: "."))
@@ -430,67 +514,6 @@ struct MenuBarView: View {
                 .foregroundStyle(.tertiary)
             Divider()
         }
-    }
-
-    // MARK: - Settings
-
-    private var settingsSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Picker(localization.string("settings.language"), selection: $localization.language) {
-                ForEach(AppLanguage.allCases) { language in
-                    Text(language.displayName).tag(language)
-                }
-            }
-
-            Picker(localization.string("settings.method"), selection: $store.method) {
-                ForEach(CalculationMethodChoice.allCases) { method in
-                    Text(method.displayName).tag(method)
-                }
-            }
-
-            // Full-width segmented rows — side-by-side segments overflow the
-            // popover once Arabic labels (شافعي/حنفي · عدّ تنازلي) get involved.
-            Picker(localization.string("settings.asr"), selection: $store.madhab) {
-                ForEach(AsrMadhab.allCases) { madhab in
-                    Text(madhab.displayName).tag(madhab)
-                }
-            }
-            .pickerStyle(.segmented)
-
-            Picker(localization.string("settings.menubar"), selection: $store.titleStyle) {
-                ForEach(TitleStyle.allCases) { style in
-                    Text(style.displayName).tag(style)
-                }
-            }
-            .pickerStyle(.segmented)
-        }
-        .font(.callout)
-    }
-
-    // MARK: - Footer
-
-    private var footer: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Toggle(localization.string("settings.login"), isOn: loginBinding)
-
-            Button(role: .destructive) {
-                NSApplication.shared.terminate(nil)
-            } label: {
-                Text(localization.string("settings.quit"))
-                    .frame(maxWidth: .infinity)
-            }
-            .controlSize(.large)
-
-            Text("Miqat \(Self.versionString)")
-                .font(.caption2)
-                .foregroundStyle(.tertiary)
-                .frame(maxWidth: .infinity)
-                .padding(.top, 2)
-        }
-    }
-
-    private static var versionString: String {
-        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0.0"
     }
 }
 

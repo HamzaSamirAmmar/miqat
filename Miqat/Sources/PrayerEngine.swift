@@ -15,6 +15,18 @@ enum PrayerKey: String, CaseIterable, Identifiable {
     var displayName: String {
         Localization.shared.string("prayer.\(rawValue)")
     }
+
+    /// Distinct celestial SF Symbol representing the prayer's time of day.
+    var symbolName: String {
+        switch self {
+        case .fajr: return "sun.horizon.fill"
+        case .sunrise: return "sunrise.fill"
+        case .dhuhr: return "sun.max.fill"
+        case .asr: return "sun.haze.fill"
+        case .maghrib: return "sunset.fill"
+        case .isha: return "moon.stars.fill"
+        }
+    }
 }
 
 /// One prayer and its time as an absolute instant.

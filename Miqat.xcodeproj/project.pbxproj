@@ -16,12 +16,14 @@
 		6889B4377AFC785403D63CA3 /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47595CB6A45844F4401F20D1 /* App.swift */; };
 		72636DDB3D199C5E9E495B95 /* cities.json in Resources */ = {isa = PBXBuildFile; fileRef = 47CECBF08F8F963FBB904BA4 /* cities.json */; };
 		9352C135D2067AEB85551935 /* LocalizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 301A77A84D61801D29005E32 /* LocalizationTests.swift */; };
+		9C9A73A4C402BC963D32A189 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFE63F8748150F89A836CFD9 /* SettingsView.swift */; };
 		A36AE020A56C904B5D319338 /* PlacePersistenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40D06787CC59BB3A09C84FC4 /* PlacePersistenceTests.swift */; };
 		A9F0C5B9DCC8ADF208F5806D /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 533BFDA590F16139194F83A8 /* LocationManager.swift */; };
 		B56D1AAA49601245A64ADFE3 /* CityDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92974D058F8ECF34C76DB03C /* CityDatabase.swift */; };
 		B8E125A95124BCAA14AA782F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B500B0686F7CF62A58FF8483 /* Assets.xcassets */; };
 		BCBE21575FC70EB0BCC4314B /* Adhan in Frameworks */ = {isa = PBXBuildFile; productRef = C0BACB9536B41F69009A45E8 /* Adhan */; };
 		C6F8280FFFACAA49AE107C92 /* PrayerEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E2E9012CD715069E5F68503 /* PrayerEngine.swift */; };
+		D24F4EFDCAC346E435CBA8FA /* PrayerHeroCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83EE8FF3CFEE0AA1EB66667B /* PrayerHeroCard.swift */; };
 		DC9EDC82FFB0E081E9B23DCA /* MenuBarIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = C87DDC9BA54BE5D8414747B5 /* MenuBarIcon.swift */; };
 		E14CB2AB16B50749CA0A2ADF /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D08EA7589CB460D3E0CC42 /* MenuBarView.swift */; };
 		E4ADE97DEC0836ED690F0CB8 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC16E9E47650EEB874667644 /* Theme.swift */; };
@@ -50,6 +52,7 @@
 		54BBFA229BFC2E1C7E9B3353 /* Miqat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Miqat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7417A1225854B39BDA08B219 /* MiqatTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MiqatTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		76D282867C27CE19A42A20EA /* LoginItemManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginItemManager.swift; sourceTree = "<group>"; };
+		83EE8FF3CFEE0AA1EB66667B /* PrayerHeroCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerHeroCard.swift; sourceTree = "<group>"; };
 		860821B45504D597A387EBCB /* CityDatabaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CityDatabaseTests.swift; sourceTree = "<group>"; };
 		88E906A1C7CA8D11F21BCF56 /* Localization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Localization.swift; sourceTree = "<group>"; };
 		8E2E9012CD715069E5F68503 /* PrayerEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerEngine.swift; sourceTree = "<group>"; };
@@ -57,6 +60,7 @@
 		B29FFC5EBEA9499E7C23FF3C /* DocsRenderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocsRenderTests.swift; sourceTree = "<group>"; };
 		B3D08EA7589CB460D3E0CC42 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
 		B500B0686F7CF62A58FF8483 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		BFE63F8748150F89A836CFD9 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		C87DDC9BA54BE5D8414747B5 /* MenuBarIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarIcon.swift; sourceTree = "<group>"; };
 		DF90AA48406F3E3088F428E8 /* Format.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Format.swift; sourceTree = "<group>"; };
 		EC16E9E47650EEB874667644 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
@@ -96,7 +100,9 @@
 				C87DDC9BA54BE5D8414747B5 /* MenuBarIcon.swift */,
 				B3D08EA7589CB460D3E0CC42 /* MenuBarView.swift */,
 				8E2E9012CD715069E5F68503 /* PrayerEngine.swift */,
+				83EE8FF3CFEE0AA1EB66667B /* PrayerHeroCard.swift */,
 				2D313837F13D833CD15B2971 /* PrayerScheduleStore.swift */,
+				BFE63F8748150F89A836CFD9 /* SettingsView.swift */,
 				FBC582F97510279AD91D1E64 /* StatusItemController.swift */,
 				EC16E9E47650EEB874667644 /* Theme.swift */,
 			);
@@ -243,7 +249,9 @@
 				DC9EDC82FFB0E081E9B23DCA /* MenuBarIcon.swift in Sources */,
 				E14CB2AB16B50749CA0A2ADF /* MenuBarView.swift in Sources */,
 				C6F8280FFFACAA49AE107C92 /* PrayerEngine.swift in Sources */,
+				D24F4EFDCAC346E435CBA8FA /* PrayerHeroCard.swift in Sources */,
 				5FF4128399FBC268D90A3103 /* PrayerScheduleStore.swift in Sources */,
+				9C9A73A4C402BC963D32A189 /* SettingsView.swift in Sources */,
 				ED5D18BF5EA582A6F2B88B0E /* StatusItemController.swift in Sources */,
 				E4ADE97DEC0836ED690F0CB8 /* Theme.swift in Sources */,
 			);

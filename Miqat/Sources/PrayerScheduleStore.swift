@@ -56,6 +56,28 @@ final class PrayerScheduleStore: ObservableObject {
     /// The time zone times should be displayed in.
     var displayTimeZone: TimeZone { place?.timeZone ?? .current }
 
+    /// The prayer that entered most recently (before `now`), or nil if before Fajr.
+    var previousPrayer: PrayerEntry? {
+        today.last(where: { $0.date <= now })
+    }
+
+    /// Progress through the interval until `next` (0.0 to 1.0).
+    var nextPrayerProgress: Double {
+        guard let next else { return 0 }
+        let nextDate = next.date
+        let prevDate: Date
+        if let previous = previousPrayer {
+            prevDate = previous.date
+        } else {
+            // Before today's Fajr: estimate interval from yesterday's Isha (~8 hours before Fajr)
+            prevDate = nextDate.addingTimeInterval(-8 * 3600)
+        }
+        let total = nextDate.timeIntervalSince(prevDate)
+        guard total > 0 else { return 0 }
+        let elapsed = now.timeIntervalSince(prevDate)
+        return min(max(elapsed / total, 0.0), 1.0)
+    }
+
     // MARK: - Private state
 
     private var todayEntries: [PrayerEntry] = []

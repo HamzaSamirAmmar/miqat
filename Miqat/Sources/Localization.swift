@@ -128,6 +128,19 @@ final class Localization: ObservableObject {
         "settings.login": "Start at Login",
         "settings.quit": "Quit Miqat",
         "language.system": "System",
+        "nav.settings": "Settings",
+        "nav.done": "Done",
+        "settings.title": "Settings",
+        "settings.section.calculation": "Calculation",
+        "settings.section.appearance": "Menu Bar Appearance",
+        "settings.section.general": "General",
+        "settings.section.about": "About",
+        "settings.offlineNote": "Miqat calculates prayer times 100% offline using local astronomical algorithms.",
+
+        // Hero & Schedule
+        "hero.nextPrayer": "Next Prayer",
+        "hero.today": "Today's Schedule",
+        "prayer.passed": "Passed",
 
         // Menu bar themes
         "theme.icon": "Icon",
@@ -200,6 +213,19 @@ final class Localization: ObservableObject {
         "settings.login": "التشغيل عند تسجيل الدخول",
         "settings.quit": "إغلاق التطبيق",
         "language.system": "حسب النظام",
+        "nav.settings": "الإعدادات",
+        "nav.done": "تم",
+        "settings.title": "الإعدادات",
+        "settings.section.calculation": "طريقة الحساب",
+        "settings.section.appearance": "مظهر شريط القائمة",
+        "settings.section.general": "عام",
+        "settings.section.about": "حول التطبيق",
+        "settings.offlineNote": "يحسب مِيقَات مواقيت الصلاة دون اتصال بالإنترنت بنسبة 100٪ باستخدام خوارزميات فلكية محلية.",
+
+        // Hero & Schedule
+        "hero.nextPrayer": "الصلاة القادمة",
+        "hero.today": "مواقيت اليوم",
+        "prayer.passed": "مضت",
 
         // Menu bar themes
         "theme.icon": "أيقونة",

@@ -39,6 +39,27 @@ final class DocsRenderTests: XCTestCase {
         func snapshotPopover(dark: Bool) -> NSBitmapImageRep? {
             let hosting = NSHostingController(
                 rootView: MenuBarView(store: store, location: locationManager)
+                    .background(Color(dark ? NSColor(calibratedWhite: 0.14, alpha: 1) : NSColor(calibratedWhite: 0.98, alpha: 1)))
+            )
+            hosting.view.appearance = NSAppearance(named: dark ? .darkAqua : .aqua)
+
+            let size = hosting.view.fittingSize
+            hosting.view.setFrameSize(size)
+            hosting.view.layoutSubtreeIfNeeded()
+
+            guard let rep = hosting.view.bitmapImageRepForCachingDisplay(in: hosting.view.bounds) else { return nil }
+            hosting.view.cacheDisplay(in: hosting.view.bounds, to: rep)
+            return rep
+        }
+
+        func snapshotSettings(dark: Bool) -> NSBitmapImageRep? {
+            let hosting = NSHostingController(
+                rootView: SettingsView(store: store, onDismiss: {})
+                    .padding(16)
+                    .frame(width: 340)
+                    .environment(\.locale, Localization.shared.locale)
+                    .environment(\.layoutDirection, Localization.shared.layoutDirection)
+                    .background(Color(dark ? NSColor(calibratedWhite: 0.14, alpha: 1) : NSColor(calibratedWhite: 0.98, alpha: 1)))
             )
             hosting.view.appearance = NSAppearance(named: dark ? .darkAqua : .aqua)
 
@@ -143,6 +164,24 @@ final class DocsRenderTests: XCTestCase {
         if let dark = snapshotPopover(dark: true) {
             try write(dark, "dropdown-dark.png")
             try write(dark, "hero.png")
+        }
+
+        // Arabic dropdown snapshots
+        Localization.shared.language = .arabic
+        if let arDark = snapshotPopover(dark: true) {
+            try write(arDark, "dropdown-ar-dark.png")
+        }
+        if let arLight = snapshotPopover(dark: false) {
+            try write(arLight, "dropdown-ar-light.png")
+        }
+        Localization.shared.language = .english
+
+        // Settings snapshots
+        if let settingsDark = snapshotSettings(dark: true) {
+            try write(settingsDark, "settings-dark.png")
+        }
+        if let settingsLight = snapshotSettings(dark: false) {
+            try write(settingsLight, "settings-light.png")
         }
 
         // Menu bar strips (light + dark), Labeled theme.
