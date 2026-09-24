@@ -136,7 +136,7 @@ struct MenuBarView: View {
                     .font(.caption)
                     .foregroundStyle(.tertiary)
 
-                Text(Self.hijriDateString(for: store.now, timeZone: store.displayTimeZone))
+                Text(Self.hijriDateString(for: store.now, timeZone: store.displayTimeZone, offset: store.hijriOffset))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -154,13 +154,16 @@ struct MenuBarView: View {
         return formatter.string(from: date)
     }
 
-    private static func hijriDateString(for date: Date, timeZone: TimeZone?) -> String {
+    private static func hijriDateString(for date: Date, timeZone: TimeZone?, offset: Int = 0) -> String {
+        let calendar = Calendar(identifier: .islamicUmmAlQura)
+        let adjustedDate = calendar.date(byAdding: .day, value: offset, to: date) ?? date
+
         let formatter = DateFormatter()
-        formatter.calendar = Calendar(identifier: .islamicCivil)
+        formatter.calendar = calendar
         formatter.locale = Localization.shared.locale
         formatter.dateStyle = .long
         formatter.timeZone = timeZone ?? .current
-        return formatter.string(from: date)
+        return formatter.string(from: adjustedDate)
     }
 
     // MARK: - Schedule

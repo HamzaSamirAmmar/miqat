@@ -56,6 +56,25 @@ struct SettingsView: View {
                                 }
                             }
                             .pickerStyle(.segmented)
+
+                            Divider()
+
+                            HStack {
+                                Text(localization.string("settings.hijriOffset"))
+                                Spacer()
+                                Text(hijriOffsetDisplay)
+                                    .foregroundStyle(.secondary)
+                            }
+
+                            Picker(localization.string("settings.hijriOffset"), selection: $store.hijriOffset) {
+                                Text("-2").tag(-2)
+                                Text("-1").tag(-1)
+                                Text("0").tag(0)
+                                Text("+1").tag(1)
+                                Text("+2").tag(2)
+                            }
+                            .pickerStyle(.segmented)
+                            .labelsHidden()
                         }
                     }
 
@@ -133,5 +152,15 @@ struct SettingsView: View {
 
     private var versionString: String {
         Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0.0"
+    }
+
+    private var hijriOffsetDisplay: String {
+        if store.hijriOffset == 0 {
+            return "0"
+        } else if store.hijriOffset > 0 {
+            return "+\(store.hijriOffset)"
+        } else {
+            return "\(store.hijriOffset)"
+        }
     }
 }

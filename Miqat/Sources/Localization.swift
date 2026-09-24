@@ -135,6 +135,7 @@ final class Localization: ObservableObject {
         "settings.section.appearance": "Menu Bar Appearance",
         "settings.section.general": "General",
         "settings.section.about": "About",
+        "settings.hijriOffset": "Hijri Date",
         "settings.offlineNote": "Miqat calculates prayer times 100% offline using local astronomical algorithms.",
 
         // Hero & Schedule
@@ -220,6 +221,7 @@ final class Localization: ObservableObject {
         "settings.section.appearance": "مظهر شريط القائمة",
         "settings.section.general": "عام",
         "settings.section.about": "حول التطبيق",
+        "settings.hijriOffset": "التاريخ الهجري",
         "settings.offlineNote": "يحسب مِيقَات مواقيت الصلاة دون اتصال بالإنترنت بنسبة 100٪ باستخدام خوارزميات فلكية محلية.",
 
         // Hero & Schedule

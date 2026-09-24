@@ -83,4 +83,16 @@ final class PlacePersistenceTests: XCTestCase {
         XCTAssertEqual(store.place, place)
         XCTAssertFalse(store.today.isEmpty, "restoring a place should immediately produce a schedule")
     }
+
+    func testStorePersistsAndRestoresHijriOffset() {
+        let store = PrayerScheduleStore()
+        store.hijriOffset = 1
+        XCTAssertEqual(UserDefaults.standard.integer(forKey: "miqat.hijriOffset"), 1)
+
+        let restoredStore = PrayerScheduleStore()
+        XCTAssertEqual(restoredStore.hijriOffset, 1)
+
+        // Reset
+        UserDefaults.standard.removeObject(forKey: "miqat.hijriOffset")
+    }
 }

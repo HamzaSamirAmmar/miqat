@@ -42,6 +42,14 @@ final class PrayerScheduleStore: ObservableObject {
         }
     }
 
+    /// Manual Hijri calendar offset in days (-2 ... +2) to match local moon sighting.
+    @Published var hijriOffset: Int = 0 {
+        didSet {
+            guard oldValue != hijriOffset else { return }
+            UserDefaults.standard.set(hijriOffset, forKey: Keys.hijriOffset)
+        }
+    }
+
     // MARK: - Live state
 
     /// The instant countdowns are measured against; ticks every second.
@@ -92,6 +100,7 @@ final class PrayerScheduleStore: ObservableObject {
         static let method = "miqat.method"
         static let madhab = "miqat.madhab"
         static let titleStyle = "miqat.titleStyle"
+        static let hijriOffset = "miqat.hijriOffset"
     }
 
     // MARK: - Lifecycle
@@ -112,6 +121,9 @@ final class PrayerScheduleStore: ObservableObject {
         if let stored = UserDefaults.standard.string(forKey: Keys.titleStyle),
            let restored = TitleStyle.migrate(stored) {
             titleStyle = restored
+        }
+        if UserDefaults.standard.object(forKey: Keys.hijriOffset) != nil {
+            hijriOffset = UserDefaults.standard.integer(forKey: Keys.hijriOffset)
         }
 
         tick()
