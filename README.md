@@ -21,11 +21,19 @@ Asr 1:23
   - *Icon* — just the mihrab glyph, Control Center style (countdown in the tooltip)
   - *Countdown* — `1:23`
   - *Labeled* — `Asr 1:23`
+- **Next prayer hero card** — prominent header card displaying the upcoming
+  prayer, target clock time, live ticking countdown capsule, and a smooth
+  interval progress bar
+- **Celestial SF Symbols** — atmospheric icons tailored for each prayer
+  (Fajr, Shuruq, Dhuhr, Asr, Maghrib, Isha) with visual indicators for
+  passed, active, and upcoming prayers
+- **Dedicated Settings panel** — keeps the daily timetable uncluttered with
+  an on-demand settings view for calculations, appearance, language, and system
 - **Arabic & English interface** — in-app language switcher (System /
   English / العربية), localized prayer, method, and madhab names, Arabic
   Hijri/Gregorian dates, and full right-to-left layout
 - **Today's full schedule** — Fajr, Shuruq, Dhuhr, Asr, Maghrib, Isha — with
-  the next prayer highlighted and the Gregorian + Hijri dates
+  the next prayer highlighted and Gregorian + Hijri dates
 - **Fully offline** — a bundled database of ~12,400 cities (GeoNames,
   population ≥ 50k) powers instant city search, with no internet at any point:
   - pick a city from the bundled list
@@ -37,7 +45,7 @@ Asr 1:23
   ISNA, Egyptian, Karachi, Dubai, Qatar, Kuwait, Moonsighting Committee,
   Singapore/Malaysia, Turkey (Diyanet), Tehran
 - **Asr madhab** — Shafi (Standard) or Hanafi
-- Times computed **locally** with
+- **Times computed locally** with
   [adhan-swift](https://github.com/batoulapps/adhan-swift) (MIT) — works fully
   offline once your city is set; the day rolls over at the *location's*
   midnight, in the location's time zone
@@ -56,12 +64,22 @@ Compact, monospaced countdown that never causes neighboring icons to jitter:
 
 ### Detailed Popover
 
-Click the item anytime for the full schedule, Hijri date, location, and settings:
+Click the menu bar item anytime for the hero countdown, today's schedule, and dual Gregorian/Hijri dates:
 
 <p align="center">
-  <img src="Docs/dropdown-dark.png" width="340" alt="Miqat Dropdown — Dark Mode" />
-  &nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="Docs/dropdown-light.png" width="340" alt="Miqat Dropdown — Light Mode" />
+  <img src="Docs/dropdown-dark.png" width="260" alt="Miqat Dropdown — Dark Mode" />
+  &nbsp;&nbsp;
+  <img src="Docs/dropdown-light.png" width="260" alt="Miqat Dropdown — Light Mode" />
+  &nbsp;&nbsp;
+  <img src="Docs/dropdown-ar-dark.png" width="260" alt="Miqat Dropdown — Arabic RTL" />
+</p>
+
+### Dedicated Settings
+
+Access calculation methods, madhab, appearance, and language options without cluttering the main schedule:
+
+<p align="center">
+  <img src="Docs/settings-dark.png" width="280" alt="Miqat Settings" />
 </p>
 
 ### Three Menu Bar Themes
