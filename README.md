@@ -30,9 +30,10 @@ Asr 1:23
 
 ## Privacy
 
-Location is used once to resolve your city and never leaves the Mac. City
-search uses Apple's geocoder, which needs a brief network call — everything
-else (time calculation, countdown) is pure local math.
+Location is used once to resolve your city and never leaves the Mac. Note that
+Macs locate themselves via Wi-Fi positioning (an Apple online lookup), so both
+detection and city search need a brief internet connection — everything else
+(time calculation, countdown) is pure local math and works fully offline.
 
 ## Credits
 

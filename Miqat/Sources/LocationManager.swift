@@ -181,7 +181,9 @@ private extension LocationManager {
     static func message(for error: Error) -> String {
         switch (error as? CLError)?.code {
         case .network:
-            return "Network unavailable — city search needs an internet connection."
+            // Macs locate themselves via Wi-Fi positioning, which queries
+            // Apple's database online — so even the fix needs internet.
+            return "Network unavailable — Macs locate via Wi-Fi positioning, which needs an internet connection. Try again once you're online."
         case .denied:
             return "Location access was denied — search for a city instead."
         default:
