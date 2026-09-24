@@ -22,11 +22,11 @@ jobs:
       - name: Build Release
         run: |
           xcodebuild -project Miqat.xcodeproj -scheme Miqat -configuration Release \
-            -derivedDataPath build SYMROOT=build/Release build
+            -derivedDataPath build build
 
       - name: Zip app bundle
         run: |
-          cd build/Release/Release
+          cd build/Build/Products/Release
           ditto -c -k --keepParent Miqat.app "Miqat-${GITHUB_REF_NAME}.zip"
 
       - name: Create GitHub Release
@@ -34,6 +34,6 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "$GITHUB_REF_NAME" \
-            "build/Release/Release/Miqat-${GITHUB_REF_NAME}.zip" \
+            "build/Build/Products/Release/Miqat-${GITHUB_REF_NAME}.zip" \
             --title "Miqat ${{ github.ref_name }}" \
             --generate-notes

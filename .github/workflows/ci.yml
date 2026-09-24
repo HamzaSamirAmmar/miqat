@@ -28,4 +28,4 @@ jobs:
       - name: Build app (Release)
         run: |
           xcodebuild -project Miqat.xcodeproj -scheme Miqat -configuration Release \
-            -derivedDataPath build SYMROOT=build/Release build
+            -derivedDataPath build build
