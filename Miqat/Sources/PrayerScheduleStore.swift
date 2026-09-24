@@ -10,7 +10,11 @@ final class PrayerScheduleStore: ObservableObject {
     @Published var place: Place? {
         didSet {
             guard oldValue != place else { return }
-            UserDefaults.standard.set(place?.rawValue ?? "", forKey: Keys.place)
+            if let place, let value = place.persistedValue {
+                UserDefaults.standard.set(value, forKey: Keys.place)
+            } else {
+                UserDefaults.standard.removeObject(forKey: Keys.place)
+            }
             invalidateSchedule()
         }
     }
@@ -72,7 +76,7 @@ final class PrayerScheduleStore: ObservableObject {
 
     init() {
         if let stored = UserDefaults.standard.string(forKey: Keys.place),
-           let restored = Place(rawValue: stored) {
+           let restored = Place(persistedValue: stored) {
             place = restored
         }
         if let stored = UserDefaults.standard.string(forKey: Keys.method),

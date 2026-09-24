@@ -47,17 +47,24 @@ struct Place: Codable, Equatable, Identifiable {
     }
 }
 
-extension Place: RawRepresentable {
-    init?(rawValue: String) {
-        guard let data = rawValue.data(using: .utf8),
-              let place = try? JSONDecoder().decode(Place.self, from: data) else { return nil }
-        self = place
+/// Stable string form for UserDefaults persistence.
+///
+/// Deliberately *not* `RawRepresentable`: a type that is both `Codable` and
+/// `RawRepresentable` with a `String` raw value gets its `Encodable` witness
+/// from the stdlib's RawRepresentable extension, so a rawValue that encodes
+/// `self` recurses forever and overflows the stack (fixed after a real crash).
+extension Place {
+    /// JSON-encoded representation suitable for UserDefaults.
+    var persistedValue: String? {
+        guard let data = try? JSONEncoder().encode(self) else { return nil }
+        return String(data: data, encoding: .utf8)
     }
 
-    var rawValue: String {
-        guard let data = try? JSONEncoder().encode(self),
-              let string = String(data: data, encoding: .utf8) else { return "" }
-        return string
+    /// Restores a place previously stored via `persistedValue`.
+    init?(persistedValue: String) {
+        guard let data = persistedValue.data(using: .utf8),
+              let place = try? JSONDecoder().decode(Place.self, from: data) else { return nil }
+        self = place
     }
 }
 
