@@ -14,14 +14,14 @@ final class StatusItemController: NSObject {
     private var storeCancellable: AnyCancellable?
     private var localizationCancellable: AnyCancellable?
 
-    init(store: PrayerScheduleStore, locationManager: LocationManager) {
+    init(store: PrayerScheduleStore, locationManager: LocationManager, adhanPlayer: AdhanPlayer, adhanNotifier: SystemAdhanNotifier) {
         self.store = store
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         super.init()
 
         popover.behavior = .transient
         popover.contentViewController = NSHostingController(
-            rootView: MenuBarView(store: store, location: locationManager)
+            rootView: MenuBarView(store: store, location: locationManager, adhanPlayer: adhanPlayer, adhanNotifier: adhanNotifier)
         )
 
         if let button = statusItem.button {

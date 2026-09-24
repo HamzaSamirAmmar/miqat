@@ -33,13 +33,18 @@ final class DocsRenderTests: XCTestCase {
 
         let store = PrayerScheduleStore()
         let locationManager = LocationManager()
+        let adhanPlayer = AdhanPlayer()
+        let adhanNotifier = SystemAdhanNotifier()
 
         // MARK: - Popover snapshots
 
-        func snapshotPopover(dark: Bool) -> NSBitmapImageRep? {
+        func snapshot(dark: Bool, screen: ActiveScreen) -> NSBitmapImageRep? {
             let hosting = NSHostingController(
-                rootView: MenuBarView(store: store, location: locationManager)
-                    .background(Color(dark ? NSColor(calibratedWhite: 0.14, alpha: 1) : NSColor(calibratedWhite: 0.98, alpha: 1)))
+                rootView: MenuBarView(
+                    store: store, location: locationManager, adhanPlayer: adhanPlayer,
+                    adhanNotifier: adhanNotifier, initialScreen: screen
+                )
+                .background(Color(dark ? NSColor(calibratedWhite: 0.14, alpha: 1) : NSColor(calibratedWhite: 0.98, alpha: 1)))
             )
             hosting.view.appearance = NSAppearance(named: dark ? .darkAqua : .aqua)
 
@@ -52,24 +57,12 @@ final class DocsRenderTests: XCTestCase {
             return rep
         }
 
+        func snapshotPopover(dark: Bool) -> NSBitmapImageRep? {
+            snapshot(dark: dark, screen: .schedule)
+        }
+
         func snapshotSettings(dark: Bool) -> NSBitmapImageRep? {
-            let hosting = NSHostingController(
-                rootView: SettingsView(store: store, onDismiss: {})
-                    .padding(16)
-                    .frame(width: 340)
-                    .environment(\.locale, Localization.shared.locale)
-                    .environment(\.layoutDirection, Localization.shared.layoutDirection)
-                    .background(Color(dark ? NSColor(calibratedWhite: 0.14, alpha: 1) : NSColor(calibratedWhite: 0.98, alpha: 1)))
-            )
-            hosting.view.appearance = NSAppearance(named: dark ? .darkAqua : .aqua)
-
-            let size = hosting.view.fittingSize
-            hosting.view.setFrameSize(size)
-            hosting.view.layoutSubtreeIfNeeded()
-
-            guard let rep = hosting.view.bitmapImageRepForCachingDisplay(in: hosting.view.bounds) else { return nil }
-            hosting.view.cacheDisplay(in: hosting.view.bounds, to: rep)
-            return rep
+            snapshot(dark: dark, screen: .settings)
         }
 
         // MARK: - Menu bar strips

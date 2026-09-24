@@ -21,14 +21,16 @@ Asr 1:23
   - *Icon* — just the mihrab glyph, Control Center style (countdown in the tooltip)
   - *Countdown* — `1:23`
   - *Labeled* — `Asr 1:23`
-- **Next prayer hero card** — prominent header card displaying the upcoming
-  prayer, target clock time, live ticking countdown capsule, and a smooth
-  interval progress bar
-- **Celestial SF Symbols** — atmospheric icons tailored for each prayer
-  (Fajr, Shuruq, Dhuhr, Asr, Maghrib, Isha) with visual indicators for
-  passed, active, and upcoming prayers
-- **Dedicated Settings panel** — keeps the daily timetable uncluttered with
-  an on-demand settings view for calculations, appearance, language, and system
+- **Next prayer hero card** — a large live countdown (to the second) on a
+  sky gradient that follows the time of day — night, dawn, morning,
+  afternoon, sunset, dusk — with a progress bar from the previous prayer
+  and a one-click adhan bell
+- **Calm daily schedule** — the next prayer is marked once (no duplicate
+  countdowns), passed prayers dim, and hovering a row reveals a bell to
+  mute or unmute that prayer's adhan without opening Settings
+- **Grouped Settings panel** — System Settings-style sections, one-line
+  adhan rows (recording · preview · switch), a Hijri adjustment stepper with
+  a live date preview, and a live menu bar preview for each style
 - **Arabic & English interface** — in-app language switcher (System /
   English / العربية), localized prayer, method, and madhab names, Arabic
   Hijri/Gregorian dates, and full right-to-left layout
@@ -45,6 +47,12 @@ Asr 1:23
   ISNA, Egyptian, Karachi, Dubai, Qatar, Kuwait, Moonsighting Committee,
   Singapore/Malaysia, Turkey (Diyanet), Tehran
 - **Asr madhab** — Shafi (Standard) or Hanafi
+- **Adhan notifications** — at each prayer's time Miqat plays a bundled adhan
+  recording (Makkah, Madinah, Al-Aqsa, Mishary Alafasy — plus dedicated Fajr
+  variants for Fajr) and posts a reminder banner:
+  - enable/disable globally or per prayer
+  - pick a different recording per prayer, with in-settings preview
+  - sunrise (Shuruq) never sounds an adhan
 - **Times computed locally** with
   [adhan-swift](https://github.com/batoulapps/adhan-swift) (MIT) — works fully
   offline once your city is set; the day rolls over at the *location's*

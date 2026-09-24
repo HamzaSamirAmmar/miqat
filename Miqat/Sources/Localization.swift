@@ -97,7 +97,6 @@ final class Localization: ObservableObject {
         // Onboarding
         "welcome.title": "Welcome to Miqat",
         "welcome.subtitle": "Pick your city to see today's prayer times and a live countdown. Everything works offline.",
-        "onboarding.or": "or",
 
         // Location
         "location.title": "Location",
@@ -124,23 +123,19 @@ final class Localization: ObservableObject {
         "settings.language": "Language",
         "settings.method": "Method",
         "settings.asr": "Asr",
-        "settings.menubar": "Menu Bar",
         "settings.login": "Start at Login",
         "settings.quit": "Quit Miqat",
         "language.system": "System",
         "nav.settings": "Settings",
-        "nav.done": "Done",
         "settings.title": "Settings",
         "settings.section.calculation": "Calculation",
         "settings.section.appearance": "Menu Bar Appearance",
         "settings.section.general": "General",
-        "settings.section.about": "About",
         "settings.hijriOffset": "Hijri Date",
         "settings.offlineNote": "Miqat calculates prayer times 100% offline using local astronomical algorithms.",
 
         // Hero & Schedule
         "hero.nextPrayer": "Next Prayer",
-        "hero.today": "Today's Schedule",
         "prayer.passed": "Passed",
 
         // Menu bar themes
@@ -168,6 +163,38 @@ final class Localization: ObservableObject {
 
         // Tooltip
         "tooltip.base": "Miqat — prayer times",
+
+        // Adhan
+        "settings.section.adhan": "Adhan",
+        "settings.adhan.master": "Adhan notifications",
+        "adhan.preview.play": "Preview",
+        "adhan.preview.stop": "Stop",
+        "adhan.banners.denied": "Banners are turned off for Miqat — the adhan sound still plays. Allow banners in System Settings › Notifications.",
+        "adhan.banners.openSettings": "Open Notification Settings",
+        "adhan.notification.title": "It's time for %@",
+        // Fajr-variant tracks render without any "Fajr" postfix — they only
+        // ever appear in Fajr's picker, so the suffix would be noise.
+        "adhan.track.makkah-fajr": "Al-Haram al-Makki",
+        "adhan.track.madinah-fajr": "Al-Haram al-Madani",
+        "adhan.track.makkah": "Al-Haram al-Makki",
+        "adhan.track.madinah": "Al-Haram al-Madani",
+        "adhan.track.aqsa": "Al-Aqsa, Jerusalem",
+        "adhan.track.alafasy": "Mishary Alafasy",
+
+        // Redesign
+        "hero.tomorrow": "Tomorrow",
+        "hero.accessibility": "Next prayer %@ at %@, in %@",
+        "schedule.next": "Next prayer",
+        "adhan.toggle.on": "Adhan on — click to mute",
+        "adhan.toggle.off": "Adhan muted — click to turn on",
+        "footer.localTime": "Times shown in %@ local time",
+        "location.change": "Change location",
+        "location.selected": "Current",
+        "location.detect.subtitle": "Uses Wi-Fi positioning — needs internet",
+        "settings.adhan.subtitle": "Sound and a banner at each prayer",
+        "settings.hijriOffset.hint": "Adjust to match your local moon sighting",
+        "settings.menubar.preview": "Preview",
+        "settings.version": "Version %@",
     ]
 
     private static let ar: [String: String] = [
@@ -183,7 +210,6 @@ final class Localization: ObservableObject {
         // Onboarding
         "welcome.title": "مرحباً بك في مِيقَات",
         "welcome.subtitle": "اختر مدينتك لعرض مواقيت الصلاة اليومية والعدّ التنازلي. كل شيء يعمل دون اتصال بالإنترنت.",
-        "onboarding.or": "أو",
 
         // Location
         "location.title": "الموقع",
@@ -210,23 +236,19 @@ final class Localization: ObservableObject {
         "settings.language": "اللغة",
         "settings.method": "طريقة الحساب",
         "settings.asr": "العصر",
-        "settings.menubar": "شريط القائمة",
         "settings.login": "التشغيل عند تسجيل الدخول",
         "settings.quit": "إغلاق التطبيق",
         "language.system": "حسب النظام",
         "nav.settings": "الإعدادات",
-        "nav.done": "تم",
         "settings.title": "الإعدادات",
         "settings.section.calculation": "طريقة الحساب",
         "settings.section.appearance": "مظهر شريط القائمة",
         "settings.section.general": "عام",
-        "settings.section.about": "حول التطبيق",
         "settings.hijriOffset": "التاريخ الهجري",
         "settings.offlineNote": "يحسب مِيقَات مواقيت الصلاة دون اتصال بالإنترنت بنسبة 100٪ باستخدام خوارزميات فلكية محلية.",
 
         // Hero & Schedule
         "hero.nextPrayer": "الصلاة القادمة",
-        "hero.today": "مواقيت اليوم",
         "prayer.passed": "مضت",
 
         // Menu bar themes
@@ -254,5 +276,35 @@ final class Localization: ObservableObject {
 
         // Tooltip
         "tooltip.base": "مِيقَات — مواقيت الصلاة",
+
+        // Adhan
+        "settings.section.adhan": "الأذان",
+        "settings.adhan.master": "إشعارات الأذان",
+        "adhan.preview.play": "معاينة",
+        "adhan.preview.stop": "إيقاف",
+        "adhan.banners.denied": "الإشعارات (البانرات) معطلة لمِيقَات — سيبقى صوت الأذان مسموعاً. فعّل الإشعارات من إعدادات النظام › الإشعارات.",
+        "adhan.banners.openSettings": "افتح إعدادات الإشعارات",
+        "adhan.notification.title": "حان وقت %@",
+        "adhan.track.makkah-fajr": "الحرم المكي",
+        "adhan.track.madinah-fajr": "الحرم المدني",
+        "adhan.track.makkah": "الحرم المكي",
+        "adhan.track.madinah": "الحرم المدني",
+        "adhan.track.aqsa": "المسجد الأقصى، القدس",
+        "adhan.track.alafasy": "مشاري راشد العفاسي",
+
+        // Redesign
+        "hero.tomorrow": "غداً",
+        "hero.accessibility": "الصلاة القادمة %@ عند %@، بعد %@",
+        "schedule.next": "الصلاة القادمة",
+        "adhan.toggle.on": "الأذان مفعّل — انقر للكتم",
+        "adhan.toggle.off": "الأذان مكتوم — انقر للتفعيل",
+        "footer.localTime": "الأوقات معروضة بالتوقيت المحلي لـ %@",
+        "location.change": "تغيير الموقع",
+        "location.selected": "الحالي",
+        "location.detect.subtitle": "عبر شبكات Wi-Fi — يتطلب اتصالاً بالإنترنت",
+        "settings.adhan.subtitle": "صوت وإشعار عند كل صلاة",
+        "settings.hijriOffset.hint": "اضبطه ليطابق رؤية الهلال في بلدك",
+        "settings.menubar.preview": "معاينة",
+        "settings.version": "الإصدار %@",
     ]
 }

@@ -50,6 +50,50 @@ final class PrayerScheduleStore: ObservableObject {
         }
     }
 
+    /// Master switch for adhan notifications (sound + banner).
+    @Published var adhanEnabled: Bool = true {
+        didSet {
+            guard oldValue != adhanEnabled else { return }
+            UserDefaults.standard.set(adhanEnabled, forKey: Keys.adhanEnabled)
+        }
+    }
+
+    /// Prayers that trigger the adhan. Sunrise (Shuruq) is never included.
+    @Published var adhanPrayers: Set<PrayerKey> = AdhanDefaults.enabledPrayers {
+        didSet {
+            guard oldValue != adhanPrayers else { return }
+            UserDefaults.standard.set(
+                adhanPrayers.map(\.rawValue).sorted(),
+                forKey: Keys.adhanPrayers
+            )
+        }
+    }
+
+    /// Selected track per prayer; missing entries resolve to catalog defaults.
+    @Published var adhanTracks: [PrayerKey: String] = [:] {
+        didSet {
+            guard oldValue != adhanTracks else { return }
+            let raw = Dictionary(
+                uniqueKeysWithValues: adhanTracks.map { ($0.key.rawValue, $0.value) }
+            )
+            UserDefaults.standard.set(raw, forKey: Keys.adhanTracks)
+        }
+    }
+
+    /// The track a prayer would play right now (stored choice or default).
+    func adhanTrack(for prayer: PrayerKey) -> AdhanTrack {
+        if let id = adhanTracks[prayer], let track = AdhanCatalog.track(id: id),
+           AdhanCatalog.tracks(for: prayer).contains(track) {
+            return track
+        }
+        return AdhanCatalog.defaultTrack(for: prayer)
+    }
+
+    /// Whether a prayer entry should fire an adhan when its time arrives.
+    func isAdhanEnabled(_ prayer: PrayerKey) -> Bool {
+        adhanEnabled && prayer != .sunrise && adhanPrayers.contains(prayer)
+    }
+
     // MARK: - Live state
 
     /// The instant countdowns are measured against; ticks every second.
@@ -101,6 +145,14 @@ final class PrayerScheduleStore: ObservableObject {
         static let madhab = "miqat.madhab"
         static let titleStyle = "miqat.titleStyle"
         static let hijriOffset = "miqat.hijriOffset"
+        static let adhanEnabled = "miqat.adhan.enabled"
+        static let adhanPrayers = "miqat.adhan.prayers"
+        static let adhanTracks = "miqat.adhan.tracks"
+    }
+
+    private enum AdhanDefaults {
+        /// On out of the box for the five prayers — never sunrise.
+        static let enabledPrayers: Set<PrayerKey> = [.fajr, .dhuhr, .asr, .maghrib, .isha]
     }
 
     // MARK: - Lifecycle
@@ -124,6 +176,30 @@ final class PrayerScheduleStore: ObservableObject {
         }
         if UserDefaults.standard.object(forKey: Keys.hijriOffset) != nil {
             hijriOffset = UserDefaults.standard.integer(forKey: Keys.hijriOffset)
+        }
+        if UserDefaults.standard.object(forKey: Keys.adhanEnabled) != nil {
+            adhanEnabled = UserDefaults.standard.bool(forKey: Keys.adhanEnabled)
+        }
+        if let stored = UserDefaults.standard.stringArray(forKey: Keys.adhanPrayers) {
+            adhanPrayers = Set(
+                stored.compactMap(PrayerKey.init(rawValue:))
+                    .filter { $0 != .sunrise }
+            )
+            // An empty selection stored by hand would mute everything; treat
+            // "no valid prayer" as the defaults.
+            if adhanPrayers.isEmpty {
+                adhanPrayers = AdhanDefaults.enabledPrayers
+            }
+        }
+        if let stored = UserDefaults.standard.dictionary(forKey: Keys.adhanTracks) as? [String: String] {
+            var restored: [PrayerKey: String] = [:]
+            for (key, trackID) in stored {
+                guard let prayer = PrayerKey(rawValue: key),
+                      prayer != .sunrise,
+                      AdhanCatalog.track(id: trackID) != nil else { continue }
+                restored[prayer] = trackID
+            }
+            adhanTracks = restored
         }
 
         tick()
