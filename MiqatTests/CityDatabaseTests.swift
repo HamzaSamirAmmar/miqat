@@ -25,6 +25,69 @@ final class CityDatabaseTests: XCTestCase {
         XCTAssertTrue(results.contains { $0.name == "Tétouan" && $0.country == "MA" })
     }
 
+    // MARK: - Arabic & country search
+
+    func testSearchFindsArabicNames() {
+        XCTAssertEqual(CityDatabase.search("الدار البيضاء").first?.name, "Casablanca")
+        XCTAssertEqual(CityDatabase.search("دمشق").first?.name, "Damascus")
+    }
+
+    /// Hamza, ta marbuta, harakat and a missing article must not matter:
+    /// "مكه" finds "مكة المكرمة", "رباط" finds "الرباط".
+    func testArabicSearchIgnoresSpellingVariants() {
+        XCTAssertEqual(CityDatabase.search("مكه").first?.country, "SA")
+        XCTAssertEqual(CityDatabase.search("مَكَّة").first?.country, "SA")
+        XCTAssertTrue(CityDatabase.search("رباط").contains { $0.name == "Rabat" })
+        XCTAssertTrue(CityDatabase.search("اسطنبول").contains { $0.name == "Istanbul" })
+    }
+
+    func testSearchByCountryListsItsLargestCities() {
+        for query in ["Syria", "سوريا"] {
+            let results = CityDatabase.search(query)
+            XCTAssertFalse(results.isEmpty, query)
+            XCTAssertTrue(results.prefix(5).allSatisfy { $0.country == "SY" }, "\(query): \(results.prefix(5).map(\.name))")
+        }
+        // A city starting with the query still comes first; the country's
+        // cities follow.
+        XCTAssertEqual(CityDatabase.search("syr").map(\.name).prefix(3), ["Syracuse", "Aleppo", "Damascus"])
+        XCTAssertEqual(CityDatabase.search("المغرب").first?.country, "MA")
+        XCTAssertEqual(CityDatabase.search("UAE").first?.country, "AE")
+    }
+
+    /// Tripoli exists in Libya and Lebanon — a country narrows it.
+    func testCityCommaCountryNarrowsResults() {
+        XCTAssertEqual(CityDatabase.search("Tripoli, Lebanon").first?.country, "LB")
+        XCTAssertEqual(CityDatabase.search("Tripoli, Libya").first?.country, "LY")
+        XCTAssertEqual(CityDatabase.search("طرابلس، لبنان").first?.country, "LB")
+        XCTAssertEqual(CityDatabase.search("tripoli lebanon").first?.country, "LB",
+                       "trailing words match a country even without a comma")
+    }
+
+    func testCityNamesFollowUILanguage() {
+        let rabat = CityDatabase.search("rabat").first!
+        Localization.shared.language = .arabic
+        XCTAssertEqual(rabat.localizedName, "الرباط")
+        XCTAssertEqual(rabat.displayName, "الرباط، \(CountryName.arabic("MA"))")
+        Localization.shared.language = .english
+        XCTAssertEqual(rabat.displayName, "Rabat, \(CountryName.english("MA"))")
+        Localization.shared.language = .system
+    }
+
+    func testPlaceFromCityIsBilingual() {
+        let place = CityDatabase.place(from: CityDatabase.search("damascus").first!)
+        XCTAssertEqual(place.source, .city)
+        XCTAssertEqual(place.name, "Damascus, \(CountryName.english("SY"))")
+        XCTAssertEqual(place.arabicName, "دمشق، \(CountryName.arabic("SY"))")
+    }
+
+    func testCoordinateParsing() {
+        XCTAssertEqual(LocationChooser.parseCoordinate("33.51", positive: "N", negative: "S"), 33.51)
+        XCTAssertEqual(LocationChooser.parseCoordinate("33,51", positive: "N", negative: "S"), 33.51)
+        XCTAssertEqual(LocationChooser.parseCoordinate("7.6°W", positive: "E", negative: "W"), -7.6)
+        XCTAssertEqual(LocationChooser.parseCoordinate(" 33.5 n ", positive: "N", negative: "S"), 33.5)
+        XCTAssertNil(LocationChooser.parseCoordinate("abc", positive: "N", negative: "S"))
+    }
+
     func testSearchRequiresTwoCharacters() {
         XCTAssertTrue(CityDatabase.search("f").isEmpty)
         XCTAssertTrue(CityDatabase.search("  ").isEmpty)
@@ -70,7 +133,9 @@ final class CityDatabaseTests: XCTestCase {
         // Istanbul coordinates, on a Mac set to any system timezone.
         let place = CityDatabase.manualPlace(name: nil, latitude: 41.0082, longitude: 28.9784)
         XCTAssertEqual(place.timeZoneIdentifier, "Europe/Istanbul")
-        XCTAssertEqual(place.name, "Near Istanbul, TR")
+        XCTAssertEqual(place.name, "Near Istanbul, \(CountryName.english("TR"))")
+        XCTAssertEqual(place.arabicName, "قرب اسطنبول، \(CountryName.arabic("TR"))")
+        XCTAssertEqual(place.source, .coordinates)
     }
 
     func testManualPlaceRespectsCustomName() {
@@ -86,5 +151,6 @@ final class CityDatabaseTests: XCTestCase {
         XCTAssertEqual(place.longitude, -7.05, accuracy: 0.000001)
         XCTAssertNotNil(TimeZone(identifier: place.timeZoneIdentifier),
                         "nearest city must supply a valid timezone")
+        XCTAssertEqual(place.source, .detected)
     }
 }

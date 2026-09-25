@@ -33,12 +33,18 @@ final class DocsRenderTests: XCTestCase {
 
         let store = PrayerScheduleStore()
         let locationManager = LocationManager()
+        let adhanPlayer = AdhanPlayer()
+        let adhanNotifier = SystemAdhanNotifier()
 
         // MARK: - Popover snapshots
 
-        func snapshotPopover(dark: Bool) -> NSBitmapImageRep? {
+        func snapshot(dark: Bool, screen: ActiveScreen) -> NSBitmapImageRep? {
             let hosting = NSHostingController(
-                rootView: MenuBarView(store: store, location: locationManager)
+                rootView: MenuBarView(
+                    store: store, location: locationManager, adhanPlayer: adhanPlayer,
+                    adhanNotifier: adhanNotifier, initialScreen: screen
+                )
+                .background(Color(dark ? NSColor(calibratedWhite: 0.14, alpha: 1) : NSColor(calibratedWhite: 0.98, alpha: 1)))
             )
             hosting.view.appearance = NSAppearance(named: dark ? .darkAqua : .aqua)
 
@@ -51,69 +57,12 @@ final class DocsRenderTests: XCTestCase {
             return rep
         }
 
-        // MARK: - Menu bar strips
-
-        func makeBitmap(width: CGFloat, height: CGFloat) -> (NSBitmapImageRep, NSGraphicsContext) {
-            let scale: CGFloat = 2 // Retina-crisp output
-            let rep = NSBitmapImageRep(
-                bitmapDataPlanes: nil,
-                pixelsWide: Int(width * scale), pixelsHigh: Int(height * scale),
-                bitsPerSample: 8, samplesPerPixel: 4,
-                hasAlpha: true, isPlanar: false,
-                colorSpaceName: .deviceRGB,
-                bytesPerRow: 0, bitsPerPixel: 0
-            )!
-            rep.size = NSSize(width: width, height: height)
-            let context = NSGraphicsContext(bitmapImageRep: rep)!
-            context.cgContext.scaleBy(x: scale, y: scale)
-            return (rep, context)
+        func snapshotPopover(dark: Bool) -> NSBitmapImageRep? {
+            snapshot(dark: dark, screen: .schedule)
         }
 
-        func statusStrip(title: String, dark: Bool) -> (image: NSImage, width: CGFloat) {
-            let font = NSFont.monospacedSystemFont(ofSize: NSFont.systemFontSize, weight: .regular)
-            let icon = MenuBarIcon.image
-            let attributed = NSAttributedString(
-                string: title,
-                attributes: [.font: font, .foregroundColor: dark ? NSColor.white : NSColor.black]
-            )
-
-            let leading: CGFloat = 12
-            let gap: CGFloat = 6
-            let height: CGFloat = 36
-            let titleWidth = title.isEmpty ? 0 : attributed.size().width
-            let width = leading + icon.size.width + (title.isEmpty ? 0 : gap + titleWidth) + leading
-
-            let (rep, context) = makeBitmap(width: width, height: height)
-            NSGraphicsContext.saveGraphicsState()
-            NSGraphicsContext.current = context
-            defer { NSGraphicsContext.restoreGraphicsState() }
-
-            (dark ? NSColor(calibratedWhite: 0.16, alpha: 1) : NSColor(calibratedWhite: 0.95, alpha: 1)).set()
-            NSBezierPath(rect: NSRect(x: 0, y: 0, width: width, height: height)).fill()
-
-            let iconRect = NSRect(x: leading, y: (height - icon.size.height) / 2,
-                                  width: icon.size.width, height: icon.size.height)
-            if dark {
-                let tinted = NSImage(size: icon.size)
-                tinted.lockFocus()
-                icon.draw(in: NSRect(origin: .zero, size: icon.size))
-                NSColor.white.set()
-                NSRect(origin: .zero, size: icon.size).fill(using: .sourceAtop)
-                tinted.unlockFocus()
-                tinted.draw(in: iconRect)
-            } else {
-                icon.draw(in: iconRect)
-            }
-
-            if !title.isEmpty {
-                let titleSize = attributed.size()
-                attributed.draw(at: NSPoint(x: leading + icon.size.width + gap,
-                                            y: (height - titleSize.height) / 2))
-            }
-
-            let image = NSImage(size: NSSize(width: width, height: height))
-            image.addRepresentation(rep)
-            return (image, width)
+        func snapshotSettings(dark: Bool) -> NSBitmapImageRep? {
+            snapshot(dark: dark, screen: .settings)
         }
 
         // MARK: - Writing
@@ -145,49 +94,222 @@ final class DocsRenderTests: XCTestCase {
             try write(dark, "hero.png")
         }
 
-        // Menu bar strips (light + dark), Labeled theme.
-        for (dark, name) in [(false, "menubar-light.png"), (true, "menubar-dark.png")] {
-            let (strip, _) = statusStrip(title: "Asr 1:23", dark: dark)
-            try write(strip, name)
+        // Arabic dropdown snapshots
+        Localization.shared.language = .arabic
+        if let arDark = snapshotPopover(dark: true) {
+            try write(arDark, "dropdown-ar-dark.png")
+        }
+        if let arLight = snapshotPopover(dark: false) {
+            try write(arLight, "dropdown-ar-light.png")
+        }
+        Localization.shared.language = .english
+
+        // Settings snapshots
+        if let settingsDark = snapshotSettings(dark: true) {
+            try write(settingsDark, "settings-dark.png")
+        }
+        if let settingsLight = snapshotSettings(dark: false) {
+            try write(settingsLight, "settings-light.png")
         }
 
-        // Themes: the three menu bar styles stacked with captions.
-        let rows: [(label: String, title: String)] = [
-            ("Icon", ""),
-            ("Countdown", "1:23"),
-            ("Labeled", "Asr 1:23"),
-        ]
+        // Menu bar mockups: the whole bar (so it reads as a real macOS menu
+        // bar) and a theme comparison, each in light and dark.
+        let countdown = Format.countdown(83 * 60)
+        for dark in [false, true] {
+            let suffix = dark ? "dark" : "light"
+            try write(MenuBarMock.fullBar(title: "Asr \(countdown)", dark: dark), "menubar-\(suffix).png")
+            try write(MenuBarMock.themes(countdown: countdown, dark: dark), "themes-\(suffix).png")
+        }
+    }
+}
 
-        let strips = rows.map { statusStrip(title: $0.title, dark: false) }
-        let rowHeight: CGFloat = 36
-        let labelFont = NSFont.systemFont(ofSize: 11, weight: .medium)
-        let labelHeight: CGFloat = 18
-        let padding: CGFloat = 18
-        let rowSpacing: CGFloat = 14
-        let themesWidth = strips.map(\.width).max()! + padding * 2
-        let themesHeight = CGFloat(rows.count) * (rowHeight + labelHeight + rowSpacing) - rowSpacing + padding
+// MARK: - Menu bar mockups
 
-        let (rep, context) = makeBitmap(width: themesWidth, height: themesHeight)
+/// Draws macOS-style menu bars around Miqat's status item, using the same
+/// glyph, font, and title format as `StatusItemController`.
+private enum MenuBarMock {
+
+    enum Item {
+        case miqat(icon: Bool, title: String)
+        case symbol(String)
+        case text(String, bold: Bool = false)
+    }
+
+    struct Palette {
+        let dark: Bool
+        var bar: NSColor { dark ? NSColor(calibratedRed: 0.16, green: 0.16, blue: 0.18, alpha: 1)
+                                : NSColor(calibratedRed: 0.93, green: 0.93, blue: 0.94, alpha: 1) }
+        var ink: NSColor { dark ? NSColor(calibratedWhite: 0.96, alpha: 1) : NSColor(calibratedWhite: 0.08, alpha: 1) }
+        var highlight: NSColor { dark ? NSColor(calibratedWhite: 1, alpha: 0.2) : NSColor(calibratedWhite: 0, alpha: 0.11) }
+        var card: NSColor { dark ? NSColor(calibratedWhite: 0.11, alpha: 1) : NSColor(calibratedWhite: 1, alpha: 1) }
+        var stroke: NSColor { dark ? NSColor(calibratedWhite: 1, alpha: 0.1) : NSColor(calibratedWhite: 0, alpha: 0.1) }
+        var secondary: NSColor { dark ? NSColor(calibratedWhite: 0.62, alpha: 1) : NSColor(calibratedWhite: 0.42, alpha: 1) }
+    }
+
+    static let barHeight: CGFloat = 28
+    static let itemSpacing: CGFloat = 16
+    static let titleFont = NSFont.monospacedSystemFont(ofSize: NSFont.systemFontSize, weight: .regular)
+    static let menuFont = NSFont.menuBarFont(ofSize: 13)
+
+    // MARK: Canvas
+
+    /// A 2× bitmap whose drawing space is `size` points (AppKit maps the
+    /// rep's point size onto its pixels — no extra scale needed).
+    static func render(_ size: NSSize, _ draw: () -> Void) -> NSBitmapImageRep {
+        let rep = NSBitmapImageRep(
+            bitmapDataPlanes: nil,
+            pixelsWide: Int(size.width * 2), pixelsHigh: Int(size.height * 2),
+            bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true, isPlanar: false,
+            colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0
+        )!
+        rep.size = size
         NSGraphicsContext.saveGraphicsState()
-        NSGraphicsContext.current = context
-        defer { NSGraphicsContext.restoreGraphicsState() }
+        NSGraphicsContext.current = NSGraphicsContext(bitmapImageRep: rep)
+        draw()
+        NSGraphicsContext.restoreGraphicsState()
+        return rep
+    }
 
-        NSColor(calibratedWhite: 0.96, alpha: 1).set()
-        NSBezierPath(roundedRect: NSRect(x: 0, y: 0, width: themesWidth, height: themesHeight),
-                     xRadius: 16, yRadius: 16).fill()
-
-        var y = padding
-        for ((row, _), strip) in zip(rows, strips).reversed() {
-            strip.image.draw(in: NSRect(origin: NSPoint(x: (themesWidth - strip.width) / 2, y: y),
-                                        size: strip.image.size))
-            let label = NSAttributedString(
-                string: row,
-                attributes: [.font: labelFont, .foregroundColor: NSColor(calibratedWhite: 0.45, alpha: 1)]
-            )
-            label.draw(at: NSPoint(x: (themesWidth - label.size().width) / 2, y: y + rowHeight + 1))
-            y += rowHeight + labelHeight + rowSpacing
+    static func tinted(_ image: NSImage, _ color: NSColor) -> NSImage {
+        NSImage(size: image.size, flipped: false) { rect in
+            image.draw(in: rect)
+            color.set()
+            rect.fill(using: .sourceAtop)
+            return true
         }
+    }
 
-        try write(rep, "themes.png")
+    static func symbol(_ name: String) -> NSImage {
+        let config = NSImage.SymbolConfiguration(pointSize: 14, weight: .regular)
+        return NSImage(systemSymbolName: name, accessibilityDescription: nil)!.withSymbolConfiguration(config)!
+    }
+
+    // MARK: Bar
+
+    static func width(of item: Item) -> CGFloat {
+        switch item {
+        case let .miqat(icon, title):
+            let titleWidth = title.isEmpty ? 0 : NSAttributedString(string: title, attributes: [.font: titleFont]).size().width
+            return (icon ? MenuBarIcon.image.size.width : 0) + (icon && !title.isEmpty ? 4 : 0) + titleWidth
+        case let .symbol(name):
+            return symbol(name).size.width
+        case let .text(string, bold):
+            let font = bold ? NSFont.boldSystemFont(ofSize: 13) : menuFont
+            return NSAttributedString(string: string, attributes: [.font: font]).size().width
+        }
+    }
+
+    /// Draws `items` left to right starting at `x`, vertically centered in
+    /// `bar`. Miqat's item gets the "open" highlight pill.
+    static func draw(_ items: [Item], from x: CGFloat, in bar: NSRect, palette: Palette) {
+        var x = x
+        for item in items {
+            let w = width(of: item)
+            let midY = bar.midY
+            switch item {
+            case let .miqat(icon, title):
+                palette.highlight.set()
+                NSBezierPath(roundedRect: NSRect(x: x - 7, y: midY - 11, width: w + 14, height: 22),
+                             xRadius: 6, yRadius: 6).fill()
+                var cursor = x
+                if icon {
+                    let glyph = MenuBarIcon.image
+                    tinted(glyph, palette.ink).draw(in: NSRect(x: cursor, y: midY - glyph.size.height / 2,
+                                                              width: glyph.size.width, height: glyph.size.height))
+                    cursor += glyph.size.width + 4
+                }
+                if !title.isEmpty {
+                    let text = NSAttributedString(string: title, attributes: [.font: titleFont, .foregroundColor: palette.ink])
+                    text.draw(at: NSPoint(x: cursor, y: midY - text.size().height / 2))
+                }
+            case let .symbol(name):
+                let image = tinted(symbol(name), palette.ink)
+                image.draw(in: NSRect(x: x, y: midY - image.size.height / 2, width: image.size.width, height: image.size.height))
+            case let .text(string, bold):
+                let font = bold ? NSFont.boldSystemFont(ofSize: 13) : menuFont
+                let text = NSAttributedString(string: string, attributes: [.font: font, .foregroundColor: palette.ink])
+                text.draw(at: NSPoint(x: x, y: midY - text.size().height / 2))
+            }
+            x += w + itemSpacing
+        }
+    }
+
+    static func rowWidth(_ items: [Item]) -> CGFloat {
+        items.map(width(of:)).reduce(0, +) + itemSpacing * CGFloat(max(items.count - 1, 0))
+    }
+
+    static let systemItems: [Item] = [
+        .symbol("wifi"), .symbol("battery.75percent"), .symbol("magnifyingglass"),
+        .symbol("switch.2"), .text("Thu 24 Sep  2:37 PM"),
+    ]
+
+    // MARK: Images
+
+    /// The complete menu bar: app menus on the left, Miqat among the status
+    /// items on the right — instantly recognizable as a Mac menu bar.
+    static func fullBar(title: String, dark: Bool) -> NSBitmapImageRep {
+        let palette = Palette(dark: dark)
+        let size = NSSize(width: 700, height: barHeight)
+        return render(size) {
+            let bar = NSRect(origin: .zero, size: size)
+            palette.bar.set()
+            NSBezierPath(roundedRect: bar, xRadius: 8, yRadius: 8).fill()
+
+            draw([.symbol("apple.logo"), .text("Finder", bold: true), .text("File"), .text("Edit"),
+                  .text("View"), .text("Go"), .text("Window")],
+                 from: 14, in: bar, palette: palette)
+
+            let right: [Item] = [.miqat(icon: false, title: title)] + systemItems
+            draw(right, from: size.width - 14 - rowWidth(right), in: bar, palette: palette)
+        }
+    }
+
+    /// The three title styles side by side with what each one shows.
+    static func themes(countdown: String, dark: Bool) -> NSBitmapImageRep {
+        let palette = Palette(dark: dark)
+        let rows: [(name: String, detail: String, item: Item)] = [
+            ("Icon", "Just the glyph — countdown in the tooltip", .miqat(icon: true, title: "")),
+            ("Countdown", "Time left until the next prayer", .miqat(icon: false, title: countdown)),
+            ("Labeled", "Next prayer’s name plus the countdown", .miqat(icon: false, title: "Asr \(countdown)")),
+        ]
+        let neighbors: [Item] = [.symbol("wifi"), .symbol("battery.75percent"), .text("2:37 PM")]
+
+        let padding: CGFloat = 20
+        let rowHeight: CGFloat = 60
+        let barWidth: CGFloat = 250
+        let size = NSSize(width: 600, height: padding * 2 + rowHeight * CGFloat(rows.count))
+
+        return render(size) {
+            let card = NSRect(origin: .zero, size: size).insetBy(dx: 0.5, dy: 0.5)
+            let cardPath = NSBezierPath(roundedRect: card, xRadius: 14, yRadius: 14)
+            palette.card.set(); cardPath.fill()
+            palette.stroke.set(); cardPath.lineWidth = 1; cardPath.stroke()
+
+            for (index, row) in rows.enumerated() {
+                let top = size.height - padding - rowHeight * CGFloat(index)
+                let midY = top - rowHeight / 2
+
+                if index > 0 {
+                    palette.stroke.set()
+                    NSRect(x: padding, y: top, width: size.width - padding * 2, height: 1).fill()
+                }
+
+                let name = NSAttributedString(string: row.name, attributes: [
+                    .font: NSFont.systemFont(ofSize: 15, weight: .semibold), .foregroundColor: palette.ink,
+                ])
+                let detail = NSAttributedString(string: row.detail, attributes: [
+                    .font: NSFont.systemFont(ofSize: 12), .foregroundColor: palette.secondary,
+                ])
+                name.draw(at: NSPoint(x: padding, y: midY + 1))
+                detail.draw(at: NSPoint(x: padding, y: midY - detail.size().height - 1))
+
+                let bar = NSRect(x: size.width - padding - barWidth, y: midY - barHeight / 2,
+                                 width: barWidth, height: barHeight)
+                palette.bar.set()
+                NSBezierPath(roundedRect: bar, xRadius: 7, yRadius: 7).fill()
+                let items = [row.item] + neighbors
+                draw(items, from: bar.maxX - 12 - rowWidth(items), in: bar, palette: palette)
+            }
+        }
     }
 }

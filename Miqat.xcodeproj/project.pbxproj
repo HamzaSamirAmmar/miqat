@@ -8,23 +8,46 @@
 
 /* Begin PBXBuildFile section */
 		01FF2E6D3D0F31BF0B7E931B /* Format.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF90AA48406F3E3088F428E8 /* Format.swift */; };
+		066EEED3940BFB760424B302 /* madinah.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EAC8ABAB5DACA3A96D87393C /* madinah.mp3 */; };
 		09B07D9336A6B9EC466547F1 /* DocsRenderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29FFC5EBEA9499E7C23FF3C /* DocsRenderTests.swift */; };
+		0E128F3F6D376DF6882C5CD7 /* alafasy.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = B1FD4B1AE8F9559C4A5C363B /* alafasy.mp3 */; };
 		15A06829AA4C142407B95AB0 /* LoginItemManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76D282867C27CE19A42A20EA /* LoginItemManager.swift */; };
+		1F060AA80C0C37FC8750DE8F /* makkah-fajr.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 21B15AE204EB1B2D853F5FA2 /* makkah-fajr.mp3 */; };
+		28B7D2ED9CFB705AF5B04DB8 /* makkah.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = C12E5AFD90C3310C6C9CB574 /* makkah.mp3 */; };
+		43695A494F0B7A7CFCD6F569 /* aqsa.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 65EF2FF08AC0060A6C769FD1 /* aqsa.mp3 */; };
 		4ACC5BDE39FFD7330E4C3DF7 /* PrayerEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4C26866D2F56AC10117FCA /* PrayerEngineTests.swift */; };
+		4C0B50BB8261341F76F20BC3 /* abdulbasit.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = CE2521E5E9B731DBC810A348 /* abdulbasit.mp3 */; };
+		4DE211067583EEF7EE9FA529 /* LocationChooser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058F38C5C094BDAA14C1816D /* LocationChooser.swift */; };
 		5B7E9BB271D037919ACEFFDB /* CityDatabaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 860821B45504D597A387EBCB /* CityDatabaseTests.swift */; };
+		5C7AD9E521DF7EDD02CF09FD /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20A25601D0A28A59E9A4FC7 /* DesignSystem.swift */; };
 		5FF4128399FBC268D90A3103 /* PrayerScheduleStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D313837F13D833CD15B2971 /* PrayerScheduleStore.swift */; };
 		6889B4377AFC785403D63CA3 /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47595CB6A45844F4401F20D1 /* App.swift */; };
+		7032EE14431C73A28E1C0E01 /* abdulbasit-fajr.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 769853FFB5B01067B39761FE /* abdulbasit-fajr.mp3 */; };
 		72636DDB3D199C5E9E495B95 /* cities.json in Resources */ = {isa = PBXBuildFile; fileRef = 47CECBF08F8F963FBB904BA4 /* cities.json */; };
+		798A156BDADB4ECDEF59C42F /* AdhanScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D0D744E2B0DEB85E80BCCBE /* AdhanScheduler.swift */; };
+		8F58BB72839B4AC062D3E2D6 /* AdhanTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAB5A3355BCDDBFF70B09217 /* AdhanTests.swift */; };
 		9352C135D2067AEB85551935 /* LocalizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 301A77A84D61801D29005E32 /* LocalizationTests.swift */; };
+		9C4548DBBAF6A4BC858DCDEE /* ReminderScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F670D6A688CD72B6D1C2CD5E /* ReminderScheduler.swift */; };
+		9C9A73A4C402BC963D32A189 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFE63F8748150F89A836CFD9 /* SettingsView.swift */; };
+		A117ACEDE5BB5FB382654B82 /* AdhanCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = A053A789C94C994C177E3CAD /* AdhanCatalog.swift */; };
 		A36AE020A56C904B5D319338 /* PlacePersistenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40D06787CC59BB3A09C84FC4 /* PlacePersistenceTests.swift */; };
+		A507E4A016F304061BC8E5AD /* madinah-fajr.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 51B549E665E090827175B47A /* madinah-fajr.mp3 */; };
 		A9F0C5B9DCC8ADF208F5806D /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 533BFDA590F16139194F83A8 /* LocationManager.swift */; };
+		B3D7250FA074A4366BBDA40F /* zahrani.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 56C85180813CDE40B40EEA05 /* zahrani.mp3 */; };
 		B56D1AAA49601245A64ADFE3 /* CityDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92974D058F8ECF34C76DB03C /* CityDatabase.swift */; };
+		B6A313E7735C2CF420EF2A2B /* turkey.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = C9AAECDFAF82D0F03B4BC7C8 /* turkey.mp3 */; };
+		B81A26512B32B12DAF2BC266 /* AdhanPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB45C82AC729BC3001BB5817 /* AdhanPlayer.swift */; };
 		B8E125A95124BCAA14AA782F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B500B0686F7CF62A58FF8483 /* Assets.xcassets */; };
 		BCBE21575FC70EB0BCC4314B /* Adhan in Frameworks */ = {isa = PBXBuildFile; productRef = C0BACB9536B41F69009A45E8 /* Adhan */; };
+		BDA8A49D5341B0BE57C51EC9 /* CountryMethodTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8AD695E8BCB3D1FA76F6F95 /* CountryMethodTests.swift */; };
+		BFE73D0DFC576A8CA988A2C3 /* AdhanNotifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5EEC9C129BDC519EC8AEB5E /* AdhanNotifier.swift */; };
 		C6F8280FFFACAA49AE107C92 /* PrayerEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E2E9012CD715069E5F68503 /* PrayerEngine.swift */; };
+		D24F4EFDCAC346E435CBA8FA /* PrayerHeroCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83EE8FF3CFEE0AA1EB66667B /* PrayerHeroCard.swift */; };
 		DC9EDC82FFB0E081E9B23DCA /* MenuBarIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = C87DDC9BA54BE5D8414747B5 /* MenuBarIcon.swift */; };
 		E14CB2AB16B50749CA0A2ADF /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D08EA7589CB460D3E0CC42 /* MenuBarView.swift */; };
+		E478E9E00EDA54D532B20C43 /* CREDITS.md in Resources */ = {isa = PBXBuildFile; fileRef = BE05D2B4770998F051409CE4 /* CREDITS.md */; };
 		E4ADE97DEC0836ED690F0CB8 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC16E9E47650EEB874667644 /* Theme.swift */; };
+		E728456C4C640836C3977AB6 /* ReminderSchedulerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D158F2D941969A4B48CAE102 /* ReminderSchedulerTests.swift */; };
 		ED5D18BF5EA582A6F2B88B0E /* StatusItemController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBC582F97510279AD91D1E64 /* StatusItemController.swift */; };
 		EDA07005C19E2B18D917E118 /* Localization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E906A1C7CA8D11F21BCF56 /* Localization.swift */; };
 /* End PBXBuildFile section */
@@ -40,26 +63,49 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		058F38C5C094BDAA14C1816D /* LocationChooser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationChooser.swift; sourceTree = "<group>"; };
+		21B15AE204EB1B2D853F5FA2 /* makkah-fajr.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "makkah-fajr.mp3"; sourceTree = "<group>"; };
 		2C4C26866D2F56AC10117FCA /* PrayerEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerEngineTests.swift; sourceTree = "<group>"; };
 		2D313837F13D833CD15B2971 /* PrayerScheduleStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerScheduleStore.swift; sourceTree = "<group>"; };
 		301A77A84D61801D29005E32 /* LocalizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationTests.swift; sourceTree = "<group>"; };
 		40D06787CC59BB3A09C84FC4 /* PlacePersistenceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlacePersistenceTests.swift; sourceTree = "<group>"; };
 		47595CB6A45844F4401F20D1 /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
 		47CECBF08F8F963FBB904BA4 /* cities.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = cities.json; sourceTree = "<group>"; };
+		51B549E665E090827175B47A /* madinah-fajr.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "madinah-fajr.mp3"; sourceTree = "<group>"; };
 		533BFDA590F16139194F83A8 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		54BBFA229BFC2E1C7E9B3353 /* Miqat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Miqat.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		56C85180813CDE40B40EEA05 /* zahrani.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = zahrani.mp3; sourceTree = "<group>"; };
+		65EF2FF08AC0060A6C769FD1 /* aqsa.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = aqsa.mp3; sourceTree = "<group>"; };
 		7417A1225854B39BDA08B219 /* MiqatTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MiqatTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		769853FFB5B01067B39761FE /* abdulbasit-fajr.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "abdulbasit-fajr.mp3"; sourceTree = "<group>"; };
 		76D282867C27CE19A42A20EA /* LoginItemManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginItemManager.swift; sourceTree = "<group>"; };
+		83EE8FF3CFEE0AA1EB66667B /* PrayerHeroCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerHeroCard.swift; sourceTree = "<group>"; };
 		860821B45504D597A387EBCB /* CityDatabaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CityDatabaseTests.swift; sourceTree = "<group>"; };
 		88E906A1C7CA8D11F21BCF56 /* Localization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Localization.swift; sourceTree = "<group>"; };
 		8E2E9012CD715069E5F68503 /* PrayerEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerEngine.swift; sourceTree = "<group>"; };
 		92974D058F8ECF34C76DB03C /* CityDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CityDatabase.swift; sourceTree = "<group>"; };
+		9D0D744E2B0DEB85E80BCCBE /* AdhanScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdhanScheduler.swift; sourceTree = "<group>"; };
+		A053A789C94C994C177E3CAD /* AdhanCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdhanCatalog.swift; sourceTree = "<group>"; };
+		B1FD4B1AE8F9559C4A5C363B /* alafasy.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = alafasy.mp3; sourceTree = "<group>"; };
 		B29FFC5EBEA9499E7C23FF3C /* DocsRenderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocsRenderTests.swift; sourceTree = "<group>"; };
 		B3D08EA7589CB460D3E0CC42 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
 		B500B0686F7CF62A58FF8483 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		BE05D2B4770998F051409CE4 /* CREDITS.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CREDITS.md; sourceTree = "<group>"; };
+		BFE63F8748150F89A836CFD9 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		C12E5AFD90C3310C6C9CB574 /* makkah.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = makkah.mp3; sourceTree = "<group>"; };
 		C87DDC9BA54BE5D8414747B5 /* MenuBarIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarIcon.swift; sourceTree = "<group>"; };
+		C9AAECDFAF82D0F03B4BC7C8 /* turkey.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = turkey.mp3; sourceTree = "<group>"; };
+		CE2521E5E9B731DBC810A348 /* abdulbasit.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = abdulbasit.mp3; sourceTree = "<group>"; };
+		D158F2D941969A4B48CAE102 /* ReminderSchedulerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderSchedulerTests.swift; sourceTree = "<group>"; };
+		D8AD695E8BCB3D1FA76F6F95 /* CountryMethodTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountryMethodTests.swift; sourceTree = "<group>"; };
+		DAB5A3355BCDDBFF70B09217 /* AdhanTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdhanTests.swift; sourceTree = "<group>"; };
 		DF90AA48406F3E3088F428E8 /* Format.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Format.swift; sourceTree = "<group>"; };
+		E5EEC9C129BDC519EC8AEB5E /* AdhanNotifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdhanNotifier.swift; sourceTree = "<group>"; };
+		EAC8ABAB5DACA3A96D87393C /* madinah.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = madinah.mp3; sourceTree = "<group>"; };
 		EC16E9E47650EEB874667644 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		F20A25601D0A28A59E9A4FC7 /* DesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystem.swift; sourceTree = "<group>"; };
+		F670D6A688CD72B6D1C2CD5E /* ReminderScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderScheduler.swift; sourceTree = "<group>"; };
+		FB45C82AC729BC3001BB5817 /* AdhanPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdhanPlayer.swift; sourceTree = "<group>"; };
 		FBC582F97510279AD91D1E64 /* StatusItemController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusItemController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -84,19 +130,46 @@
 			);
 			sourceTree = "<group>";
 		};
+		177246175763CA39EB74BE2D /* Adhan */ = {
+			isa = PBXGroup;
+			children = (
+				769853FFB5B01067B39761FE /* abdulbasit-fajr.mp3 */,
+				CE2521E5E9B731DBC810A348 /* abdulbasit.mp3 */,
+				B1FD4B1AE8F9559C4A5C363B /* alafasy.mp3 */,
+				65EF2FF08AC0060A6C769FD1 /* aqsa.mp3 */,
+				BE05D2B4770998F051409CE4 /* CREDITS.md */,
+				51B549E665E090827175B47A /* madinah-fajr.mp3 */,
+				EAC8ABAB5DACA3A96D87393C /* madinah.mp3 */,
+				21B15AE204EB1B2D853F5FA2 /* makkah-fajr.mp3 */,
+				C12E5AFD90C3310C6C9CB574 /* makkah.mp3 */,
+				C9AAECDFAF82D0F03B4BC7C8 /* turkey.mp3 */,
+				56C85180813CDE40B40EEA05 /* zahrani.mp3 */,
+			);
+			path = Adhan;
+			sourceTree = "<group>";
+		};
 		8966537BA2C1CAF310EBDD15 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				A053A789C94C994C177E3CAD /* AdhanCatalog.swift */,
+				E5EEC9C129BDC519EC8AEB5E /* AdhanNotifier.swift */,
+				FB45C82AC729BC3001BB5817 /* AdhanPlayer.swift */,
+				9D0D744E2B0DEB85E80BCCBE /* AdhanScheduler.swift */,
 				47595CB6A45844F4401F20D1 /* App.swift */,
 				92974D058F8ECF34C76DB03C /* CityDatabase.swift */,
+				F20A25601D0A28A59E9A4FC7 /* DesignSystem.swift */,
 				DF90AA48406F3E3088F428E8 /* Format.swift */,
 				88E906A1C7CA8D11F21BCF56 /* Localization.swift */,
+				058F38C5C094BDAA14C1816D /* LocationChooser.swift */,
 				533BFDA590F16139194F83A8 /* LocationManager.swift */,
 				76D282867C27CE19A42A20EA /* LoginItemManager.swift */,
 				C87DDC9BA54BE5D8414747B5 /* MenuBarIcon.swift */,
 				B3D08EA7589CB460D3E0CC42 /* MenuBarView.swift */,
 				8E2E9012CD715069E5F68503 /* PrayerEngine.swift */,
+				83EE8FF3CFEE0AA1EB66667B /* PrayerHeroCard.swift */,
 				2D313837F13D833CD15B2971 /* PrayerScheduleStore.swift */,
+				F670D6A688CD72B6D1C2CD5E /* ReminderScheduler.swift */,
+				BFE63F8748150F89A836CFD9 /* SettingsView.swift */,
 				FBC582F97510279AD91D1E64 /* StatusItemController.swift */,
 				EC16E9E47650EEB874667644 /* Theme.swift */,
 			);
@@ -106,11 +179,14 @@
 		AC9F9D4497F5AC0D2BB64F3E /* MiqatTests */ = {
 			isa = PBXGroup;
 			children = (
+				DAB5A3355BCDDBFF70B09217 /* AdhanTests.swift */,
 				860821B45504D597A387EBCB /* CityDatabaseTests.swift */,
+				D8AD695E8BCB3D1FA76F6F95 /* CountryMethodTests.swift */,
 				B29FFC5EBEA9499E7C23FF3C /* DocsRenderTests.swift */,
 				301A77A84D61801D29005E32 /* LocalizationTests.swift */,
 				40D06787CC59BB3A09C84FC4 /* PlacePersistenceTests.swift */,
 				2C4C26866D2F56AC10117FCA /* PrayerEngineTests.swift */,
+				D158F2D941969A4B48CAE102 /* ReminderSchedulerTests.swift */,
 			);
 			path = MiqatTests;
 			sourceTree = "<group>";
@@ -119,6 +195,7 @@
 			isa = PBXGroup;
 			children = (
 				47CECBF08F8F963FBB904BA4 /* cities.json */,
+				177246175763CA39EB74BE2D /* Adhan */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -223,7 +300,18 @@
 			buildActionMask = 2147483647;
 			files = (
 				B8E125A95124BCAA14AA782F /* Assets.xcassets in Resources */,
+				E478E9E00EDA54D532B20C43 /* CREDITS.md in Resources */,
+				7032EE14431C73A28E1C0E01 /* abdulbasit-fajr.mp3 in Resources */,
+				4C0B50BB8261341F76F20BC3 /* abdulbasit.mp3 in Resources */,
+				0E128F3F6D376DF6882C5CD7 /* alafasy.mp3 in Resources */,
+				43695A494F0B7A7CFCD6F569 /* aqsa.mp3 in Resources */,
 				72636DDB3D199C5E9E495B95 /* cities.json in Resources */,
+				A507E4A016F304061BC8E5AD /* madinah-fajr.mp3 in Resources */,
+				066EEED3940BFB760424B302 /* madinah.mp3 in Resources */,
+				1F060AA80C0C37FC8750DE8F /* makkah-fajr.mp3 in Resources */,
+				28B7D2ED9CFB705AF5B04DB8 /* makkah.mp3 in Resources */,
+				B6A313E7735C2CF420EF2A2B /* turkey.mp3 in Resources */,
+				B3D7250FA074A4366BBDA40F /* zahrani.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -234,16 +322,25 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A117ACEDE5BB5FB382654B82 /* AdhanCatalog.swift in Sources */,
+				BFE73D0DFC576A8CA988A2C3 /* AdhanNotifier.swift in Sources */,
+				B81A26512B32B12DAF2BC266 /* AdhanPlayer.swift in Sources */,
+				798A156BDADB4ECDEF59C42F /* AdhanScheduler.swift in Sources */,
 				6889B4377AFC785403D63CA3 /* App.swift in Sources */,
 				B56D1AAA49601245A64ADFE3 /* CityDatabase.swift in Sources */,
+				5C7AD9E521DF7EDD02CF09FD /* DesignSystem.swift in Sources */,
 				01FF2E6D3D0F31BF0B7E931B /* Format.swift in Sources */,
 				EDA07005C19E2B18D917E118 /* Localization.swift in Sources */,
+				4DE211067583EEF7EE9FA529 /* LocationChooser.swift in Sources */,
 				A9F0C5B9DCC8ADF208F5806D /* LocationManager.swift in Sources */,
 				15A06829AA4C142407B95AB0 /* LoginItemManager.swift in Sources */,
 				DC9EDC82FFB0E081E9B23DCA /* MenuBarIcon.swift in Sources */,
 				E14CB2AB16B50749CA0A2ADF /* MenuBarView.swift in Sources */,
 				C6F8280FFFACAA49AE107C92 /* PrayerEngine.swift in Sources */,
+				D24F4EFDCAC346E435CBA8FA /* PrayerHeroCard.swift in Sources */,
 				5FF4128399FBC268D90A3103 /* PrayerScheduleStore.swift in Sources */,
+				9C4548DBBAF6A4BC858DCDEE /* ReminderScheduler.swift in Sources */,
+				9C9A73A4C402BC963D32A189 /* SettingsView.swift in Sources */,
 				ED5D18BF5EA582A6F2B88B0E /* StatusItemController.swift in Sources */,
 				E4ADE97DEC0836ED690F0CB8 /* Theme.swift in Sources */,
 			);
@@ -253,11 +350,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8F58BB72839B4AC062D3E2D6 /* AdhanTests.swift in Sources */,
 				5B7E9BB271D037919ACEFFDB /* CityDatabaseTests.swift in Sources */,
+				BDA8A49D5341B0BE57C51EC9 /* CountryMethodTests.swift in Sources */,
 				09B07D9336A6B9EC466547F1 /* DocsRenderTests.swift in Sources */,
 				9352C135D2067AEB85551935 /* LocalizationTests.swift in Sources */,
 				A36AE020A56C904B5D319338 /* PlacePersistenceTests.swift in Sources */,
 				4ACC5BDE39FFD7330E4C3DF7 /* PrayerEngineTests.swift in Sources */,
+				E728456C4C640836C3977AB6 /* ReminderSchedulerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -293,13 +393,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				INFOPLIST_FILE = Miqat/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = personal.hamza.miqat;
 				PRODUCT_NAME = Miqat;
 				SDKROOT = macosx;
@@ -434,13 +534,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				INFOPLIST_FILE = Miqat/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = personal.hamza.miqat;
 				PRODUCT_NAME = Miqat;
 				SDKROOT = macosx;

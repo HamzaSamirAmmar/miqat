@@ -11,6 +11,17 @@ enum Format {
         return String(format: "%d:%02d", seconds / 3600, (seconds % 3600) / 60)
     }
 
+    /// Live popover countdown with seconds: "2:48:07", or "48:07" under an hour.
+    static func clock(_ interval: TimeInterval) -> String {
+        let seconds = max(Int(interval.rounded(.up)), 0)
+        let hours = seconds / 3600
+        let minutes = (seconds % 3600) / 60
+        let secs = seconds % 60
+        return hours > 0
+            ? String(format: "%d:%02d:%02d", hours, minutes, secs)
+            : String(format: "%d:%02d", minutes, secs)
+    }
+
     /// Human-readable remaining time, e.g. "1h 23m" / "43m" (Arabic: "1س 23د").
     /// Digits stay Western — bidi-safe next to RTL text, and standard in Morocco.
     static func remaining(_ interval: TimeInterval) -> String {

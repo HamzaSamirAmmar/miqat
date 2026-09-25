@@ -15,6 +15,18 @@ enum PrayerKey: String, CaseIterable, Identifiable {
     var displayName: String {
         Localization.shared.string("prayer.\(rawValue)")
     }
+
+    /// Distinct celestial SF Symbol representing the prayer's time of day.
+    var symbolName: String {
+        switch self {
+        case .fajr: return "sun.horizon.fill"
+        case .sunrise: return "sunrise.fill"
+        case .dhuhr: return "sun.max.fill"
+        case .asr: return "sun.haze.fill"
+        case .maghrib: return "sunset.fill"
+        case .isha: return "moon.stars.fill"
+        }
+    }
 }
 
 /// One prayer and its time as an absolute instant.
@@ -27,13 +39,25 @@ struct PrayerEntry: Identifiable, Equatable {
 
 /// A place for which prayer times are calculated.
 struct Place: Codable, Equatable, Identifiable {
+    /// How a place was chosen — shown in the UI, and `.detected` places are
+    /// refreshed automatically when the Mac starts or wakes.
+    enum Source: String, Codable {
+        case city
+        case detected
+        case coordinates
+    }
+
     /// Display name, e.g. "Casablanca, Morocco".
     let name: String
+    /// Arabic display name, e.g. "الدار البيضاء، المغرب", when known.
+    let arabicName: String?
     let latitude: Double
     let longitude: Double
     let timeZoneIdentifier: String
     /// ISO 3166-1 alpha-2 code when known ("MA"), used for the flag emoji.
     let countryCode: String?
+    /// Nil for places saved before sources were tracked.
+    let source: Source?
 
     var id: String { "\(latitude),\(longitude)" }
 
@@ -45,27 +69,44 @@ struct Place: Codable, Equatable, Identifiable {
         CountryFlag.emoji(for: countryCode)
     }
 
-    init(name: String, latitude: Double, longitude: Double, timeZoneIdentifier: String, countryCode: String? = nil) {
+    /// The name in the active UI language.
+    var displayName: String {
+        Localization.shared.isArabic ? arabicName ?? name : name
+    }
+
+    init(
+        name: String,
+        arabicName: String? = nil,
+        latitude: Double,
+        longitude: Double,
+        timeZoneIdentifier: String,
+        countryCode: String? = nil,
+        source: Source? = nil
+    ) {
         self.name = name
+        self.arabicName = arabicName
         self.latitude = latitude
         self.longitude = longitude
         self.timeZoneIdentifier = timeZoneIdentifier
         self.countryCode = countryCode
+        self.source = source
     }
 
     private enum CodingKeys: String, CodingKey {
-        case name, latitude, longitude, timeZoneIdentifier, countryCode
+        case name, arabicName, latitude, longitude, timeZoneIdentifier, countryCode, source
     }
 
-    /// Decodes with `countryCode` optional so places persisted by earlier
+    /// Decodes newer fields optionally so places persisted by earlier
     /// versions of the app keep loading after upgrade.
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         name = try container.decode(String.self, forKey: .name)
+        arabicName = try container.decodeIfPresent(String.self, forKey: .arabicName)
         latitude = try container.decode(Double.self, forKey: .latitude)
         longitude = try container.decode(Double.self, forKey: .longitude)
         timeZoneIdentifier = try container.decode(String.self, forKey: .timeZoneIdentifier)
         countryCode = try container.decodeIfPresent(String.self, forKey: .countryCode)
+        source = try? container.decodeIfPresent(Source.self, forKey: .source)
     }
 }
 
@@ -126,6 +167,48 @@ enum CalculationMethodChoice: String, CaseIterable, Identifiable {
         case .tehran: return CalculationMethod.tehran.params
         case .northAmerica: return CalculationMethod.northAmerica.params
         }
+    }
+
+    // MARK: - Location default
+
+    /// The convention each country's official schedule follows. Countries
+    /// not listed — the Levant, Europe, most of Africa, … — use Muslim World
+    /// League, the common international default (and the library's own).
+    private static let countryMethods: [String: CalculationMethodChoice] = [
+        // Arabian Peninsula.
+        "SA": .ummAlQura,
+        "AE": .dubai,
+        "QA": .qatar,
+        "KW": .kuwait,
+        // The Nile valley and its neighbours follow the Egyptian authority.
+        "EG": .egyptian,
+        "SD": .egyptian,
+        "LY": .egyptian,
+        "SO": .egyptian,
+        // South Asia.
+        "PK": .karachi,
+        "IN": .karachi,
+        "BD": .karachi,
+        "AF": .karachi,
+        "LK": .karachi,
+        // MUIS (Singapore), JAKIM (Malaysia), Kemenag (Indonesia) and Brunei
+        // all share adhan's Singapore angles (20°/18°).
+        "SG": .singapore,
+        "MY": .singapore,
+        "ID": .singapore,
+        "BN": .singapore,
+        // State-specific authorities.
+        "TR": .turkey,
+        "IR": .tehran,
+        "US": .northAmerica,
+        "CA": .northAmerica,
+    ]
+
+    /// The method selected by default for a place: its country's convention
+    /// when known, otherwise Muslim World League. Accepts lowercase codes.
+    static func defaultMethod(forCountryCode code: String?) -> CalculationMethodChoice {
+        guard let code else { return .muslimWorldLeague }
+        return countryMethods[code.uppercased()] ?? .muslimWorldLeague
     }
 }
 

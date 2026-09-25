@@ -1,509 +1,353 @@
 import AppKit
 import SwiftUI
 
+enum ActiveScreen {
+    case schedule
+    case locationPicker
+    case settings
+}
+
 struct MenuBarView: View {
     @ObservedObject var store: PrayerScheduleStore
     @ObservedObject var location: LocationManager
+    @ObservedObject var adhanPlayer: AdhanPlayer
+    @ObservedObject var adhanNotifier: SystemAdhanNotifier
     @ObservedObject private var localization = Localization.shared
 
-    @State private var showingLocationPicker = false
-    @State private var searchQuery = ""
-    @State private var showsManualEntry = false
-    @State private var manualLatitude = ""
-    @State private var manualLongitude = ""
-    @State private var manualName = ""
-    @State private var manualError: String?
+    @State private var activeScreen: ActiveScreen = .schedule
 
-    private var loginBinding: Binding<Bool> {
-        Binding(
-            get: { LoginItemManager.isEnabled },
-            set: { enabled in
-                _ = LoginItemManager.setEnabled(enabled)
-            }
-        )
-    }
-
-    /// Directional SF Symbols must be picked per layout direction — SwiftUI
-    /// does not mirror `chevron.right`-style glyphs on its own.
-    private func directionalIcon(ltr: String, rtl: String) -> String {
-        localization.isRTL ? rtl : ltr
+    init(
+        store: PrayerScheduleStore,
+        location: LocationManager,
+        adhanPlayer: AdhanPlayer,
+        adhanNotifier: SystemAdhanNotifier,
+        initialScreen: ActiveScreen = .schedule
+    ) {
+        self.store = store
+        self.location = location
+        self.adhanPlayer = adhanPlayer
+        self.adhanNotifier = adhanNotifier
+        _activeScreen = State(initialValue: initialScreen)
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            header
-
-            Divider()
-
+        Group {
             if store.place == nil {
                 onboarding
-            } else if showingLocationPicker {
-                locationPicker
             } else {
-                scheduleSection
-
-                Divider()
-
-                locationCard
-                settingsSection
+                switch activeScreen {
+                case .settings:
+                    SettingsView(store: store, player: adhanPlayer, notifier: adhanNotifier) {
+                        navigate(to: .schedule)
+                    }
+                    .transition(.opacity)
+                case .locationPicker:
+                    locationPicker
+                        .transition(.opacity)
+                case .schedule:
+                    mainScheduleContent
+                        .transition(.opacity)
+                }
             }
-
-            Divider()
-
-            footer
         }
         .padding(16)
         .frame(width: 340)
+        .tint(Brand.accent)
         .environment(\.locale, localization.locale)
         .environment(\.layoutDirection, localization.layoutDirection)
         .onChange(of: store.place) { _ in
-            // A place arriving (detect, pick, manual) closes the picker.
-            if showingLocationPicker, store.place != nil {
-                showingLocationPicker = false
-                location.clearSearch()
-                searchQuery = ""
+            // A place arriving (detect, pick, manual) returns to schedule.
+            if activeScreen == .locationPicker, store.place != nil {
+                navigate(to: .schedule)
             }
+        }
+    }
+
+    private func navigate(to screen: ActiveScreen) {
+        withAnimation(.easeInOut(duration: 0.18)) {
+            location.clearSearch()
+            activeScreen = screen
+        }
+    }
+
+    // MARK: - Main Schedule Content
+
+    private var mainScheduleContent: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            header
+
+            PrayerHeroCard(store: store, onToggleAdhan: toggleAdhan)
+
+            schedule
+
+            footer
         }
     }
 
     // MARK: - Header
 
     private var header: some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text("Miqat")
-                .font(.title3.weight(.semibold))
-            Text(Self.dateLine(for: store.now, timeZone: store.displayTimeZone))
-                .font(.caption)
+        HStack(alignment: .top, spacing: 8) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(Self.gregorianDateString(for: store.now, timeZone: store.displayTimeZone))
+                    .font(.headline)
+
+                HStack(spacing: 4) {
+                    Image(systemName: "moon.fill")
+                        .font(.system(size: 9))
+                        .foregroundStyle(Brand.accent)
+                    Text(Self.hijriDateString(for: store.now, timeZone: store.displayTimeZone, offset: store.hijriOffset))
+                }
+                .font(.subheadline)
                 .foregroundStyle(.secondary)
-                .lineLimit(1)
-                .minimumScaleFactor(0.8)
+            }
+            .lineLimit(1)
+            .minimumScaleFactor(0.85)
+            .accessibilityElement(children: .combine)
+
+            Spacer(minLength: 4)
+
+            Button {
+                navigate(to: .settings)
+            } label: {
+                Image(systemName: "gearshape")
+                    .font(.system(size: 14, weight: .medium))
+            }
+            .buttonStyle(IconButtonStyle())
+            .keyboardShortcut(",", modifiers: .command)
+            .help(localization.string("nav.settings"))
+            .accessibilityLabel(localization.string("nav.settings"))
         }
     }
 
-    /// "Sep 24, 2026 · Rabiʻ II 13, 1448 AH" (Arabic: "٢٤ سبتمبر ٢٠٢٦ · ١٤ ربيع الآخر ١٤٤٨ هـ")
-    private static func dateLine(for date: Date, timeZone: TimeZone?) -> String {
-        let locale = Localization.shared.locale
+    private static func gregorianDateString(for date: Date, timeZone: TimeZone?) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Localization.shared.locale
+        formatter.timeZone = timeZone ?? .current
+        formatter.setLocalizedDateFormatFromTemplate("EEEEdMMMM")
+        return formatter.string(from: date)
+    }
 
-        let gregorian = DateFormatter()
-        gregorian.locale = locale
-        gregorian.dateStyle = .medium
-        gregorian.timeStyle = .none
-        gregorian.timeZone = timeZone ?? .current
+    static func hijriDateString(for date: Date, timeZone: TimeZone?, offset: Int = 0) -> String {
+        let calendar = Calendar(identifier: .islamicUmmAlQura)
+        let adjustedDate = calendar.date(byAdding: .day, value: offset, to: date) ?? date
 
-        let hijri = DateFormatter()
-        hijri.calendar = Calendar(identifier: .islamicCivil)
-        hijri.locale = locale
-        hijri.dateStyle = .long
-        hijri.timeZone = timeZone ?? .current
-
-        return "\(gregorian.string(from: date)) · \(hijri.string(from: date))"
+        let formatter = DateFormatter()
+        formatter.calendar = calendar
+        formatter.locale = Localization.shared.locale
+        formatter.dateStyle = .long
+        formatter.timeZone = timeZone ?? .current
+        return formatter.string(from: adjustedDate)
     }
 
     // MARK: - Schedule
 
-    private var scheduleSection: some View {
-        VStack(spacing: 6) {
+    private var schedule: some View {
+        VStack(spacing: 2) {
             ForEach(store.today) { entry in
-                scheduleRow(entry)
+                // Match on the full entry (key + date): after Isha the next
+                // prayer is *tomorrow's* Fajr, not today's passed one.
+                let isNext = entry == store.next
+                ScheduleRow(
+                    entry: entry,
+                    time: Format.time(entry.date, timeZone: store.displayTimeZone),
+                    isNext: isNext,
+                    isPassed: !isNext && entry.date <= store.now,
+                    adhanOn: store.isAdhanEnabled(entry.key),
+                    onToggleAdhan: { toggleAdhan(entry.key) }
+                )
             }
         }
     }
 
-    private func scheduleRow(_ entry: PrayerEntry) -> some View {
-        let isNext = entry.id == store.next?.id
-
-        return HStack(spacing: 6) {
-            Image(systemName: isNext
-                  ? directionalIcon(ltr: "arrow.right.circle.fill", rtl: "arrow.left.circle.fill")
-                  : "circle")
-                .font(.caption2)
-                .foregroundStyle(isNext ? Color.accentColor : .clear)
-                .frame(width: 12)
-
-            Text(entry.key.displayName)
-                .foregroundStyle(isNext ? .primary : .secondary)
-
-            if isNext {
-                Text(localization.string("next.prefix", Format.remaining(entry.date.timeIntervalSince(store.now))))
-                    .font(.caption)
-                    .foregroundStyle(Color.accentColor)
+    /// Quick per-prayer mute from the schedule or hero. Turning a prayer on
+    /// while the master switch is off turns the master switch on too —
+    /// otherwise the click would appear to do nothing.
+    private func toggleAdhan(_ prayer: PrayerKey) {
+        guard prayer != .sunrise else { return }
+        if store.isAdhanEnabled(prayer) {
+            store.adhanPrayers.remove(prayer)
+            if adhanPlayer.playingTrackID == store.adhanTrack(for: prayer).id {
+                adhanPlayer.stop()
             }
-
-            Spacer()
-
-            Text(Format.time(entry.date, timeZone: store.displayTimeZone))
-                .monospacedDigit()
-                .foregroundStyle(isNext ? .primary : .secondary)
-        }
-        .font(isNext ? .callout.weight(.semibold) : .callout)
-    }
-
-    // MARK: - Location
-
-    /// Compact summary card on the main panel — tap to open the picker.
-    private var locationCard: some View {
-        Button {
-            location.clearSearch()
-            searchQuery = ""
-            showingLocationPicker = true
-        } label: {
-            HStack(spacing: 10) {
-                Text(store.place?.flagEmoji ?? "📍")
-                    .font(.title3)
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(store.place?.name ?? "Set location")
-                        .font(.callout.weight(.medium))
-                        .lineLimit(1)
-                        .truncationMode(.middle)
-
-                    if let place = store.place {
-                        Text("\(place.timeZoneIdentifier) · \(Format.coordinate(place.latitude, place.longitude))")
-                            .font(.caption2)
-                            .foregroundStyle(.tertiary)
-                            .lineLimit(1)
-                            .truncationMode(.middle)
-                    }
-                }
-
-                Spacer()
-
-                Image(systemName: directionalIcon(ltr: "chevron.right", rtl: "chevron.left"))
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.tertiary)
-            }
-            .padding(10)
-            .background(.quaternary.opacity(0.5), in: RoundedRectangle(cornerRadius: 8))
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-    }
-
-    /// Full-popover location picker: offline search, detect, or manual
-    /// coordinates — gets the whole popover instead of a cramped strip.
-    private var locationPicker: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            ZStack {
-                Text(localization.string("location.title"))
-                    .font(.headline)
-
-                HStack {
-                    Button {
-                        location.clearSearch()
-                        searchQuery = ""
-                        showingLocationPicker = false
-                    } label: {
-                        Label(localization.string("location.back"),
-                              systemImage: directionalIcon(ltr: "chevron.left", rtl: "chevron.right"))
-                    }
-                    .controlSize(.small)
-                    Spacer()
-                }
-            }
-
-            locationSearchSection
-
-            detectButton
-
-            manualEntrySection
-        }
-    }
-
-    private var detectButton: some View {
-        Button {
-            location.detect()
-        } label: {
-            HStack(spacing: 8) {
-                if location.isLocating {
-                    ProgressView()
-                        .controlSize(.small)
-                } else {
-                    Image(systemName: "location.fill")
-                }
-                Text(localization.string(location.isLocating ? "location.locating" : "location.detect"))
-                Spacer()
-            }
-            .padding(.vertical, 2)
-        }
-        .controlSize(.large)
-        .buttonStyle(.borderedProminent)
-        .disabled(location.isLocating)
-    }
-
-    private var locationSearchSection: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack(spacing: 8) {
-                Image(systemName: "magnifyingglass")
-                    .foregroundStyle(.secondary)
-                TextField(localization.string("location.search"), text: $searchQuery)
-                    .textFieldStyle(.plain)
-                    .onChange(of: searchQuery) { query in
-                        location.search(query)
-                    }
-                if !searchQuery.isEmpty {
-                    Button {
-                        searchQuery = ""
-                        location.clearSearch()
-                    } label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundStyle(.tertiary)
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-            .padding(8)
-            .background(.quaternary, in: RoundedRectangle(cornerRadius: 8))
-
-            if let error = location.lastError {
-                Text(error)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-
-            if !location.searchResults.isEmpty {
-                ScrollView {
-                    VStack(spacing: 2) {
-                        ForEach(location.searchResults) { city in
-                            cityRow(city)
-                        }
-                    }
-                    .padding(3)
-                }
-                .frame(maxHeight: 196)
-                .background(.quaternary.opacity(0.3), in: RoundedRectangle(cornerRadius: 8))
-            } else if City.fold(searchQuery.trimmingCharacters(in: .whitespaces)).count >= 2 {
-                Text(localization.string("location.noMatches", searchQuery))
-                    .font(.caption)
-                    .foregroundStyle(.tertiary)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 8)
-            } else {
-                Text(localization.string("location.offlineHint", CityDatabase.cities.count.formatted()))
-                    .font(.caption2)
-                    .foregroundStyle(.tertiary)
+        } else {
+            store.adhanPrayers.insert(prayer)
+            if !store.adhanEnabled {
+                store.adhanEnabled = true
+                adhanNotifier.requestAuthorization()
             }
         }
-        .font(.callout)
-    }
-
-    private func cityRow(_ city: City) -> some View {
-        Button {
-            pick(city)
-        } label: {
-            HStack(spacing: 10) {
-                Text(city.flagEmoji)
-                    .font(.body)
-
-                Text(city.displayName)
-                    .lineLimit(1)
-                    .truncationMode(.middle)
-
-                Spacer()
-
-                Text(city.timeZone?.abbreviation() ?? "")
-                    .font(.caption)
-                    .foregroundStyle(.tertiary)
-            }
-            .padding(.horizontal, 8)
-            .padding(.vertical, 5)
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-        .modifier(HoverHighlight())
-    }
-
-    private func pick(_ city: City) {
-        store.place = CityDatabase.place(from: city)
-        location.clearSearch()
-        searchQuery = ""
-        showingLocationPicker = false
-    }
-
-    /// Fully-offline manual coordinates: the nearest bundled city supplies
-    /// the time zone and a "Near …" label unless a custom name is given.
-    private var manualEntrySection: some View {
-        DisclosureGroup(isExpanded: $showsManualEntry) {
-            VStack(alignment: .leading, spacing: 8) {
-                HStack(spacing: 8) {
-                    labeledField(localization.string("location.latitude"), text: $manualLatitude, placeholder: "33.5731")
-                    labeledField(localization.string("location.longitude"), text: $manualLongitude, placeholder: "-7.5898")
-                }
-
-                labeledField(localization.string("location.nameOptional"), text: $manualName, placeholder: "Dar")
-
-                if let manualError {
-                    Text(manualError)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-
-                Button {
-                    applyManualCoordinates()
-                } label: {
-                    Text(localization.string("location.useCoordinates"))
-                        .frame(maxWidth: .infinity)
-                }
-                .controlSize(.large)
-                .buttonStyle(.bordered)
-                .disabled(manualLatitude.isEmpty || manualLongitude.isEmpty)
-            }
-            .padding(.top, 6)
-        } label: {
-            Label(localization.string("location.manual"), systemImage: "mappin.and.ellipse")
-        }
-        .font(.callout)
-    }
-
-    private func labeledField(_ title: String, text: Binding<String>, placeholder: String) -> some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text(title)
-                .font(.caption2)
-                .foregroundStyle(.secondary)
-            TextField(placeholder, text: text)
-                .textFieldStyle(.roundedBorder)
-        }
-    }
-
-    private func applyManualCoordinates() {
-        let latitude = Self.parseCoordinate(manualLatitude)
-        let longitude = Self.parseCoordinate(manualLongitude)
-
-        guard let latitude, (-90...90).contains(latitude) else {
-            manualError = localization.string("error.latitude")
-            return
-        }
-        guard let longitude, (-180...180).contains(longitude) else {
-            manualError = localization.string("error.longitude")
-            return
-        }
-
-        store.place = CityDatabase.manualPlace(
-            name: manualName,
-            latitude: latitude,
-            longitude: longitude
-        )
-
-        manualLatitude = ""
-        manualLongitude = ""
-        manualName = ""
-        manualError = nil
-        location.clearSearch()
-        searchQuery = ""
-        showingLocationPicker = false
-    }
-
-    /// Accepts both "." and "," decimal separators.
-    private static func parseCoordinate(_ string: String) -> Double? {
-        Double(string.trimmingCharacters(in: .whitespaces)
-            .replacingOccurrences(of: ",", with: "."))
-    }
-
-    // MARK: - Onboarding (first run, no place yet)
-
-    private var onboarding: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            VStack(alignment: .leading, spacing: 4) {
-                Text("🕌")
-                    .font(.system(size: 30))
-                Text(localization.string("welcome.title"))
-                    .font(.headline)
-                Text(localization.string("welcome.subtitle"))
-                    .font(.callout)
-                    .foregroundStyle(.secondary)
-            }
-
-            locationSearchSection
-
-            orDivider
-
-            detectButton
-
-            manualEntrySection
-        }
-    }
-
-    private var orDivider: some View {
-        HStack(spacing: 8) {
-            Divider()
-            Text(localization.string("onboarding.or"))
-                .font(.caption)
-                .foregroundStyle(.tertiary)
-            Divider()
-        }
-    }
-
-    // MARK: - Settings
-
-    private var settingsSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Picker(localization.string("settings.language"), selection: $localization.language) {
-                ForEach(AppLanguage.allCases) { language in
-                    Text(language.displayName).tag(language)
-                }
-            }
-
-            Picker(localization.string("settings.method"), selection: $store.method) {
-                ForEach(CalculationMethodChoice.allCases) { method in
-                    Text(method.displayName).tag(method)
-                }
-            }
-
-            // Full-width segmented rows — side-by-side segments overflow the
-            // popover once Arabic labels (شافعي/حنفي · عدّ تنازلي) get involved.
-            Picker(localization.string("settings.asr"), selection: $store.madhab) {
-                ForEach(AsrMadhab.allCases) { madhab in
-                    Text(madhab.displayName).tag(madhab)
-                }
-            }
-            .pickerStyle(.segmented)
-
-            Picker(localization.string("settings.menubar"), selection: $store.titleStyle) {
-                ForEach(TitleStyle.allCases) { style in
-                    Text(style.displayName).tag(style)
-                }
-            }
-            .pickerStyle(.segmented)
-        }
-        .font(.callout)
     }
 
     // MARK: - Footer
 
     private var footer: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Toggle(localization.string("settings.login"), isOn: loginBinding)
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 8) {
+                Button {
+                    navigate(to: .locationPicker)
+                } label: {
+                    HStack(spacing: 5) {
+                        Text(store.place?.flagEmoji ?? "📍")
+                            .font(.caption)
+                        Text(store.place?.displayName ?? localization.string("location.title"))
+                            .font(.caption.weight(.medium))
+                            .lineLimit(1)
+                            .truncationMode(.tail)
+                        if store.place?.source == .detected {
+                            Image(systemName: "location.fill")
+                                .font(.system(size: 8, weight: .semibold))
+                                .foregroundStyle(Brand.accent)
+                                .help(localization.string("location.auto.on"))
+                        }
+                        Image(systemName: "chevron.up.chevron.down")
+                            .font(.system(size: 8, weight: .bold))
+                            .foregroundStyle(.tertiary)
+                    }
+                }
+                .buttonStyle(PillButtonStyle())
+                .help(localization.string("location.change"))
+                .layoutPriority(1)
 
-            Button(role: .destructive) {
-                NSApplication.shared.terminate(nil)
-            } label: {
-                Text(localization.string("settings.quit"))
-                    .frame(maxWidth: .infinity)
+                Spacer(minLength: 4)
+
+                Button {
+                    navigate(to: .settings)
+                } label: {
+                    Text(verbatim: "\(store.method.displayName) · \(store.madhab.displayName)")
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                }
+                .buttonStyle(.plain)
+                .help(localization.string("nav.settings"))
             }
-            .controlSize(.large)
 
-            Text("Miqat \(Self.versionString)")
-                .font(.caption2)
-                .foregroundStyle(.tertiary)
-                .frame(maxWidth: .infinity)
-                .padding(.top, 2)
+            if let place = store.place,
+               place.timeZone.secondsFromGMT(for: store.now) != TimeZone.current.secondsFromGMT(for: store.now) {
+                Label(localization.string("footer.localTime", place.displayName), systemImage: "clock")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                    .padding(.horizontal, 4)
+            }
         }
     }
 
-    private static var versionString: String {
-        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0.0"
+    // MARK: - Location Picker
+
+    private var locationPicker: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            ScreenHeader(title: localization.string("location.title")) {
+                navigate(to: .schedule)
+            }
+
+            LocationChooser(store: store, location: location)
+        }
+    }
+
+    // MARK: - Onboarding (first run, no place yet)
+
+    private var onboarding: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            VStack(alignment: .leading, spacing: 8) {
+                BrandMark(size: 48)
+                    .padding(.bottom, 2)
+                Text(localization.string("welcome.title"))
+                    .font(.title3.weight(.bold))
+                Text(localization.string("welcome.subtitle"))
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            LocationChooser(store: store, location: location, showsCurrentPlace: false)
+        }
     }
 }
 
-/// Soft row highlight on hover, echoing the native list feel.
-private struct HoverHighlight: ViewModifier {
+// MARK: - Schedule row
+
+private struct ScheduleRow: View {
+    let entry: PrayerEntry
+    let time: String
+    let isNext: Bool
+    let isPassed: Bool
+    let adhanOn: Bool
+    let onToggleAdhan: () -> Void
+
+    @ObservedObject private var localization = Localization.shared
     @State private var isHovered = false
 
-    func body(content: Content) -> some View {
-        content
-            .background(
-                RoundedRectangle(cornerRadius: 6)
-                    .fill(isHovered ? Color.primary.opacity(0.08) : Color.clear)
-            )
-            .onHover { isHovered = $0 }
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: entry.key.symbolName)
+                .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(isNext ? AnyShapeStyle(Brand.accent) : AnyShapeStyle(.secondary))
+                .opacity(isPassed ? 0.6 : 1)
+                .frame(width: 20)
+
+            Text(entry.key.displayName)
+                .fontWeight(isNext ? .semibold : .regular)
+
+            Spacer(minLength: 8)
+
+            Text(time)
+                .fontWeight(isNext ? .semibold : .regular)
+                .monospacedDigit()
+
+            adhanButton
+        }
+        .font(.callout)
+        .foregroundStyle(isPassed ? .secondary : .primary)
+        .padding(.leading, 10)
+        .padding(.trailing, 4)
+        .padding(.vertical, 6)
+        .background(
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .fill(isNext ? Brand.accentFill : (isHovered ? Color.primary.opacity(0.05) : .clear))
+        )
+        .overlay(alignment: .leading) {
+            if isNext {
+                Capsule()
+                    .fill(Brand.accent)
+                    .frame(width: 3, height: 14)
+                    .offset(x: 1)
+            }
+        }
+        .contentShape(Rectangle())
+        .onHover { isHovered = $0 }
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel(accessibilityText)
+    }
+
+    /// Sunrise never sounds. Others show a muted bell persistently, and an
+    /// active bell on hover — quiet by default, one click to change.
+    @ViewBuilder
+    private var adhanButton: some View {
+        if entry.key == .sunrise {
+            Color.clear.frame(width: 22, height: 18)
+        } else {
+            Button(action: onToggleAdhan) {
+                Image(systemName: adhanOn ? "bell.fill" : "bell.slash")
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundStyle(adhanOn ? AnyShapeStyle(.secondary) : AnyShapeStyle(.tertiary))
+                    .frame(width: 22, height: 18)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .opacity(!adhanOn || isHovered ? 1 : 0)
+            .help(localization.string(adhanOn ? "adhan.toggle.on" : "adhan.toggle.off"))
+            .accessibilityLabel(localization.string(adhanOn ? "adhan.toggle.on" : "adhan.toggle.off"))
+        }
+    }
+
+    private var accessibilityText: String {
+        var parts = [entry.key.displayName, time]
+        if isNext { parts.append(localization.string("schedule.next")) }
+        if isPassed { parts.append(localization.string("prayer.passed")) }
+        return parts.joined(separator: ", ")
     }
 }

@@ -72,6 +72,15 @@ final class LocalizationTests: XCTestCase {
         XCTAssertEqual(Localization.shared.string("settings.quit"), "إغلاق التطبيق")
     }
 
+    /// The adhan banner's action button must ship in both languages.
+    func testAdhanStopActionTitleIsLocalized() {
+        Localization.shared.language = .english
+        XCTAssertEqual(Localization.shared.string("adhan.notification.stop"), "Stop Adhan")
+
+        Localization.shared.language = .arabic
+        XCTAssertEqual(Localization.shared.string("adhan.notification.stop"), "إيقاف الأذان")
+    }
+
     /// The pre-multitheme "compact" style (icon + countdown) maps to
     /// `countdown` so existing users keep a live readout after upgrade.
     func testCompactThemeMigratesToCountdown() {
