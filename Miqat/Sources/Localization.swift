@@ -92,6 +92,7 @@ final class Localization: ObservableObject {
         "prayer.asr": "Asr",
         "prayer.maghrib": "Maghrib",
         "prayer.isha": "Isha",
+        "prayer.duha": "Duha",
         "next.prefix": "in %@",
 
         // Onboarding
@@ -101,16 +102,15 @@ final class Localization: ObservableObject {
         // Location
         "location.title": "Location",
         "location.back": "Back",
-        "location.search": "Search city…",
+        "location.search": "City or country…",
         "location.offlineHint": "Offline search · %@ cities bundled",
         "location.noMatches": "No cities match “%@”",
         "location.detect": "Use My Location",
         "location.locating": "Locating…",
-        "location.manual": "Enter coordinates manually",
         "location.latitude": "Latitude",
         "location.longitude": "Longitude",
         "location.nameOptional": "Name (optional)",
-        "location.useCoordinates": "Use Coordinates",
+        "location.useCoordinates": "Use These Coordinates",
 
         // Errors
         "error.latitude": "Latitude must be a number between -90 and 90.",
@@ -148,6 +148,7 @@ final class Localization: ObservableObject {
         "madhab.hanafi": "Hanafi",
 
         // Calculation methods
+        "settings.method.automatic": "Automatic — %@",
         "method.muslimWorldLeague": "Muslim World League",
         "method.egyptian": "Egyptian General Authority",
         "method.karachi": "Karachi (Islamic Sciences)",
@@ -172,14 +173,19 @@ final class Localization: ObservableObject {
         "adhan.banners.denied": "Banners are turned off for Miqat — the adhan sound still plays. Allow banners in System Settings › Notifications.",
         "adhan.banners.openSettings": "Open Notification Settings",
         "adhan.notification.title": "It's time for %@",
+        "adhan.notification.stop": "Stop Adhan",
         // Fajr-variant tracks render without any "Fajr" postfix — they only
         // ever appear in Fajr's picker, so the suffix would be noise.
         "adhan.track.makkah-fajr": "Al-Haram al-Makki",
         "adhan.track.madinah-fajr": "Al-Haram al-Madani",
+        "adhan.track.abdulbasit-fajr": "Abdulbasit Abdussamad",
         "adhan.track.makkah": "Al-Haram al-Makki",
         "adhan.track.madinah": "Al-Haram al-Madani",
         "adhan.track.aqsa": "Al-Aqsa, Jerusalem",
         "adhan.track.alafasy": "Mishary Alafasy",
+        "adhan.track.abdulbasit": "Abdulbasit Abdussamad",
+        "adhan.track.zahrani": "Mansour Al-Zahrani",
+        "adhan.track.turkey": "Mustafa Özcan (Turkey)",
 
         // Redesign
         "hero.tomorrow": "Tomorrow",
@@ -189,12 +195,47 @@ final class Localization: ObservableObject {
         "adhan.toggle.off": "Adhan muted — click to turn on",
         "footer.localTime": "Times shown in %@ local time",
         "location.change": "Change location",
-        "location.selected": "Current",
         "location.detect.subtitle": "Uses Wi-Fi positioning — needs internet",
+
+        // Location modes
+        "location.mode.search": "City",
+        "location.mode.auto": "Automatic",
+        "location.mode.coordinates": "Coordinates",
+        "location.mode.accessibility": "How to set your location",
+        "location.source.help": "How this location was set",
+        "location.current.accessibility": "Current location: %@",
+        "location.clear": "Clear search",
+        "location.search.tip": "Search by city or country, in English or Arabic. Add a country to narrow it down — “Tripoli, Lebanon”.",
+        "location.noMatches.hint": "Try the English or Arabic spelling, or a country name.",
+        "location.auto.title": "Follow my Mac's location",
+        "location.auto.on": "Automatic location is on",
+        "location.auto.body": "Miqat finds where you are, and updates each time your Mac starts or wakes — prayer times follow you when you travel.",
+        "location.auto.refresh": "Update Now",
+        "location.auto.openSettings": "Open Location Settings…",
+        "location.coordinates.tip": "Tip: paste “33.5138, 36.2765” from a maps app into Latitude to fill both.",
+        "location.coordinates.preview": "%@ · %@",
+        "location.name.placeholder": "Home",
         "settings.adhan.subtitle": "Sound and a banner at each prayer",
         "settings.hijriOffset.hint": "Adjust to match your local moon sighting",
         "settings.menubar.preview": "Preview",
         "settings.version": "Version %@",
+
+        // Reminders
+        "settings.section.reminders": "Reminders",
+        "settings.reminders.master": "Prayer time reminders",
+        "settings.reminders.subtitle": "A notification before each prayer's time ends",
+        "settings.reminders.lead": "Remind before",
+        "settings.reminders.lead.hint": "How many minutes before a prayer's time ends the reminder arrives",
+        "settings.reminders.minutes": "min",
+        "settings.reminders.anchor.fajr": "Ends at Shuruq",
+        "settings.reminders.anchor.dhuhr": "Ends at Asr",
+        "settings.reminders.anchor.asr": "Ends at Maghrib",
+        "settings.reminders.anchor.maghrib": "Ends at Isha",
+        "settings.reminders.anchor.isha": "Ends at Fajr",
+        "settings.reminders.duha.note": "20 minutes before Dhuhr — fixed",
+        "reminder.banners.denied": "Notifications are turned off for Miqat — reminders can't appear. Allow them in System Settings › Notifications.",
+        "reminder.notification.title": "%1$@ ends in %2$@",
+        "reminder.notification.deadline": "Ends at %@",
     ]
 
     private static let ar: [String: String] = [
@@ -205,6 +246,7 @@ final class Localization: ObservableObject {
         "prayer.asr": "العصر",
         "prayer.maghrib": "المغرب",
         "prayer.isha": "العشاء",
+        "prayer.duha": "الضحى",
         "next.prefix": "بعد %@",
 
         // Onboarding
@@ -214,16 +256,15 @@ final class Localization: ObservableObject {
         // Location
         "location.title": "الموقع",
         "location.back": "رجوع",
-        "location.search": "ابحث عن مدينة…",
+        "location.search": "مدينة أو دولة…",
         "location.offlineHint": "بحث دون اتصال · %@ مدينة",
         "location.noMatches": "لا توجد مدن مطابقة لـ «%@»",
         "location.detect": "استخدم موقعي",
         "location.locating": "جارٍ تحديد الموقع…",
-        "location.manual": "إدخال الإحداثيات يدوياً",
         "location.latitude": "خط العرض",
         "location.longitude": "خط الطول",
         "location.nameOptional": "الاسم (اختياري)",
-        "location.useCoordinates": "استخدم الإحداثيات",
+        "location.useCoordinates": "استخدم هذه الإحداثيات",
 
         // Errors
         "error.latitude": "خط العرض يجب أن يكون رقماً بين ‎-90‎ و 90.",
@@ -261,6 +302,7 @@ final class Localization: ObservableObject {
         "madhab.hanafi": "حنفي",
 
         // Calculation methods
+        "settings.method.automatic": "تلقائي — %@",
         "method.muslimWorldLeague": "رابطة العالم الإسلامي",
         "method.egyptian": "الهيئة المصرية العامة للمساحة",
         "method.karachi": "جامعة العلوم الإسلامية بكراتشي",
@@ -285,12 +327,17 @@ final class Localization: ObservableObject {
         "adhan.banners.denied": "الإشعارات (البانرات) معطلة لمِيقَات — سيبقى صوت الأذان مسموعاً. فعّل الإشعارات من إعدادات النظام › الإشعارات.",
         "adhan.banners.openSettings": "افتح إعدادات الإشعارات",
         "adhan.notification.title": "حان وقت %@",
+        "adhan.notification.stop": "إيقاف الأذان",
         "adhan.track.makkah-fajr": "الحرم المكي",
         "adhan.track.madinah-fajr": "الحرم المدني",
+        "adhan.track.abdulbasit-fajr": "عبد الباسط عبد الصمد",
         "adhan.track.makkah": "الحرم المكي",
         "adhan.track.madinah": "الحرم المدني",
         "adhan.track.aqsa": "المسجد الأقصى، القدس",
         "adhan.track.alafasy": "مشاري راشد العفاسي",
+        "adhan.track.abdulbasit": "عبد الباسط عبد الصمد",
+        "adhan.track.zahrani": "منصور الزهراني",
+        "adhan.track.turkey": "مصطفى أوزجان (تركيا)",
 
         // Redesign
         "hero.tomorrow": "غداً",
@@ -300,11 +347,46 @@ final class Localization: ObservableObject {
         "adhan.toggle.off": "الأذان مكتوم — انقر للتفعيل",
         "footer.localTime": "الأوقات معروضة بالتوقيت المحلي لـ %@",
         "location.change": "تغيير الموقع",
-        "location.selected": "الحالي",
         "location.detect.subtitle": "عبر شبكات Wi-Fi — يتطلب اتصالاً بالإنترنت",
+
+        // Location modes
+        "location.mode.search": "مدينة",
+        "location.mode.auto": "تلقائي",
+        "location.mode.coordinates": "إحداثيات",
+        "location.mode.accessibility": "طريقة تحديد الموقع",
+        "location.source.help": "طريقة تحديد هذا الموقع",
+        "location.current.accessibility": "الموقع الحالي: %@",
+        "location.clear": "مسح البحث",
+        "location.search.tip": "ابحث باسم المدينة أو الدولة، بالعربية أو الإنجليزية. أضف الدولة لتضييق النتائج — «طرابلس، لبنان».",
+        "location.noMatches.hint": "جرّب الكتابة بالإنجليزية أو العربية، أو اكتب اسم الدولة.",
+        "location.auto.title": "اتبع موقع جهاز Mac",
+        "location.auto.on": "الموقع التلقائي مفعّل",
+        "location.auto.body": "يحدد ميقات موقعك ويحدّثه في كل مرة يبدأ فيها جهازك أو يستيقظ — فتتبعك أوقات الصلاة أينما سافرت.",
+        "location.auto.refresh": "تحديث الآن",
+        "location.auto.openSettings": "فتح إعدادات الموقع…",
+        "location.coordinates.tip": "تلميح: الصق «33.5138, 36.2765» من تطبيق الخرائط في خانة خط العرض لتعبئة الخانتين.",
+        "location.coordinates.preview": "%@ · %@",
+        "location.name.placeholder": "المنزل",
         "settings.adhan.subtitle": "صوت وإشعار عند كل صلاة",
         "settings.hijriOffset.hint": "اضبطه ليطابق رؤية الهلال في بلدك",
         "settings.menubar.preview": "معاينة",
         "settings.version": "الإصدار %@",
+
+        // Reminders
+        "settings.section.reminders": "التذكير",
+        "settings.reminders.master": "تذكير قبل انتهاء الوقت",
+        "settings.reminders.subtitle": "إشعار قبل انتهاء وقت كل صلاة",
+        "settings.reminders.lead": "ذكّرني قبل",
+        "settings.reminders.lead.hint": "بكم دقيقة قبل انتهاء وقت الصلاة يصل التذكير",
+        "settings.reminders.minutes": "دقيقة",
+        "settings.reminders.anchor.fajr": "ينتهي عند الشروق",
+        "settings.reminders.anchor.dhuhr": "ينتهي عند العصر",
+        "settings.reminders.anchor.asr": "ينتهي عند المغرب",
+        "settings.reminders.anchor.maghrib": "ينتهي عند العشاء",
+        "settings.reminders.anchor.isha": "ينتهي عند الفجر",
+        "settings.reminders.duha.note": "قبل الظهر بعشرين دقيقة — ثابتة",
+        "reminder.banners.denied": "الإشعارات معطلة لمِيقَات — لن تظهر التذكيرات. فعّلها من إعدادات النظام › الإشعارات.",
+        "reminder.notification.title": "ينتهي وقت %1$@ بعد %2$@",
+        "reminder.notification.deadline": "ينتهي عند %@",
     ]
 }

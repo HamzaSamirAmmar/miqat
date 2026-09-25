@@ -38,14 +38,19 @@ Asr 1:23
   the next prayer highlighted and Gregorian + Hijri dates
 - **Fully offline** — a bundled database of ~12,400 cities (GeoNames,
   population ≥ 50k) powers instant city search, with no internet at any point:
-  - pick a city from the bundled list
+  - search by city or country, in English or Arabic ("Rabat", "الرباط",
+    "Syria", "Tripoli, Lebanon")
   - enter coordinates manually — the nearest notable bundled city supplies
     the time zone and a "Near …" label
-  - auto-detect (the only online path) names the fix via the nearest city
-    even when Apple's geocoder is unreachable
+  - Automatic mode (the only online path) re-detects when the Mac starts or
+    wakes, and names the fix via the nearest city even when Apple's geocoder
+    is unreachable
 - **12 calculation methods** — Muslim World League, Umm al-Qura (Makkah),
   ISNA, Egyptian, Karachi, Dubai, Qatar, Kuwait, Moonsighting Committee,
-  Singapore/Malaysia, Turkey (Diyanet), Tehran
+  Singapore/Malaysia, Turkey (Diyanet), Tehran — auto-selected from the
+  chosen country's convention (Umm al-Qura in Saudi Arabia, ISNA in North
+  America, Karachi in South Asia, MWL in Syria and unlisted countries), with
+  a one-tap manual override
 - **Asr madhab** — Shafi (Standard) or Hanafi
 - **Adhan notifications** — at each prayer's time Miqat plays a bundled adhan
   recording (Makkah, Madinah, Al-Aqsa, Mishary Alafasy — plus dedicated Fajr
@@ -67,7 +72,7 @@ Compact, monospaced countdown that never causes neighboring icons to jitter:
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="Docs/menubar-dark.png">
   <source media="(prefers-color-scheme: light)" srcset="Docs/menubar-light.png">
-  <img alt="Miqat in macOS Menu Bar" src="Docs/menubar-dark.png" width="220">
+  <img alt="Miqat in macOS Menu Bar" src="Docs/menubar-dark.png" width="700">
 </picture>
 
 ### Detailed Popover
@@ -94,9 +99,11 @@ Access calculation methods, madhab, appearance, and language options without clu
 
 Icon (Control Center style), Countdown, or Labeled:
 
-<p align="center">
-  <img src="Docs/themes.png" width="200" alt="Miqat Menu Bar Themes" />
-</p>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="Docs/themes-dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="Docs/themes-light.png">
+  <img alt="Miqat Menu Bar Themes" src="Docs/themes-light.png" width="600">
+</picture>
 
 ## Install
 
@@ -128,8 +135,8 @@ cp -R build/Build/Products/Release/Miqat.app /Applications/
 
 ## Privacy
 
-Location is used once to resolve your city and never leaves the Mac. Only
-"Use My Location" can ever touch the network (Macs locate via Wi-Fi
+Location is used only to resolve your city and never leaves the Mac. Only
+Automatic mode can ever touch the network (Macs locate via Wi-Fi
 positioning, an online Apple lookup — offline, the fix itself fails and the
 error says so). City search, manual coordinates, and all time calculations
 are pure local math and work fully offline.

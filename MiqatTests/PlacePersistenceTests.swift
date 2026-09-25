@@ -43,7 +43,24 @@ final class PlacePersistenceTests: XCTestCase {
         XCTAssertEqual(place?.name, "Casablanca")
         XCTAssertEqual(place?.timeZoneIdentifier, "Africa/Casablanca")
         XCTAssertNil(place?.countryCode)
+        XCTAssertNil(place?.source)
+        XCTAssertNil(place?.arabicName)
         XCTAssertEqual(place?.flagEmoji, "📍")
+    }
+
+    func testSourceAndArabicNameRoundTrip() {
+        let place = Place(
+            name: "Damascus, Syria",
+            arabicName: "دمشق، سوريا",
+            latitude: 33.5102,
+            longitude: 36.29128,
+            timeZoneIdentifier: "Asia/Damascus",
+            countryCode: "SY",
+            source: .detected
+        )
+        let restored = place.persistedValue.flatMap(Place.init(persistedValue:))
+        XCTAssertEqual(restored, place)
+        XCTAssertEqual(restored?.source, .detected)
     }
 
     func testGarbagePersistedValueIsRejected() {

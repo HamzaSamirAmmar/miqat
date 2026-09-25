@@ -19,12 +19,29 @@ final class PrayerScheduleStore: ObservableObject {
         }
     }
 
-    @Published var method: CalculationMethodChoice = .muslimWorldLeague {
+    /// nil while the method follows the selected location's country — see `method`.
+    @Published private(set) var methodOverride: CalculationMethodChoice? {
         didSet {
-            guard oldValue != method else { return }
-            UserDefaults.standard.set(method.rawValue, forKey: Keys.method)
+            guard oldValue != methodOverride else { return }
+            if let methodOverride {
+                UserDefaults.standard.set(methodOverride.rawValue, forKey: Keys.method)
+            } else {
+                UserDefaults.standard.removeObject(forKey: Keys.method)
+            }
             invalidateSchedule()
         }
+    }
+
+    /// The method times are computed with: the user's explicit pick
+    /// (`methodOverride`), or the convention of the current country.
+    var method: CalculationMethodChoice {
+        methodOverride ?? .defaultMethod(forCountryCode: place?.countryCode)
+    }
+
+    /// Sets the calculation method. Pass nil to go back to following the
+    /// location's country convention ("Automatic" in Settings).
+    func selectMethod(_ choice: CalculationMethodChoice?) {
+        methodOverride = choice
     }
 
     @Published var madhab: AsrMadhab = .shafi {
@@ -94,6 +111,48 @@ final class PrayerScheduleStore: ObservableObject {
         adhanEnabled && prayer != .sunrise && adhanPrayers.contains(prayer)
     }
 
+    /// Master switch for time-end reminders — opt-in, off out of the box.
+    @Published var remindersEnabled: Bool = false {
+        didSet {
+            guard oldValue != remindersEnabled else { return }
+            UserDefaults.standard.set(remindersEnabled, forKey: Keys.remindersEnabled)
+        }
+    }
+
+    /// Minutes before a prayer's window closes that its reminder fires.
+    @Published var reminderLeadMinutes: Int = ReminderDefaults.leadMinutes {
+        didSet {
+            guard oldValue != reminderLeadMinutes else { return }
+            UserDefaults.standard.set(reminderLeadMinutes, forKey: Keys.reminderLead)
+        }
+    }
+
+    /// Prayers whose window-end carries a reminder. Sunrise (Shuruq) is
+    /// never included — it closes Fajr's window and has no reminder of its own.
+    @Published var reminderPrayers: Set<PrayerKey> = ReminderDefaults.enabledPrayers {
+        didSet {
+            guard oldValue != reminderPrayers else { return }
+            UserDefaults.standard.set(
+                reminderPrayers.map(\.rawValue).sorted(),
+                forKey: Keys.reminderPrayers
+            )
+        }
+    }
+
+    /// Independent switch for the Duha reminder — a separate feature with a
+    /// fixed 20-minute lead before Dhuhr, unaffected by the master switch.
+    @Published var duhaReminderEnabled: Bool = false {
+        didSet {
+            guard oldValue != duhaReminderEnabled else { return }
+            UserDefaults.standard.set(duhaReminderEnabled, forKey: Keys.duhaReminderEnabled)
+        }
+    }
+
+    /// Whether a prayer's window-end should post a reminder notification.
+    func isReminderEnabled(_ prayer: PrayerKey) -> Bool {
+        remindersEnabled && prayer != .sunrise && reminderPrayers.contains(prayer)
+    }
+
     // MARK: - Live state
 
     /// The instant countdowns are measured against; ticks every second.
@@ -104,6 +163,10 @@ final class PrayerScheduleStore: ObservableObject {
 
     /// The next prayer — possibly tomorrow's Fajr once Isha has passed.
     @Published private(set) var next: PrayerEntry?
+
+    /// Tomorrow's Fajr: closes tonight's Isha window and arms the pre-Fajr
+    /// reminder. Published for the reminder scheduler.
+    @Published private(set) var tomorrowFajr: PrayerEntry?
 
     /// The time zone times should be displayed in.
     var displayTimeZone: TimeZone { place?.timeZone ?? .current }
@@ -133,7 +196,6 @@ final class PrayerScheduleStore: ObservableObject {
     // MARK: - Private state
 
     private var todayEntries: [PrayerEntry] = []
-    private var tomorrowFajr: PrayerEntry?
     /// Ordinal day (at the place) the cached schedule was computed for.
     private var cachedDay: Int?
     private var timer: Timer?
@@ -141,6 +203,7 @@ final class PrayerScheduleStore: ObservableObject {
 
     private enum Keys {
         static let place = "miqat.place"
+        /// The user's method override; absent while following the location.
         static let method = "miqat.method"
         static let madhab = "miqat.madhab"
         static let titleStyle = "miqat.titleStyle"
@@ -148,10 +211,21 @@ final class PrayerScheduleStore: ObservableObject {
         static let adhanEnabled = "miqat.adhan.enabled"
         static let adhanPrayers = "miqat.adhan.prayers"
         static let adhanTracks = "miqat.adhan.tracks"
+        static let remindersEnabled = "miqat.reminder.enabled"
+        static let reminderLead = "miqat.reminder.lead"
+        static let reminderPrayers = "miqat.reminder.prayers"
+        static let duhaReminderEnabled = "miqat.reminder.duha"
     }
 
     private enum AdhanDefaults {
         /// On out of the box for the five prayers — never sunrise.
+        static let enabledPrayers: Set<PrayerKey> = [.fajr, .dhuhr, .asr, .maghrib, .isha]
+    }
+
+    private enum ReminderDefaults {
+        static let leadMinutes = 30
+        static let leadRange: ClosedRange<Int> = 5...90
+        /// The prayers reminded by default — never sunrise.
         static let enabledPrayers: Set<PrayerKey> = [.fajr, .dhuhr, .asr, .maghrib, .isha]
     }
 
@@ -162,9 +236,12 @@ final class PrayerScheduleStore: ObservableObject {
            let restored = Place(persistedValue: stored) {
             place = restored
         }
+        // The pre-override app only wrote this key when the user explicitly
+        // changed the method, so any stored value is a deliberate choice —
+        // restore it as the override rather than re-following the country.
         if let stored = UserDefaults.standard.string(forKey: Keys.method),
            let restored = CalculationMethodChoice(rawValue: stored) {
-            method = restored
+            methodOverride = restored
         }
         if let stored = UserDefaults.standard.string(forKey: Keys.madhab),
            let restored = AsrMadhab(rawValue: stored) {
@@ -200,6 +277,30 @@ final class PrayerScheduleStore: ObservableObject {
                 restored[prayer] = trackID
             }
             adhanTracks = restored
+        }
+        if UserDefaults.standard.object(forKey: Keys.remindersEnabled) != nil {
+            remindersEnabled = UserDefaults.standard.bool(forKey: Keys.remindersEnabled)
+        }
+        if UserDefaults.standard.object(forKey: Keys.reminderLead) != nil {
+            let stored = UserDefaults.standard.integer(forKey: Keys.reminderLead)
+            reminderLeadMinutes = min(
+                max(stored, ReminderDefaults.leadRange.lowerBound),
+                ReminderDefaults.leadRange.upperBound
+            )
+        }
+        if let stored = UserDefaults.standard.stringArray(forKey: Keys.reminderPrayers) {
+            reminderPrayers = Set(
+                stored.compactMap(PrayerKey.init(rawValue:))
+                    .filter { $0 != .sunrise }
+            )
+            // An empty selection stored by hand would mute everything; treat
+            // "no valid prayer" as the defaults.
+            if reminderPrayers.isEmpty {
+                reminderPrayers = ReminderDefaults.enabledPrayers
+            }
+        }
+        if UserDefaults.standard.object(forKey: Keys.duhaReminderEnabled) != nil {
+            duhaReminderEnabled = UserDefaults.standard.bool(forKey: Keys.duhaReminderEnabled)
         }
 
         tick()

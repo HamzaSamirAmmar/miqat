@@ -22,8 +22,8 @@ final class AdhanCatalogTests: XCTestCase {
     }
 
     func testFajrAndStandardSplit() {
-        XCTAssertEqual(AdhanCatalog.fajrTracks.count, 2)
-        XCTAssertEqual(AdhanCatalog.standardTracks.count, 4)
+        XCTAssertEqual(AdhanCatalog.fajrTracks.count, 3)
+        XCTAssertEqual(AdhanCatalog.standardTracks.count, 7)
         XCTAssertTrue(AdhanCatalog.fajrTracks.allSatisfy(\.isFajrVariant))
         XCTAssertTrue(AdhanCatalog.standardTracks.allSatisfy { !$0.isFajrVariant })
     }

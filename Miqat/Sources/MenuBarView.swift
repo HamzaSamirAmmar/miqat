@@ -15,13 +15,6 @@ struct MenuBarView: View {
     @ObservedObject private var localization = Localization.shared
 
     @State private var activeScreen: ActiveScreen = .schedule
-    @State private var searchQuery = ""
-    @State private var showsManualEntry = false
-    @State private var manualLatitude = ""
-    @State private var manualLongitude = ""
-    @State private var manualName = ""
-    @State private var manualError: String?
-    @FocusState private var searchFocused: Bool
 
     init(
         store: PrayerScheduleStore,
@@ -73,7 +66,6 @@ struct MenuBarView: View {
     private func navigate(to screen: ActiveScreen) {
         withAnimation(.easeInOut(duration: 0.18)) {
             location.clearSearch()
-            searchQuery = ""
             activeScreen = screen
         }
     }
@@ -198,10 +190,16 @@ struct MenuBarView: View {
                     HStack(spacing: 5) {
                         Text(store.place?.flagEmoji ?? "📍")
                             .font(.caption)
-                        Text(store.place?.name ?? localization.string("location.title"))
+                        Text(store.place?.displayName ?? localization.string("location.title"))
                             .font(.caption.weight(.medium))
                             .lineLimit(1)
                             .truncationMode(.tail)
+                        if store.place?.source == .detected {
+                            Image(systemName: "location.fill")
+                                .font(.system(size: 8, weight: .semibold))
+                                .foregroundStyle(Brand.accent)
+                                .help(localization.string("location.auto.on"))
+                        }
                         Image(systemName: "chevron.up.chevron.down")
                             .font(.system(size: 8, weight: .bold))
                             .foregroundStyle(.tertiary)
@@ -228,7 +226,7 @@ struct MenuBarView: View {
 
             if let place = store.place,
                place.timeZone.secondsFromGMT(for: store.now) != TimeZone.current.secondsFromGMT(for: store.now) {
-                Label(localization.string("footer.localTime", place.name), systemImage: "clock")
+                Label(localization.string("footer.localTime", place.displayName), systemImage: "clock")
                     .font(.caption2)
                     .foregroundStyle(.tertiary)
                     .lineLimit(1)
@@ -246,294 +244,8 @@ struct MenuBarView: View {
                 navigate(to: .schedule)
             }
 
-            locationChooser
-
-            manualEntrySection
+            LocationChooser(store: store, location: location)
         }
-    }
-
-    /// Search field plus either results, or the current place and "detect"
-    /// shortcut when nothing is typed. Shared by onboarding and the picker.
-    private var locationChooser: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            searchField
-
-            if let error = location.lastError {
-                Label(error, systemImage: "exclamationmark.triangle.fill")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .symbolRenderingMode(.multicolor)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-
-            let trimmed = City.fold(searchQuery.trimmingCharacters(in: .whitespaces))
-
-            if !location.searchResults.isEmpty {
-                listContainer {
-                    ScrollView {
-                        VStack(spacing: 1) {
-                            ForEach(location.searchResults) { city in
-                                cityRow(city)
-                            }
-                        }
-                        .padding(4)
-                    }
-                    .frame(maxHeight: 208)
-                }
-            } else if trimmed.count >= 2 {
-                VStack(spacing: 6) {
-                    Image(systemName: "magnifyingglass")
-                        .font(.title3)
-                        .foregroundStyle(.tertiary)
-                    Text(localization.string("location.noMatches", searchQuery))
-                        .font(.callout)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 14)
-            } else {
-                listContainer {
-                    VStack(spacing: 1) {
-                        if let place = store.place {
-                            currentPlaceRow(place)
-                        }
-                        detectRow
-                    }
-                    .padding(4)
-                }
-
-                Label(
-                    localization.string("location.offlineHint", CityDatabase.cities.count.formatted()),
-                    systemImage: "wifi.slash"
-                )
-                .font(.caption2)
-                .foregroundStyle(.tertiary)
-                .padding(.horizontal, 4)
-            }
-        }
-        .font(.callout)
-    }
-
-    private var searchField: some View {
-        HStack(spacing: 8) {
-            Image(systemName: "magnifyingglass")
-                .foregroundStyle(.secondary)
-            TextField(localization.string("location.search"), text: $searchQuery)
-                .textFieldStyle(.plain)
-                .focused($searchFocused)
-                .onChange(of: searchQuery) { query in
-                    location.search(query)
-                }
-                .onSubmit {
-                    // Return picks the top match — type "mak⏎" and you're done.
-                    if let first = location.searchResults.first {
-                        pick(first)
-                    }
-                }
-            if !searchQuery.isEmpty {
-                Button {
-                    searchQuery = ""
-                    location.clearSearch()
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundStyle(.tertiary)
-                }
-                .buttonStyle(.plain)
-            }
-        }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 8)
-        .background(
-            RoundedRectangle(cornerRadius: 9, style: .continuous)
-                .fill(Color.primary.opacity(0.06))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 9, style: .continuous)
-                .strokeBorder(searchFocused ? Brand.accent.opacity(0.7) : Color.primary.opacity(0.08),
-                              lineWidth: searchFocused ? 1.5 : 1)
-        )
-        .animation(.easeOut(duration: 0.15), value: searchFocused)
-        .onAppear {
-            // The popover's window must be key before focus can land.
-            DispatchQueue.main.async { searchFocused = true }
-        }
-    }
-
-    private func listContainer<Content: View>(@ViewBuilder content: () -> Content) -> some View {
-        content()
-            .background(
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .fill(Color.primary.opacity(0.035))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .strokeBorder(Color.primary.opacity(0.07), lineWidth: 1)
-            )
-    }
-
-    private func currentPlaceRow(_ place: Place) -> some View {
-        HStack(spacing: 10) {
-            Text(place.flagEmoji)
-                .font(.body)
-                .frame(width: 26)
-            VStack(alignment: .leading, spacing: 1) {
-                Text(place.name)
-                    .lineLimit(1)
-                Text(Format.coordinate(place.latitude, place.longitude))
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .environment(\.layoutDirection, .leftToRight)
-            }
-            Spacer()
-            Label(localization.string("location.selected"), systemImage: "checkmark")
-                .font(.caption.weight(.medium))
-                .foregroundStyle(Brand.accent)
-        }
-        .padding(.horizontal, 8)
-        .padding(.vertical, 6)
-    }
-
-    private var detectRow: some View {
-        Button {
-            location.detect()
-        } label: {
-            HStack(spacing: 10) {
-                Image(systemName: "location.fill")
-                    .font(.system(size: 11, weight: .semibold))
-                    .foregroundStyle(.white)
-                    .frame(width: 26, height: 26)
-                    .background(Circle().fill(Brand.accent))
-
-                VStack(alignment: .leading, spacing: 1) {
-                    Text(localization.string(location.isLocating ? "location.locating" : "location.detect"))
-                        .foregroundStyle(Brand.accent)
-                        .fontWeight(.medium)
-                    Text(localization.string("location.detect.subtitle"))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-
-                Spacer()
-
-                if location.isLocating {
-                    ProgressView()
-                        .controlSize(.small)
-                }
-            }
-            .padding(.horizontal, 8)
-            .padding(.vertical, 6)
-        }
-        .buttonStyle(RowButtonStyle())
-        .disabled(location.isLocating)
-    }
-
-    private func cityRow(_ city: City) -> some View {
-        Button {
-            pick(city)
-        } label: {
-            HStack(spacing: 10) {
-                Text(city.flagEmoji)
-                    .font(.body)
-                    .frame(width: 26)
-
-                Text(city.displayName)
-                    .lineLimit(1)
-                    .truncationMode(.middle)
-
-                Spacer()
-
-                Text(city.timeZone?.abbreviation() ?? "")
-                    .font(.caption)
-                    .foregroundStyle(.tertiary)
-            }
-            .padding(.horizontal, 8)
-            .padding(.vertical, 6)
-        }
-        .buttonStyle(RowButtonStyle())
-    }
-
-    private func pick(_ city: City) {
-        store.place = CityDatabase.place(from: city)
-        navigate(to: .schedule)
-    }
-
-    private var manualEntrySection: some View {
-        DisclosureGroup(isExpanded: $showsManualEntry) {
-            VStack(alignment: .leading, spacing: 8) {
-                HStack(spacing: 8) {
-                    labeledField(localization.string("location.latitude"), text: $manualLatitude, placeholder: "33.5731")
-                    labeledField(localization.string("location.longitude"), text: $manualLongitude, placeholder: "-7.5898")
-                }
-
-                labeledField(localization.string("location.nameOptional"), text: $manualName, placeholder: "Dar")
-
-                if let manualError {
-                    Label(manualError, systemImage: "exclamationmark.circle.fill")
-                        .font(.caption)
-                        .foregroundStyle(.red)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-
-                Button {
-                    applyManualCoordinates()
-                } label: {
-                    Text(localization.string("location.useCoordinates"))
-                        .frame(maxWidth: .infinity)
-                }
-                .controlSize(.large)
-                .buttonStyle(.borderedProminent)
-                .disabled(manualLatitude.isEmpty || manualLongitude.isEmpty)
-            }
-            .padding(.top, 8)
-        } label: {
-            Label(localization.string("location.manual"), systemImage: "mappin.and.ellipse")
-                .foregroundStyle(.secondary)
-        }
-        .font(.callout)
-    }
-
-    private func labeledField(_ title: String, text: Binding<String>, placeholder: String) -> some View {
-        VStack(alignment: .leading, spacing: 3) {
-            Text(title)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            TextField(placeholder, text: text)
-                .textFieldStyle(.roundedBorder)
-                .onSubmit(applyManualCoordinates)
-        }
-    }
-
-    private func applyManualCoordinates() {
-        guard !manualLatitude.isEmpty, !manualLongitude.isEmpty else { return }
-        let latitude = Self.parseCoordinate(manualLatitude)
-        let longitude = Self.parseCoordinate(manualLongitude)
-
-        guard let latitude, (-90...90).contains(latitude) else {
-            manualError = localization.string("error.latitude")
-            return
-        }
-        guard let longitude, (-180...180).contains(longitude) else {
-            manualError = localization.string("error.longitude")
-            return
-        }
-
-        store.place = CityDatabase.manualPlace(
-            name: manualName,
-            latitude: latitude,
-            longitude: longitude
-        )
-
-        manualLatitude = ""
-        manualLongitude = ""
-        manualName = ""
-        manualError = nil
-        navigate(to: .schedule)
-    }
-
-    private static func parseCoordinate(_ string: String) -> Double? {
-        Double(string.trimmingCharacters(in: .whitespaces)
-            .replacingOccurrences(of: ",", with: "."))
     }
 
     // MARK: - Onboarding (first run, no place yet)
@@ -551,9 +263,7 @@ struct MenuBarView: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
 
-            locationChooser
-
-            manualEntrySection
+            LocationChooser(store: store, location: location, showsCurrentPlace: false)
         }
     }
 }

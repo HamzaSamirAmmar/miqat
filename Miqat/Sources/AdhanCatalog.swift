@@ -20,10 +20,14 @@ enum AdhanCatalog {
     static let tracks: [AdhanTrack] = [
         AdhanTrack(id: "makkah-fajr", isFajrVariant: true),
         AdhanTrack(id: "madinah-fajr", isFajrVariant: true),
+        AdhanTrack(id: "abdulbasit-fajr", isFajrVariant: true),
         AdhanTrack(id: "makkah", isFajrVariant: false),
         AdhanTrack(id: "madinah", isFajrVariant: false),
         AdhanTrack(id: "aqsa", isFajrVariant: false),
         AdhanTrack(id: "alafasy", isFajrVariant: false),
+        AdhanTrack(id: "abdulbasit", isFajrVariant: false),
+        AdhanTrack(id: "zahrani", isFajrVariant: false),
+        AdhanTrack(id: "turkey", isFajrVariant: false),
     ]
 
     static let fajrTracks = tracks.filter(\.isFajrVariant)

@@ -1,6 +1,11 @@
 import AppKit
 import SwiftUI
 
+private struct SettingsContentHeightKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) { value = nextValue() }
+}
+
 struct SettingsView: View {
     @ObservedObject var store: PrayerScheduleStore
     @ObservedObject var player: AdhanPlayer
@@ -11,6 +16,10 @@ struct SettingsView: View {
     /// Mirrors the login item so the switch redraws after toggling.
     @State private var startsAtLogin = LoginItemManager.isEnabled
 
+    /// A bare `ScrollView` has no intrinsic height, so on the popover's first
+    /// layout it collapsed to nothing. Measure the content and size it explicitly.
+    @State private var contentHeight: CGFloat = 470
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             ScreenHeader(title: localization.string("settings.title"), onBack: onDismiss)
@@ -18,6 +27,7 @@ struct SettingsView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     adhanSection
+                    remindersSection
                     calculationSection
                     appearanceSection
                     generalSection
@@ -25,8 +35,16 @@ struct SettingsView: View {
                 }
                 .padding(.horizontal, 1)
                 .padding(.bottom, 2)
+                .background(
+                    GeometryReader { proxy in
+                        Color.clear.preference(key: SettingsContentHeightKey.self, value: proxy.size.height)
+                    }
+                )
             }
-            .frame(maxHeight: 470)
+            .frame(height: min(max(contentHeight, 1), 470))
+            .onPreferenceChange(SettingsContentHeightKey.self) { height in
+                if height > 0 { contentHeight = height }
+            }
         }
     }
 
@@ -57,7 +75,7 @@ struct SettingsView: View {
             }
 
             if store.adhanEnabled, notifier.supportsBanners, !notifier.bannersAllowed {
-                bannersOffHint
+                bannersOffHint(localization.string("adhan.banners.denied"))
                     .padding(.horizontal, 10)
                     .padding(.bottom, 8)
             }
@@ -78,13 +96,13 @@ struct SettingsView: View {
 
     /// Shown when macOS isn't letting Miqat show banners. The adhan sound
     /// works regardless — only the banner needs system permission.
-    private var bannersOffHint: some View {
+    private func bannersOffHint(_ message: String) -> some View {
         HStack(alignment: .top, spacing: 8) {
             Image(systemName: "bell.badge.slash.fill")
                 .foregroundStyle(.orange)
 
             VStack(alignment: .leading, spacing: 6) {
-                Text(localization.string("adhan.banners.denied"))
+                Text(message)
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -207,14 +225,162 @@ struct SettingsView: View {
         .accessibilityLabel(localization.string(isPlaying ? "adhan.preview.stop" : "adhan.preview.play"))
     }
 
+    // MARK: - Reminders
+
+    /// The five prayers whose window-end can carry a reminder (sunrise never
+    /// does — it closes Fajr's window and has no time of its own).
+    private static let reminderPrayers: [PrayerKey] = [.fajr, .dhuhr, .asr, .maghrib, .isha]
+
+    private var remindersSection: some View {
+        FormSection(title: localization.string("settings.section.reminders"), systemImage: "bell.badge") {
+            FormRow(
+                title: localization.string("settings.reminders.master"),
+                subtitle: localization.string("settings.reminders.subtitle")
+            ) {
+                Toggle("", isOn: $store.remindersEnabled)
+                    .toggleStyle(.switch)
+                    .labelsHidden()
+                    .controlSize(.small)
+            }
+            .onChange(of: store.remindersEnabled) { enabled in
+                if enabled {
+                    // Ask (or re-ask) for notification rights the
+                    // moment reminders get switched on.
+                    notifier.requestAuthorization()
+                }
+            }
+
+            if (store.remindersEnabled || store.duhaReminderEnabled),
+               notifier.supportsBanners, !notifier.bannersAllowed {
+                bannersOffHint(localization.string("reminder.banners.denied"))
+                    .padding(.horizontal, 10)
+                    .padding(.bottom, 8)
+            }
+
+            FormDivider()
+
+            VStack(spacing: 0) {
+                leadRow
+                FormDivider()
+                ForEach(Self.reminderPrayers) { prayer in
+                    reminderRow(prayer)
+                }
+            }
+            .padding(.vertical, 4)
+            .disabled(!store.remindersEnabled)
+            .opacity(store.remindersEnabled ? 1 : 0.45)
+            .animation(.easeInOut(duration: 0.15), value: store.remindersEnabled)
+
+            FormDivider()
+
+            duhaRow
+        }
+    }
+
+    /// Lead-time control shared by all five prayers (default 30 minutes).
+    private var leadRow: some View {
+        FormRow(title: localization.string("settings.reminders.lead")) {
+            HStack(spacing: 6) {
+                Text(leadDisplay)
+                    .monospacedDigit()
+                    .foregroundStyle(.secondary)
+                    .frame(minWidth: 44, alignment: .trailing)
+                Stepper("", value: $store.reminderLeadMinutes, in: 5...90, step: 5)
+                    .labelsHidden()
+            }
+        }
+        .help(localization.string("settings.reminders.lead.hint"))
+    }
+
+    private var leadDisplay: String {
+        "\(store.reminderLeadMinutes) \(localization.string("settings.reminders.minutes"))"
+    }
+
+    /// One line per prayer: glyph · name and its closing boundary · switch.
+    private func reminderRow(_ prayer: PrayerKey) -> some View {
+        let isOn = store.reminderPrayers.contains(prayer)
+
+        return HStack(spacing: 8) {
+            Image(systemName: prayer.symbolName)
+                .font(.system(size: 12, weight: .medium))
+                .foregroundStyle(isOn ? AnyShapeStyle(Brand.accent) : AnyShapeStyle(.tertiary))
+                .frame(width: 18)
+
+            VStack(alignment: .leading, spacing: 1) {
+                Text(prayer.displayName)
+                Text(localization.string("settings.reminders.anchor.\(prayer.rawValue)"))
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer(minLength: 4)
+
+            Toggle("", isOn: reminderEnabledBinding(prayer))
+                .toggleStyle(.switch)
+                .labelsHidden()
+                .controlSize(.mini)
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 5)
+    }
+
+    private func reminderEnabledBinding(_ prayer: PrayerKey) -> Binding<Bool> {
+        Binding(
+            get: { store.reminderPrayers.contains(prayer) },
+            set: { enabled in
+                if enabled {
+                    store.reminderPrayers.insert(prayer)
+                } else {
+                    store.reminderPrayers.remove(prayer)
+                }
+            }
+        )
+    }
+
+    /// Duha is its own feature: a fixed 20-minute heads-up before Dhuhr,
+    /// independent of the master switch and the configurable lead time.
+    private var duhaRow: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "sun.and.horizon.fill")
+                .font(.system(size: 12, weight: .medium))
+                .foregroundStyle(
+                    store.duhaReminderEnabled ? AnyShapeStyle(Brand.accent) : AnyShapeStyle(.tertiary)
+                )
+                .frame(width: 18)
+
+            VStack(alignment: .leading, spacing: 1) {
+                Text(localization.string("prayer.duha"))
+                Text(localization.string("settings.reminders.duha.note"))
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer(minLength: 4)
+
+            Toggle("", isOn: $store.duhaReminderEnabled)
+                .toggleStyle(.switch)
+                .labelsHidden()
+                .controlSize(.mini)
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 5)
+        .onChange(of: store.duhaReminderEnabled) { enabled in
+            if enabled {
+                notifier.requestAuthorization()
+            }
+        }
+    }
+
     // MARK: - Calculation
 
     private var calculationSection: some View {
         FormSection(title: localization.string("settings.section.calculation"), systemImage: "function") {
             FormRow(title: localization.string("settings.method")) {
-                Picker("", selection: $store.method) {
+                Picker("", selection: methodSelection) {
+                    Text(automaticMethodTitle)
+                        .tag(CalculationMethodChoice?.none)
                     ForEach(CalculationMethodChoice.allCases) { method in
-                        Text(method.displayName).tag(method)
+                        Text(method.displayName).tag(CalculationMethodChoice?.some(method))
                     }
                 }
                 .labelsHidden()
@@ -261,6 +427,25 @@ struct SettingsView: View {
 
     private var hijriOffsetDisplay: String {
         store.hijriOffset > 0 ? "+\(store.hijriOffset)" : "\(store.hijriOffset)"
+    }
+
+    // MARK: - Calculation helpers
+
+    /// The picker offers "Automatic" (nil) on top of the twelve fixed methods.
+    private var methodSelection: Binding<CalculationMethodChoice?> {
+        Binding(
+            get: { store.methodOverride },
+            set: { store.selectMethod($0) }
+        )
+    }
+
+    /// "Automatic — Muslim World League": names the convention the current
+    /// location resolves to, so the default row isn't a black box.
+    private var automaticMethodTitle: String {
+        String(
+            format: localization.string("settings.method.automatic"),
+            store.method.displayName
+        )
     }
 
     // MARK: - Appearance
