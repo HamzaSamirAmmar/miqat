@@ -90,6 +90,30 @@ final class StatusItemController: NSObject, NSPopoverDelegate {
             return
         }
 
+        // Between the adhan and the iqama, the bar counts down to the iqama
+        // instead of toward the next prayer.
+        if let iqama = store.pendingIqama {
+            let remaining = iqama.iqama.timeIntervalSince(store.now)
+            let clock = Format.clock(remaining)
+            let label = Localization.shared.string("iqama.label")
+            switch store.titleStyle {
+            case .icon:
+                button.image = MenuBarIcon.image
+                button.attributedTitle = NSAttributedString(string: "", attributes: [.font: font])
+            case .countdown:
+                button.image = nil
+                button.attributedTitle = NSAttributedString(string: clock, attributes: [.font: font])
+            case .labeled:
+                button.image = nil
+                button.attributedTitle = NSAttributedString(
+                    string: "\(label) \(clock)",
+                    attributes: [.font: font]
+                )
+            }
+            button.toolTip = "\(base) — \(iqama.prayer.displayName) \(label) \(Format.remaining(remaining))"
+            return
+        }
+
         let interval = next.date.timeIntervalSince(store.now)
         let countdown = Format.countdown(interval)
 

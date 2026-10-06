@@ -236,6 +236,9 @@ final class Localization: ObservableObject {
         "reminder.banners.denied": "Notifications are turned off for Miqat — reminders can't appear. Allow them in System Settings › Notifications.",
         "reminder.notification.title": "%1$@ ends in %2$@",
         "reminder.notification.deadline": "Ends at %@",
+        "settings.iqama.countdown": "Time left until Iqama",
+        "settings.iqama.countdown.subtitle": "Menu bar counts down to the iqama after each adhan",
+        "iqama.label": "Iqama",
     ]
 
     private static let ar: [String: String] = [
@@ -388,5 +391,8 @@ final class Localization: ObservableObject {
         "reminder.banners.denied": "الإشعارات معطلة لمِيقَات — لن تظهر التذكيرات. فعّلها من إعدادات النظام › الإشعارات.",
         "reminder.notification.title": "ينتهي وقت %1$@ بعد %2$@",
         "reminder.notification.deadline": "ينتهي عند %@",
+        "settings.iqama.countdown": "الباقي للإقامة",
+        "settings.iqama.countdown.subtitle": "يعرض شريط القائمة العدّ التنازلي للإقامة بعد كل أذان",
+        "iqama.label": "الإقامة",
     ]
 }

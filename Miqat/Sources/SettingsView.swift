@@ -274,6 +274,18 @@ struct SettingsView: View {
             FormDivider()
 
             duhaRow
+
+            FormDivider()
+
+            FormRow(
+                title: localization.string("settings.iqama.countdown"),
+                subtitle: localization.string("settings.iqama.countdown.subtitle")
+            ) {
+                Toggle("", isOn: $store.iqamaCountdownEnabled)
+                    .toggleStyle(.switch)
+                    .labelsHidden()
+                    .controlSize(.small)
+            }
         }
     }
 
