@@ -198,6 +198,18 @@ final class PrayerScheduleStore: ObservableObject {
 
     // MARK: - Live state
 
+    /// True only in the side-by-side "Miqat Dev" build (see scripts/run-dev.sh).
+    static let isDevBuild = Bundle.main.bundleIdentifier?.hasSuffix(".dev") == true
+
+    /// Dev builds only: minutes added to the system clock, to test timings
+    /// (iqama, adhan, reminders) without waiting. Never persisted.
+    @Published var debugTimeOffsetMinutes: Int = 0 {
+        didSet {
+            guard Self.isDevBuild, oldValue != debugTimeOffsetMinutes else { return }
+            invalidateSchedule()
+        }
+    }
+
     /// The instant countdowns are measured against; ticks every second.
     @Published private(set) var now = Date()
 
@@ -400,7 +412,9 @@ final class PrayerScheduleStore: ObservableObject {
     }
 
     private func tick() {
-        now = Date()
+        now = Date().addingTimeInterval(
+            Self.isDevBuild ? TimeInterval(debugTimeOffsetMinutes * 60) : 0
+        )
 
         guard let place else {
             todayEntries = []

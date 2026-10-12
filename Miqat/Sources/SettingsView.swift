@@ -28,6 +28,9 @@ struct SettingsView: View {
                 VStack(alignment: .leading, spacing: 16) {
                     adhanSection
                     remindersSection
+                    if PrayerScheduleStore.isDevBuild {
+                        devSection
+                    }
                     calculationSection
                     appearanceSection
                     generalSection
@@ -626,6 +629,29 @@ struct SettingsView: View {
                         // Reflect the real state if registration failed.
                         startsAtLogin = LoginItemManager.isEnabled
                     }
+            }
+        }
+    }
+
+    // MARK: - Developer (Miqat Dev build only)
+
+    private var devSection: some View {
+        FormSection(title: "Developer", systemImage: "hammer.fill") {
+            FormRow(
+                title: "Time offset",
+                subtitle: "Minutes added to the current time, to test the iqama and adhan"
+            ) {
+                HStack(spacing: 6) {
+                    TextField("0", value: $store.debugTimeOffsetMinutes, format: .number)
+                        .textFieldStyle(.roundedBorder)
+                        .multilineTextAlignment(.trailing)
+                        .frame(width: 64)
+                    Stepper("", value: $store.debugTimeOffsetMinutes, step: 5)
+                        .labelsHidden()
+                    Button("Reset") { store.debugTimeOffsetMinutes = 0 }
+                        .controlSize(.small)
+                        .disabled(store.debugTimeOffsetMinutes == 0)
+                }
             }
         }
     }
