@@ -619,6 +619,24 @@ struct SettingsView: View {
         .disabled(updates.status == .checking)
     }
 
+    /// Asks before quitting — a menu bar app that stops silently would also
+    /// stop the adhan and reminders. A modal alert outlives the popover,
+    /// which closes when it loses focus.
+    private func confirmQuit() {
+        let alert = NSAlert()
+        alert.alertStyle = .warning
+        alert.messageText = localization.string("settings.quit.confirm.title")
+        alert.informativeText = localization.string("settings.quit.confirm.message")
+        let quit = alert.addButton(withTitle: localization.string("settings.quit"))
+        quit.hasDestructiveAction = true
+        alert.addButton(withTitle: localization.string("settings.quit.cancel"))
+
+        NSApp.activate(ignoringOtherApps: true)
+        if alert.runModal() == .alertFirstButtonReturn {
+            NSApplication.shared.terminate(nil)
+        }
+    }
+
     private var aboutSection: some View {
         VStack(spacing: 12) {
             HStack(spacing: 12) {
@@ -637,13 +655,17 @@ struct SettingsView: View {
 
                 Spacer()
 
-                Button(role: .destructive) {
-                    NSApplication.shared.terminate(nil)
+                Button {
+                    confirmQuit()
                 } label: {
-                    Text(localization.string("settings.quit"))
+                    Image(systemName: "power")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(.red)
                 }
-                .controlSize(.small)
+                .buttonStyle(IconButtonStyle())
                 .keyboardShortcut("q", modifiers: .command)
+                .help(localization.string("settings.quit"))
+                .accessibilityLabel(localization.string("settings.quit"))
             }
 
             Label(localization.string("settings.offlineNote"), systemImage: "lock.shield")

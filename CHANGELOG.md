@@ -12,6 +12,8 @@ and the project uses [Semantic Versioning](https://semver.org).
   version with the latest GitHub release. The button shows the status, or
   "Update to X" opening the release page when a newer one exists. English and
   Arabic
+- The Quit button in Settings is now a power icon button that asks for
+  confirmation first
 
 ## [1.1.0] — 2026-10-12
 
