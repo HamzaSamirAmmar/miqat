@@ -47,7 +47,7 @@ final class StatusItemController: NSObject, NSPopoverDelegate {
         }
 
         if let button = statusItem.button {
-            button.setAccessibilityLabel("Miqat prayer times")
+            button.setAccessibilityLabel(Localization.shared.string("tooltip.base"))
             button.target = self
             button.action = #selector(togglePopover(_:))
         }

@@ -636,10 +636,10 @@ struct SettingsView: View {
     // MARK: - Developer (Miqat Dev build only)
 
     private var devSection: some View {
-        FormSection(title: "Developer", systemImage: "hammer.fill") {
+        FormSection(title: localization.string("settings.dev.section"), systemImage: "hammer.fill") {
             FormRow(
-                title: "Time offset",
-                subtitle: "Minutes added to the current time, to test the iqama and adhan"
+                title: localization.string("settings.dev.offset"),
+                subtitle: localization.string("settings.dev.offset.subtitle")
             ) {
                 HStack(spacing: 6) {
                     TextField("0", value: $store.debugTimeOffsetMinutes, format: .number)
@@ -648,7 +648,7 @@ struct SettingsView: View {
                         .frame(width: 64)
                     Stepper("", value: $store.debugTimeOffsetMinutes, step: 5)
                         .labelsHidden()
-                    Button("Reset") { store.debugTimeOffsetMinutes = 0 }
+                    Button(localization.string("settings.dev.reset")) { store.debugTimeOffsetMinutes = 0 }
                         .controlSize(.small)
                         .disabled(store.debugTimeOffsetMinutes == 0)
                 }
