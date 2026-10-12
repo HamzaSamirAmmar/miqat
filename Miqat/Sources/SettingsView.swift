@@ -283,6 +283,17 @@ struct SettingsView: View {
                 ForEach(IqamaCalculator.prayers) { prayer in
                     iqamaGapRow(prayer)
                 }
+
+                HStack {
+                    Spacer()
+                    Button(localization.string("settings.iqama.reset")) {
+                        store.iqamaGaps = [:]
+                    }
+                    .controlSize(.small)
+                    .disabled(store.iqamaGaps.isEmpty)
+                }
+                .padding(.horizontal, 10)
+                .padding(.top, 4)
             }
             .padding(.bottom, 4)
             .disabled(!store.iqamaCountdownEnabled)

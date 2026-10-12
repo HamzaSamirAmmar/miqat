@@ -239,6 +239,7 @@ final class Localization: ObservableObject {
         "settings.iqama.countdown": "Time left until Iqama",
         "settings.iqama.countdown.subtitle": "Menu bar counts down to the iqama after each adhan",
         "iqama.label": "Iqama",
+        "settings.iqama.reset": "Reset to defaults",
     ]
 
     private static let ar: [String: String] = [
@@ -394,5 +395,6 @@ final class Localization: ObservableObject {
         "settings.iqama.countdown": "الباقي للإقامة",
         "settings.iqama.countdown.subtitle": "يعرض شريط القائمة العدّ التنازلي للإقامة بعد كل أذان",
         "iqama.label": "الإقامة",
+        "settings.iqama.reset": "استعادة الافتراضي",
     ]
 }
