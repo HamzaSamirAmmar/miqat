@@ -4,6 +4,14 @@ All notable changes to Miqat are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and the project uses [Semantic Versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+- Iqama countdown (on by default): a toggle under Reminders, "Time left until
+  Iqama" (الباقي للإقامة). Between each adhan and its iqama the menu bar shows
+  the time left to the iqama instead of the next-prayer countdown. Gaps follow
+  common Saudi practice: Fajr 25, Dhuhr 20, Asr 20, Maghrib 10, Isha 20 minutes
+
 ## [1.0.1] — 2026-09-25
 
 ### Fixed

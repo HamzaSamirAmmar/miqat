@@ -148,6 +148,20 @@ final class PrayerScheduleStore: ObservableObject {
         }
     }
 
+    /// Shows the time left until the iqama in the menu bar between the adhan
+    /// and the iqama. On out of the box.
+    @Published var iqamaCountdownEnabled: Bool = true {
+        didSet {
+            guard oldValue != iqamaCountdownEnabled else { return }
+            UserDefaults.standard.set(iqamaCountdownEnabled, forKey: Keys.iqamaCountdownEnabled)
+        }
+    }
+
+    /// The prayer awaiting its iqama right now, when the countdown is enabled.
+    var pendingIqama: IqamaCalculator.Pending? {
+        iqamaCountdownEnabled ? IqamaCalculator.pending(today: today, now: now) : nil
+    }
+
     /// Whether a prayer's window-end should post a reminder notification.
     func isReminderEnabled(_ prayer: PrayerKey) -> Bool {
         remindersEnabled && prayer != .sunrise && reminderPrayers.contains(prayer)
@@ -215,6 +229,7 @@ final class PrayerScheduleStore: ObservableObject {
         static let reminderLead = "miqat.reminder.lead"
         static let reminderPrayers = "miqat.reminder.prayers"
         static let duhaReminderEnabled = "miqat.reminder.duha"
+        static let iqamaCountdownEnabled = "miqat.iqama.countdown"
     }
 
     private enum AdhanDefaults {
@@ -301,6 +316,9 @@ final class PrayerScheduleStore: ObservableObject {
         }
         if UserDefaults.standard.object(forKey: Keys.duhaReminderEnabled) != nil {
             duhaReminderEnabled = UserDefaults.standard.bool(forKey: Keys.duhaReminderEnabled)
+        }
+        if UserDefaults.standard.object(forKey: Keys.iqamaCountdownEnabled) != nil {
+            iqamaCountdownEnabled = UserDefaults.standard.bool(forKey: Keys.iqamaCountdownEnabled)
         }
 
         tick()
