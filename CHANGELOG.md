@@ -4,6 +4,13 @@ All notable changes to Miqat are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and the project uses [Semantic Versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+- Check for updates: once a day (switchable) and on demand via "Check now",
+  Miqat compares its version with the latest GitHub release and offers a
+  Download button when a newer one exists. Settings › General, English and Arabic
+
 ## [1.1.0] — 2026-10-12
 
 ### Added

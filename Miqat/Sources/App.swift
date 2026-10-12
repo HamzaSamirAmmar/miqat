@@ -62,6 +62,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         reminders.start()
         reminderScheduler = reminders
 
+        UpdateChecker.shared.startAutomaticChecks()
+
         statusItemController = StatusItemController(
             store: store,
             locationManager: locationManager,

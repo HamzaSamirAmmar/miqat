@@ -11,11 +11,13 @@
 		066EEED3940BFB760424B302 /* madinah.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EAC8ABAB5DACA3A96D87393C /* madinah.mp3 */; };
 		09B07D9336A6B9EC466547F1 /* DocsRenderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29FFC5EBEA9499E7C23FF3C /* DocsRenderTests.swift */; };
 		0AAB28E75FF890EE7C7B1B88 /* IqamaCalculatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE4CB89DE6355CDEE0CBFEE /* IqamaCalculatorTests.swift */; };
+		C1B2C3D4E5F60718293A4B7C /* UpdateCheckerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1B2C3D4E5F60718293A4B7D /* UpdateCheckerTests.swift */; };
 		0E128F3F6D376DF6882C5CD7 /* alafasy.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = B1FD4B1AE8F9559C4A5C363B /* alafasy.mp3 */; };
 		15A06829AA4C142407B95AB0 /* LoginItemManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76D282867C27CE19A42A20EA /* LoginItemManager.swift */; };
 		1F060AA80C0C37FC8750DE8F /* makkah-fajr.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 21B15AE204EB1B2D853F5FA2 /* makkah-fajr.mp3 */; };
 		28B7D2ED9CFB705AF5B04DB8 /* makkah.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = C12E5AFD90C3310C6C9CB574 /* makkah.mp3 */; };
 		436726AE8C68ACFEE14004D5 /* IqamaCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1523ED063F268CEDC2A6969 /* IqamaCalculator.swift */; };
+		C1B2C3D4E5F60718293A4B7A /* UpdateChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1B2C3D4E5F60718293A4B7B /* UpdateChecker.swift */; };
 		43695A494F0B7A7CFCD6F569 /* aqsa.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 65EF2FF08AC0060A6C769FD1 /* aqsa.mp3 */; };
 		4ACC5BDE39FFD7330E4C3DF7 /* PrayerEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4C26866D2F56AC10117FCA /* PrayerEngineTests.swift */; };
 		4C0B50BB8261341F76F20BC3 /* abdulbasit.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = CE2521E5E9B731DBC810A348 /* abdulbasit.mp3 */; };
@@ -78,6 +80,7 @@
 		54BBFA229BFC2E1C7E9B3353 /* Miqat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Miqat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		56C85180813CDE40B40EEA05 /* zahrani.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = zahrani.mp3; sourceTree = "<group>"; };
 		5EE4CB89DE6355CDEE0CBFEE /* IqamaCalculatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IqamaCalculatorTests.swift; sourceTree = "<group>"; };
+		C1B2C3D4E5F60718293A4B7D /* UpdateCheckerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCheckerTests.swift; sourceTree = "<group>"; };
 		65EF2FF08AC0060A6C769FD1 /* aqsa.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = aqsa.mp3; sourceTree = "<group>"; };
 		7417A1225854B39BDA08B219 /* MiqatTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MiqatTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		769853FFB5B01067B39761FE /* abdulbasit-fajr.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "abdulbasit-fajr.mp3"; sourceTree = "<group>"; };
@@ -104,6 +107,7 @@
 		DAB5A3355BCDDBFF70B09217 /* AdhanTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdhanTests.swift; sourceTree = "<group>"; };
 		DF90AA48406F3E3088F428E8 /* Format.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Format.swift; sourceTree = "<group>"; };
 		E1523ED063F268CEDC2A6969 /* IqamaCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IqamaCalculator.swift; sourceTree = "<group>"; };
+		C1B2C3D4E5F60718293A4B7B /* UpdateChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateChecker.swift; sourceTree = "<group>"; };
 		E5EEC9C129BDC519EC8AEB5E /* AdhanNotifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdhanNotifier.swift; sourceTree = "<group>"; };
 		EAC8ABAB5DACA3A96D87393C /* madinah.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = madinah.mp3; sourceTree = "<group>"; };
 		EC16E9E47650EEB874667644 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
@@ -164,6 +168,7 @@
 				F20A25601D0A28A59E9A4FC7 /* DesignSystem.swift */,
 				DF90AA48406F3E3088F428E8 /* Format.swift */,
 				E1523ED063F268CEDC2A6969 /* IqamaCalculator.swift */,
+				C1B2C3D4E5F60718293A4B7B /* UpdateChecker.swift */,
 				88E906A1C7CA8D11F21BCF56 /* Localization.swift */,
 				058F38C5C094BDAA14C1816D /* LocationChooser.swift */,
 				533BFDA590F16139194F83A8 /* LocationManager.swift */,
@@ -189,6 +194,7 @@
 				D8AD695E8BCB3D1FA76F6F95 /* CountryMethodTests.swift */,
 				B29FFC5EBEA9499E7C23FF3C /* DocsRenderTests.swift */,
 				5EE4CB89DE6355CDEE0CBFEE /* IqamaCalculatorTests.swift */,
+				C1B2C3D4E5F60718293A4B7D /* UpdateCheckerTests.swift */,
 				301A77A84D61801D29005E32 /* LocalizationTests.swift */,
 				40D06787CC59BB3A09C84FC4 /* PlacePersistenceTests.swift */,
 				2C4C26866D2F56AC10117FCA /* PrayerEngineTests.swift */,
@@ -337,6 +343,7 @@
 				5C7AD9E521DF7EDD02CF09FD /* DesignSystem.swift in Sources */,
 				01FF2E6D3D0F31BF0B7E931B /* Format.swift in Sources */,
 				436726AE8C68ACFEE14004D5 /* IqamaCalculator.swift in Sources */,
+				C1B2C3D4E5F60718293A4B7A /* UpdateChecker.swift in Sources */,
 				EDA07005C19E2B18D917E118 /* Localization.swift in Sources */,
 				4DE211067583EEF7EE9FA529 /* LocationChooser.swift in Sources */,
 				A9F0C5B9DCC8ADF208F5806D /* LocationManager.swift in Sources */,
@@ -362,6 +369,7 @@
 				BDA8A49D5341B0BE57C51EC9 /* CountryMethodTests.swift in Sources */,
 				09B07D9336A6B9EC466547F1 /* DocsRenderTests.swift in Sources */,
 				0AAB28E75FF890EE7C7B1B88 /* IqamaCalculatorTests.swift in Sources */,
+				C1B2C3D4E5F60718293A4B7C /* UpdateCheckerTests.swift in Sources */,
 				9352C135D2067AEB85551935 /* LocalizationTests.swift in Sources */,
 				A36AE020A56C904B5D319338 /* PlacePersistenceTests.swift in Sources */,
 				4ACC5BDE39FFD7330E4C3DF7 /* PrayerEngineTests.swift in Sources */,

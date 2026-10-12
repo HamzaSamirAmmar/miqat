@@ -11,6 +11,7 @@ struct SettingsView: View {
     @ObservedObject var player: AdhanPlayer
     @ObservedObject var notifier: SystemAdhanNotifier
     @ObservedObject private var localization = Localization.shared
+    @ObservedObject private var updates = UpdateChecker.shared
     var onDismiss: () -> Void
 
     /// Mirrors the login item so the switch redraws after toggling.
@@ -555,6 +556,56 @@ struct SettingsView: View {
                         startsAtLogin = LoginItemManager.isEnabled
                     }
             }
+
+            FormDivider()
+
+            FormRow(
+                title: localization.string("settings.update.auto"),
+                subtitle: localization.string("settings.update.auto.subtitle")
+            ) {
+                Toggle("", isOn: $updates.automaticChecksEnabled)
+                    .toggleStyle(.switch)
+                    .labelsHidden()
+                    .controlSize(.small)
+            }
+
+            FormDivider()
+
+            updateRow
+        }
+    }
+
+    /// Status line plus a "Check now" button; a found update links to its release page.
+    private var updateRow: some View {
+        FormRow(title: updateStatusText) {
+            HStack(spacing: 8) {
+                if case .available(_, let url) = updates.status {
+                    Button(localization.string("settings.update.download")) {
+                        NSWorkspace.shared.open(url)
+                    }
+                    .controlSize(.small)
+                    .buttonStyle(.borderedProminent)
+                } else {
+                    if case .checking = updates.status {
+                        ProgressView().controlSize(.small)
+                    }
+                    Button(localization.string("settings.update.check")) {
+                        updates.check()
+                    }
+                    .controlSize(.small)
+                    .disabled(updates.status == .checking)
+                }
+            }
+        }
+    }
+
+    private var updateStatusText: String {
+        switch updates.status {
+        case .idle: return localization.string("settings.update.idle", versionString)
+        case .checking: return localization.string("settings.update.checking")
+        case .upToDate: return localization.string("settings.update.upToDate")
+        case .available(let version, _): return localization.string("settings.update.available", version)
+        case .failed: return localization.string("settings.update.failed")
         }
     }
 
