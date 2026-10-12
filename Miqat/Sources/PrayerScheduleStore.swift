@@ -157,9 +157,38 @@ final class PrayerScheduleStore: ObservableObject {
         }
     }
 
+    /// Per-prayer overrides of the adhan→iqama gap, in minutes. Only values
+    /// that differ from the defaults are stored.
+    @Published var iqamaGaps: [PrayerKey: Int] = [:] {
+        didSet {
+            guard oldValue != iqamaGaps else { return }
+            UserDefaults.standard.set(
+                Dictionary(uniqueKeysWithValues: iqamaGaps.map { ($0.key.rawValue, $0.value) }),
+                forKey: Keys.iqamaGaps
+            )
+        }
+    }
+
+    /// Minutes between a prayer's adhan and its iqama (custom or default).
+    func iqamaGap(for prayer: PrayerKey) -> Int {
+        iqamaGaps[prayer] ?? IqamaCalculator.defaultGapMinutes(for: prayer) ?? 0
+    }
+
+    /// Sets a prayer's gap; the default value clears the override.
+    func setIqamaGap(_ minutes: Int, for prayer: PrayerKey) {
+        let clamped = min(max(minutes, IqamaCalculator.gapRange.lowerBound), IqamaCalculator.gapRange.upperBound)
+        if clamped == IqamaCalculator.defaultGapMinutes(for: prayer) {
+            iqamaGaps[prayer] = nil
+        } else {
+            iqamaGaps[prayer] = clamped
+        }
+    }
+
     /// The prayer awaiting its iqama right now, when the countdown is enabled.
     var pendingIqama: IqamaCalculator.Pending? {
-        iqamaCountdownEnabled ? IqamaCalculator.pending(today: today, now: now) : nil
+        iqamaCountdownEnabled
+            ? IqamaCalculator.pending(today: today, now: now, customGaps: iqamaGaps)
+            : nil
     }
 
     /// Whether a prayer's window-end should post a reminder notification.
@@ -230,6 +259,7 @@ final class PrayerScheduleStore: ObservableObject {
         static let reminderPrayers = "miqat.reminder.prayers"
         static let duhaReminderEnabled = "miqat.reminder.duha"
         static let iqamaCountdownEnabled = "miqat.iqama.countdown"
+        static let iqamaGaps = "miqat.iqama.gaps"
     }
 
     private enum AdhanDefaults {
@@ -319,6 +349,16 @@ final class PrayerScheduleStore: ObservableObject {
         }
         if UserDefaults.standard.object(forKey: Keys.iqamaCountdownEnabled) != nil {
             iqamaCountdownEnabled = UserDefaults.standard.bool(forKey: Keys.iqamaCountdownEnabled)
+        }
+        if let stored = UserDefaults.standard.dictionary(forKey: Keys.iqamaGaps) as? [String: Int] {
+            var restored: [PrayerKey: Int] = [:]
+            for (raw, minutes) in stored {
+                guard let prayer = PrayerKey(rawValue: raw),
+                      let standard = IqamaCalculator.defaultGapMinutes(for: prayer) else { continue }
+                let clamped = min(max(minutes, IqamaCalculator.gapRange.lowerBound), IqamaCalculator.gapRange.upperBound)
+                if clamped != standard { restored[prayer] = clamped }
+            }
+            iqamaGaps = restored
         }
 
         tick()

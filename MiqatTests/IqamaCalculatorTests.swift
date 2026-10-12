@@ -27,4 +27,25 @@ final class IqamaCalculatorTests: XCTestCase {
         let sunrise = dhuhr.addingTimeInterval(-6 * 3600)
         XCTAssertNil(IqamaCalculator.pending(today: entries(), now: sunrise.addingTimeInterval(60)))
     }
+
+    func testCustomGapOverridesDefault() {
+        let now = dhuhr.addingTimeInterval(25 * 60)
+        XCTAssertNil(IqamaCalculator.pending(today: entries(), now: now))
+        let pending = IqamaCalculator.pending(today: entries(), now: now, customGaps: [.dhuhr: 30])
+        XCTAssertEqual(pending?.iqama, dhuhr.addingTimeInterval(30 * 60))
+    }
+
+    func testStoreClampsAndClearsOverridesAtDefault() {
+        UserDefaults.standard.removeObject(forKey: "miqat.iqama.gaps")
+        defer { UserDefaults.standard.removeObject(forKey: "miqat.iqama.gaps") }
+
+        let store = PrayerScheduleStore()
+        XCTAssertEqual(store.iqamaGap(for: .fajr), 25)
+        store.setIqamaGap(40, for: .fajr)
+        XCTAssertEqual(PrayerScheduleStore().iqamaGap(for: .fajr), 40, "persisted")
+        store.setIqamaGap(999, for: .fajr)
+        XCTAssertEqual(store.iqamaGap(for: .fajr), 60, "clamped")
+        store.setIqamaGap(25, for: .fajr)
+        XCTAssertTrue(store.iqamaGaps.isEmpty, "default clears the override")
+    }
 }

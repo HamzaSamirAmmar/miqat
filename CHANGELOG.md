@@ -10,7 +10,8 @@ and the project uses [Semantic Versioning](https://semver.org).
 - Iqama countdown (on by default): a toggle under Reminders, "Time left until
   Iqama" (الباقي للإقامة). Between each adhan and its iqama the menu bar shows
   the time left to the iqama instead of the next-prayer countdown. Gaps follow
-  common Saudi practice: Fajr 25, Dhuhr 20, Asr 20, Maghrib 10, Isha 20 minutes
+  common Saudi practice: Fajr 25, Dhuhr 20, Asr 20, Maghrib 10, Isha 20 minutes,
+  and each prayer's gap can be customized in Settings (1–60 minutes)
 
 ## [1.0.1] — 2026-09-25
 

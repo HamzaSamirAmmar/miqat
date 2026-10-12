@@ -277,16 +277,77 @@ struct SettingsView: View {
 
             FormDivider()
 
-            FormRow(
-                title: localization.string("settings.iqama.countdown"),
-                subtitle: localization.string("settings.iqama.countdown.subtitle")
-            ) {
-                Toggle("", isOn: $store.iqamaCountdownEnabled)
-                    .toggleStyle(.switch)
-                    .labelsHidden()
-                    .controlSize(.small)
+            iqamaRow
+
+            VStack(spacing: 0) {
+                ForEach(IqamaCalculator.prayers) { prayer in
+                    iqamaGapRow(prayer)
+                }
             }
+            .padding(.bottom, 4)
+            .disabled(!store.iqamaCountdownEnabled)
+            .opacity(store.iqamaCountdownEnabled ? 1 : 0.45)
+            .animation(.easeInOut(duration: 0.15), value: store.iqamaCountdownEnabled)
         }
+    }
+
+    /// Master switch for the iqama countdown, styled like the Duha row.
+    private var iqamaRow: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "timer")
+                .font(.system(size: 12, weight: .medium))
+                .foregroundStyle(
+                    store.iqamaCountdownEnabled ? AnyShapeStyle(Brand.accent) : AnyShapeStyle(.tertiary)
+                )
+                .frame(width: 18)
+
+            VStack(alignment: .leading, spacing: 1) {
+                Text(localization.string("settings.iqama.countdown"))
+                Text(localization.string("settings.iqama.countdown.subtitle"))
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            Spacer(minLength: 4)
+
+            Toggle("", isOn: $store.iqamaCountdownEnabled)
+                .toggleStyle(.switch)
+                .labelsHidden()
+                .controlSize(.small)
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+    }
+
+    /// One line per prayer: glyph · name · minutes between adhan and iqama.
+    private func iqamaGapRow(_ prayer: PrayerKey) -> some View {
+        let gap = store.iqamaGap(for: prayer)
+        let binding = Binding(
+            get: { store.iqamaGap(for: prayer) },
+            set: { store.setIqamaGap($0, for: prayer) }
+        )
+
+        return HStack(spacing: 8) {
+            Image(systemName: prayer.symbolName)
+                .font(.system(size: 12, weight: .medium))
+                .foregroundStyle(store.iqamaCountdownEnabled ? AnyShapeStyle(Brand.accent) : AnyShapeStyle(.tertiary))
+                .frame(width: 18)
+
+            Text(prayer.displayName)
+
+            Spacer(minLength: 4)
+
+            Text("\(gap) \(localization.string("settings.reminders.minutes"))")
+                .monospacedDigit()
+                .foregroundStyle(.secondary)
+                .frame(minWidth: 44, alignment: .trailing)
+
+            Stepper("", value: binding, in: IqamaCalculator.gapRange)
+                .labelsHidden()
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 3)
     }
 
     /// Lead-time control shared by all five prayers (default 30 minutes).
