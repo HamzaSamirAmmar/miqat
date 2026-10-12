@@ -7,9 +7,11 @@ and the project uses [Semantic Versioning](https://semver.org).
 ## [Unreleased]
 
 ### Added
-- Check for updates: once a day (switchable) and on demand via "Check now",
-  Miqat compares its version with the latest GitHub release and offers a
-  Download button when a newer one exists. Settings › General, English and Arabic
+- Check for updates: once a day (switchable in Settings › General) and on
+  demand via a small button beside the version in Settings, Miqat compares its
+  version with the latest GitHub release. The button shows the status, or
+  "Update to X" opening the release page when a newer one exists. English and
+  Arabic
 
 ## [1.1.0] — 2026-10-12
 

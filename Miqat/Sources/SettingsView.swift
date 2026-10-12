@@ -569,47 +569,55 @@ struct SettingsView: View {
                     .controlSize(.small)
             }
 
-            FormDivider()
-
-            updateRow
-        }
-    }
-
-    /// Status line plus a "Check now" button; a found update links to its release page.
-    private var updateRow: some View {
-        FormRow(title: updateStatusText) {
-            HStack(spacing: 8) {
-                if case .available(_, let url) = updates.status {
-                    Button(localization.string("settings.update.download")) {
-                        NSWorkspace.shared.open(url)
-                    }
-                    .controlSize(.small)
-                    .buttonStyle(.borderedProminent)
-                } else {
-                    if case .checking = updates.status {
-                        ProgressView().controlSize(.small)
-                    }
-                    Button(localization.string("settings.update.check")) {
-                        updates.check()
-                    }
-                    .controlSize(.small)
-                    .disabled(updates.status == .checking)
-                }
-            }
-        }
-    }
-
-    private var updateStatusText: String {
-        switch updates.status {
-        case .idle: return localization.string("settings.update.idle", versionString)
-        case .checking: return localization.string("settings.update.checking")
-        case .upToDate: return localization.string("settings.update.upToDate")
-        case .available(let version, _): return localization.string("settings.update.available", version)
-        case .failed: return localization.string("settings.update.failed")
         }
     }
 
     // MARK: - About
+
+    /// Small pill beside the version: "Update to X" when a release is newer,
+    /// otherwise the check status (tap to check again).
+    private var updateButton: some View {
+        let available: (version: String, url: URL)? = {
+            if case .available(let version, let url) = updates.status { return (version, url) }
+            return nil
+        }()
+        let label: String
+        switch updates.status {
+        case .idle: label = localization.string("settings.update.check")
+        case .checking: label = localization.string("settings.update.checking")
+        case .upToDate: label = localization.string("settings.update.upToDate")
+        case .available(let version, _): label = localization.string("settings.update.available", version)
+        case .failed: label = localization.string("settings.update.failed")
+        }
+
+        return Button {
+            if let available {
+                NSWorkspace.shared.open(available.url)
+            } else {
+                updates.check()
+            }
+        } label: {
+            HStack(spacing: 3) {
+                if available != nil {
+                    Image(systemName: "arrow.down.circle.fill")
+                } else if updates.status == .upToDate {
+                    Image(systemName: "checkmark.circle.fill")
+                } else if updates.status == .checking {
+                    ProgressView().controlSize(.mini)
+                }
+                Text(label)
+            }
+            .font(.system(size: 10, weight: .medium))
+            .foregroundStyle(available != nil ? AnyShapeStyle(.white) : AnyShapeStyle(.secondary))
+            .padding(.horizontal, 7)
+            .padding(.vertical, 2)
+            .background(
+                Capsule().fill(available != nil ? AnyShapeStyle(Brand.accent) : AnyShapeStyle(Color.primary.opacity(0.07)))
+            )
+        }
+        .buttonStyle(.plain)
+        .disabled(updates.status == .checking)
+    }
 
     private var aboutSection: some View {
         VStack(spacing: 12) {
@@ -619,9 +627,12 @@ struct SettingsView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Miqat")
                         .font(.headline)
-                    Text(localization.string("settings.version", versionString))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    HStack(spacing: 6) {
+                        Text(localization.string("settings.version", versionString))
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        updateButton
+                    }
                 }
 
                 Spacer()

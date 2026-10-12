@@ -220,13 +220,11 @@ final class Localization: ObservableObject {
         "settings.menubar.preview": "Preview",
         "settings.version": "Version %@",
         "settings.update.auto": "Check for updates",
-        "settings.update.auto.subtitle": "Once a day, Miqat asks GitHub if a newer version exists",
-        "settings.update.check": "Check now",
-        "settings.update.download": "Download",
-        "settings.update.idle": "Version %@",
+        "settings.update.auto.subtitle": "Once a day, Miqat asks GitHub if a newer version exists (the button beside the version checks on demand)",
+        "settings.update.check": "Check for updates",
         "settings.update.checking": "Checking for updates…",
         "settings.update.upToDate": "Miqat is up to date",
-        "settings.update.available": "Version %@ is available",
+        "settings.update.available": "Update to %@",
         "settings.update.failed": "Couldn't check for updates",
 
         // Reminders
@@ -385,12 +383,10 @@ final class Localization: ObservableObject {
         "settings.version": "الإصدار %@",
         "settings.update.auto": "البحث عن تحديثات",
         "settings.update.auto.subtitle": "مرة يوميًا يسأل مِيقَات GitHub عن وجود إصدار أحدث",
-        "settings.update.check": "تحقق الآن",
-        "settings.update.download": "تنزيل",
-        "settings.update.idle": "الإصدار %@",
+        "settings.update.check": "تحقق من التحديثات",
         "settings.update.checking": "جارٍ البحث عن تحديثات…",
         "settings.update.upToDate": "مِيقَات محدّث",
-        "settings.update.available": "الإصدار %@ متاح",
+        "settings.update.available": "تحديث إلى %@",
         "settings.update.failed": "تعذّر البحث عن تحديثات",
 
         // Reminders

@@ -143,7 +143,8 @@ are pure local math and work fully offline.
 
 The optional update check (Settings › General, on by default) makes one request
 a day to GitHub's public "latest release" API to compare version numbers. It
-sends no personal data and can be switched off; "Check now" works either way.
+sends no personal data and can be switched off; the small button beside the
+version in Settings still checks on demand.
 
 ## Credits
 
