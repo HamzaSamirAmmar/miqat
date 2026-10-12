@@ -184,6 +184,30 @@ final class PrayerScheduleStore: ObservableObject {
         }
     }
 
+    /// Recolors the menu bar countdown once the iqama is near. On by default.
+    @Published var iqamaWarningEnabled: Bool = true {
+        didSet {
+            guard oldValue != iqamaWarningEnabled else { return }
+            UserDefaults.standard.set(iqamaWarningEnabled, forKey: Keys.iqamaWarningEnabled)
+        }
+    }
+
+    /// The warning starts when this many minutes (or fewer) are left.
+    @Published var iqamaWarningMinutes: Int = IqamaDefaults.warningMinutes {
+        didSet {
+            guard oldValue != iqamaWarningMinutes else { return }
+            UserDefaults.standard.set(iqamaWarningMinutes, forKey: Keys.iqamaWarningMinutes)
+        }
+    }
+
+    /// The warning color as `RRGGBB` hex.
+    @Published var iqamaWarningColorHex: String = IqamaDefaults.warningColorHex {
+        didSet {
+            guard oldValue != iqamaWarningColorHex else { return }
+            UserDefaults.standard.set(iqamaWarningColorHex, forKey: Keys.iqamaWarningColor)
+        }
+    }
+
     /// The prayer awaiting its iqama right now, when the countdown is enabled.
     var pendingIqama: IqamaCalculator.Pending? {
         iqamaCountdownEnabled
@@ -272,11 +296,20 @@ final class PrayerScheduleStore: ObservableObject {
         static let duhaReminderEnabled = "miqat.reminder.duha"
         static let iqamaCountdownEnabled = "miqat.iqama.countdown"
         static let iqamaGaps = "miqat.iqama.gaps"
+        static let iqamaWarningEnabled = "miqat.iqama.warning.enabled"
+        static let iqamaWarningMinutes = "miqat.iqama.warning.minutes"
+        static let iqamaWarningColor = "miqat.iqama.warning.color"
     }
 
     private enum AdhanDefaults {
         /// On out of the box for the five prayers — never sunrise.
         static let enabledPrayers: Set<PrayerKey> = [.fajr, .dhuhr, .asr, .maghrib, .isha]
+    }
+
+    enum IqamaDefaults {
+        static let warningMinutes = 5
+        static let warningRange: ClosedRange<Int> = 1...15
+        static let warningColorHex = "FF3B30"
     }
 
     private enum ReminderDefaults {
@@ -361,6 +394,20 @@ final class PrayerScheduleStore: ObservableObject {
         }
         if UserDefaults.standard.object(forKey: Keys.iqamaCountdownEnabled) != nil {
             iqamaCountdownEnabled = UserDefaults.standard.bool(forKey: Keys.iqamaCountdownEnabled)
+        }
+        if UserDefaults.standard.object(forKey: Keys.iqamaWarningEnabled) != nil {
+            iqamaWarningEnabled = UserDefaults.standard.bool(forKey: Keys.iqamaWarningEnabled)
+        }
+        if UserDefaults.standard.object(forKey: Keys.iqamaWarningMinutes) != nil {
+            let stored = UserDefaults.standard.integer(forKey: Keys.iqamaWarningMinutes)
+            iqamaWarningMinutes = min(
+                max(stored, IqamaDefaults.warningRange.lowerBound),
+                IqamaDefaults.warningRange.upperBound
+            )
+        }
+        if let stored = UserDefaults.standard.string(forKey: Keys.iqamaWarningColor),
+           stored.count == 6, UInt32(stored, radix: 16) != nil {
+            iqamaWarningColorHex = stored
         }
         if let stored = UserDefaults.standard.dictionary(forKey: Keys.iqamaGaps) as? [String: Int] {
             var restored: [PrayerKey: Int] = [:]

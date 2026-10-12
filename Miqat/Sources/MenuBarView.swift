@@ -5,6 +5,7 @@ enum ActiveScreen {
     case schedule
     case locationPicker
     case settings
+    case iqamaSettings
 }
 
 struct MenuBarView: View {
@@ -37,8 +38,17 @@ struct MenuBarView: View {
             } else {
                 switch activeScreen {
                 case .settings:
-                    SettingsView(store: store, player: adhanPlayer, notifier: adhanNotifier) {
-                        navigate(to: .schedule)
+                    SettingsView(
+                        store: store,
+                        player: adhanPlayer,
+                        notifier: adhanNotifier,
+                        onDismiss: { navigate(to: .schedule) },
+                        onOpenIqamaSettings: { navigate(to: .iqamaSettings) }
+                    )
+                    .transition(.opacity)
+                case .iqamaSettings:
+                    IqamaSettingsView(store: store) {
+                        navigate(to: .settings)
                     }
                     .transition(.opacity)
                 case .locationPicker:

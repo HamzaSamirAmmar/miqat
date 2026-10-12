@@ -15,4 +15,5 @@ xcodebuild -project Miqat.xcodeproj -scheme Miqat -configuration Debug \
   build | tail -3
 
 pkill -f "Miqat Dev.app/Contents/MacOS" 2>/dev/null || true
+while pgrep -f "Miqat Dev.app/Contents/MacOS" >/dev/null; do sleep 0.2; done
 open "$APP"

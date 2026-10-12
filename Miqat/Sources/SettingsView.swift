@@ -12,6 +12,7 @@ struct SettingsView: View {
     @ObservedObject var notifier: SystemAdhanNotifier
     @ObservedObject private var localization = Localization.shared
     var onDismiss: () -> Void
+    var onOpenIqamaSettings: () -> Void
 
     /// Mirrors the login item so the switch redraws after toggling.
     @State private var startsAtLogin = LoginItemManager.isEnabled
@@ -282,26 +283,9 @@ struct SettingsView: View {
 
             iqamaRow
 
-            VStack(spacing: 0) {
-                ForEach(IqamaCalculator.prayers) { prayer in
-                    iqamaGapRow(prayer)
-                }
+            FormDivider()
 
-                HStack {
-                    Spacer()
-                    Button(localization.string("settings.iqama.reset")) {
-                        store.iqamaGaps = [:]
-                    }
-                    .controlSize(.small)
-                    .disabled(store.iqamaGaps.isEmpty)
-                }
-                .padding(.horizontal, 10)
-                .padding(.top, 4)
-            }
-            .padding(.bottom, 4)
-            .disabled(!store.iqamaCountdownEnabled)
-            .opacity(store.iqamaCountdownEnabled ? 1 : 0.45)
-            .animation(.easeInOut(duration: 0.15), value: store.iqamaCountdownEnabled)
+            iqamaSettingsLink
         }
     }
 
@@ -334,34 +318,28 @@ struct SettingsView: View {
         .padding(.vertical, 6)
     }
 
-    /// One line per prayer: glyph · name · minutes between adhan and iqama.
-    private func iqamaGapRow(_ prayer: PrayerKey) -> some View {
-        let gap = store.iqamaGap(for: prayer)
-        let binding = Binding(
-            get: { store.iqamaGap(for: prayer) },
-            set: { store.setIqamaGap($0, for: prayer) }
-        )
+    /// Opens the dedicated iqama screen (gaps, low-time warning).
+    private var iqamaSettingsLink: some View {
+        Button(action: onOpenIqamaSettings) {
+            HStack(spacing: 8) {
+                Image(systemName: "slider.horizontal.3")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(AnyShapeStyle(Brand.accent))
+                    .frame(width: 18)
 
-        return HStack(spacing: 8) {
-            Image(systemName: prayer.symbolName)
-                .font(.system(size: 12, weight: .medium))
-                .foregroundStyle(store.iqamaCountdownEnabled ? AnyShapeStyle(Brand.accent) : AnyShapeStyle(.tertiary))
-                .frame(width: 18)
+                Text(localization.string("settings.iqama.open"))
 
-            Text(prayer.displayName)
+                Spacer(minLength: 4)
 
-            Spacer(minLength: 4)
-
-            Text("\(gap) \(localization.string("settings.reminders.minutes"))")
-                .monospacedDigit()
-                .foregroundStyle(.secondary)
-                .frame(minWidth: 44, alignment: .trailing)
-
-            Stepper("", value: binding, in: IqamaCalculator.gapRange)
-                .labelsHidden()
+                Image(systemName: localization.isRTL ? "chevron.left" : "chevron.right")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(.tertiary)
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 8)
+            .contentShape(Rectangle())
         }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 3)
+        .buttonStyle(.plain)
     }
 
     /// Lead-time control shared by all five prayers (default 30 minutes).

@@ -48,4 +48,23 @@ final class IqamaCalculatorTests: XCTestCase {
         store.setIqamaGap(25, for: .fajr)
         XCTAssertTrue(store.iqamaGaps.isEmpty, "default clears the override")
     }
+
+    func testWarningDefaultsAndPersistence() {
+        let keys = ["miqat.iqama.warning.enabled", "miqat.iqama.warning.minutes", "miqat.iqama.warning.color"]
+        keys.forEach { UserDefaults.standard.removeObject(forKey: $0) }
+        defer { keys.forEach { UserDefaults.standard.removeObject(forKey: $0) } }
+
+        let store = PrayerScheduleStore()
+        XCTAssertTrue(store.iqamaWarningEnabled)
+        XCTAssertEqual(store.iqamaWarningMinutes, 5)
+        XCTAssertEqual(store.iqamaWarningColorHex, "FF3B30")
+
+        store.iqamaWarningEnabled = false
+        store.iqamaWarningMinutes = 8
+        store.iqamaWarningColorHex = "00AA55"
+        let reloaded = PrayerScheduleStore()
+        XCTAssertFalse(reloaded.iqamaWarningEnabled)
+        XCTAssertEqual(reloaded.iqamaWarningMinutes, 8)
+        XCTAssertEqual(reloaded.iqamaWarningColorHex, "00AA55")
+    }
 }

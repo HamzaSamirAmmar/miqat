@@ -96,18 +96,24 @@ final class StatusItemController: NSObject, NSPopoverDelegate {
             let remaining = iqama.iqama.timeIntervalSince(store.now)
             let clock = Format.clock(remaining)
             let label = Localization.shared.string("iqama.label")
+            // Near the iqama the countdown turns the user's warning color.
+            var attributes: [NSAttributedString.Key: Any] = [.font: font]
+            if store.iqamaWarningEnabled,
+               remaining <= TimeInterval(store.iqamaWarningMinutes * 60) {
+                attributes[.foregroundColor] = NSColor(hex: store.iqamaWarningColorHex)
+            }
             switch store.titleStyle {
             case .icon:
                 button.image = MenuBarIcon.image
                 button.attributedTitle = NSAttributedString(string: "", attributes: [.font: font])
             case .countdown:
                 button.image = nil
-                button.attributedTitle = NSAttributedString(string: clock, attributes: [.font: font])
+                button.attributedTitle = NSAttributedString(string: clock, attributes: attributes)
             case .labeled:
                 button.image = nil
                 button.attributedTitle = NSAttributedString(
                     string: "\(label) \(clock)",
-                    attributes: [.font: font]
+                    attributes: attributes
                 )
             }
             button.toolTip = "\(base) — \(iqama.prayer.displayName) \(label) \(Format.remaining(remaining))"
