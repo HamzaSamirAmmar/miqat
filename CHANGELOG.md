@@ -4,6 +4,17 @@ All notable changes to Miqat are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and the project uses [Semantic Versioning](https://semver.org).
 
+## [1.2.0] — 2026-10-12
+
+### Added
+- Iqama settings screen (opened from Settings › Reminders) with per-prayer
+  adhan→iqama gaps (1–60 minutes) and a reset to the defaults
+- Low-time warning: the menu bar iqama countdown pulses between the normal text
+  color and a chosen color (red by default) when 5 minutes or fewer remain; the
+  threshold (1–15 minutes) and color are configurable
+- `scripts/run-dev.sh` builds a side-by-side "Miqat Dev" app (own bundle id and
+  settings) with a time-offset input in Settings for testing timings
+
 ## [1.1.0] — 2026-10-12
 
 ### Added
