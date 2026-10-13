@@ -16,11 +16,12 @@
 		1F060AA80C0C37FC8750DE8F /* makkah-fajr.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 21B15AE204EB1B2D853F5FA2 /* makkah-fajr.mp3 */; };
 		28B7D2ED9CFB705AF5B04DB8 /* makkah.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = C12E5AFD90C3310C6C9CB574 /* makkah.mp3 */; };
 		436726AE8C68ACFEE14004D5 /* IqamaCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1523ED063F268CEDC2A6969 /* IqamaCalculator.swift */; };
-		B1B2C3D4E5F60718293A4B6A /* IqamaSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1B2C3D4E5F60718293A4B6B /* IqamaSettingsView.swift */; };
 		43695A494F0B7A7CFCD6F569 /* aqsa.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 65EF2FF08AC0060A6C769FD1 /* aqsa.mp3 */; };
+		4824681CFC6F921B99D4D1B8 /* UpdateChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A8FCBB06A89AC1170E288A2 /* UpdateChecker.swift */; };
 		4ACC5BDE39FFD7330E4C3DF7 /* PrayerEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4C26866D2F56AC10117FCA /* PrayerEngineTests.swift */; };
 		4C0B50BB8261341F76F20BC3 /* abdulbasit.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = CE2521E5E9B731DBC810A348 /* abdulbasit.mp3 */; };
 		4DE211067583EEF7EE9FA529 /* LocationChooser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058F38C5C094BDAA14C1816D /* LocationChooser.swift */; };
+		55587CE186433522BCAB0A35 /* UpdateCheckerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FDF63A43D7A354A8803601B /* UpdateCheckerTests.swift */; };
 		5B7E9BB271D037919ACEFFDB /* CityDatabaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 860821B45504D597A387EBCB /* CityDatabaseTests.swift */; };
 		5C7AD9E521DF7EDD02CF09FD /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20A25601D0A28A59E9A4FC7 /* DesignSystem.swift */; };
 		5FF4128399FBC268D90A3103 /* PrayerScheduleStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D313837F13D833CD15B2971 /* PrayerScheduleStore.swift */; };
@@ -53,6 +54,7 @@
 		E728456C4C640836C3977AB6 /* ReminderSchedulerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D158F2D941969A4B48CAE102 /* ReminderSchedulerTests.swift */; };
 		ED5D18BF5EA582A6F2B88B0E /* StatusItemController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBC582F97510279AD91D1E64 /* StatusItemController.swift */; };
 		EDA07005C19E2B18D917E118 /* Localization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E906A1C7CA8D11F21BCF56 /* Localization.swift */; };
+		F1B3401572C4D8219F6A6AC9 /* IqamaSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8AE1B32C748832181CD7E3 /* IqamaSettingsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -74,6 +76,7 @@
 		40D06787CC59BB3A09C84FC4 /* PlacePersistenceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlacePersistenceTests.swift; sourceTree = "<group>"; };
 		47595CB6A45844F4401F20D1 /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
 		47CECBF08F8F963FBB904BA4 /* cities.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = cities.json; sourceTree = "<group>"; };
+		4A8AE1B32C748832181CD7E3 /* IqamaSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IqamaSettingsView.swift; sourceTree = "<group>"; };
 		51B549E665E090827175B47A /* madinah-fajr.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "madinah-fajr.mp3"; sourceTree = "<group>"; };
 		533BFDA590F16139194F83A8 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		54BBFA229BFC2E1C7E9B3353 /* Miqat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Miqat.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -83,6 +86,8 @@
 		7417A1225854B39BDA08B219 /* MiqatTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MiqatTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		769853FFB5B01067B39761FE /* abdulbasit-fajr.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "abdulbasit-fajr.mp3"; sourceTree = "<group>"; };
 		76D282867C27CE19A42A20EA /* LoginItemManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginItemManager.swift; sourceTree = "<group>"; };
+		7A8FCBB06A89AC1170E288A2 /* UpdateChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateChecker.swift; sourceTree = "<group>"; };
+		7FDF63A43D7A354A8803601B /* UpdateCheckerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCheckerTests.swift; sourceTree = "<group>"; };
 		83EE8FF3CFEE0AA1EB66667B /* PrayerHeroCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerHeroCard.swift; sourceTree = "<group>"; };
 		860821B45504D597A387EBCB /* CityDatabaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CityDatabaseTests.swift; sourceTree = "<group>"; };
 		88E906A1C7CA8D11F21BCF56 /* Localization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Localization.swift; sourceTree = "<group>"; };
@@ -105,7 +110,6 @@
 		DAB5A3355BCDDBFF70B09217 /* AdhanTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdhanTests.swift; sourceTree = "<group>"; };
 		DF90AA48406F3E3088F428E8 /* Format.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Format.swift; sourceTree = "<group>"; };
 		E1523ED063F268CEDC2A6969 /* IqamaCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IqamaCalculator.swift; sourceTree = "<group>"; };
-		B1B2C3D4E5F60718293A4B6B /* IqamaSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IqamaSettingsView.swift; sourceTree = "<group>"; };
 		E5EEC9C129BDC519EC8AEB5E /* AdhanNotifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdhanNotifier.swift; sourceTree = "<group>"; };
 		EAC8ABAB5DACA3A96D87393C /* madinah.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = madinah.mp3; sourceTree = "<group>"; };
 		EC16E9E47650EEB874667644 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
@@ -166,7 +170,7 @@
 				F20A25601D0A28A59E9A4FC7 /* DesignSystem.swift */,
 				DF90AA48406F3E3088F428E8 /* Format.swift */,
 				E1523ED063F268CEDC2A6969 /* IqamaCalculator.swift */,
-				B1B2C3D4E5F60718293A4B6B /* IqamaSettingsView.swift */,
+				4A8AE1B32C748832181CD7E3 /* IqamaSettingsView.swift */,
 				88E906A1C7CA8D11F21BCF56 /* Localization.swift */,
 				058F38C5C094BDAA14C1816D /* LocationChooser.swift */,
 				533BFDA590F16139194F83A8 /* LocationManager.swift */,
@@ -180,6 +184,7 @@
 				BFE63F8748150F89A836CFD9 /* SettingsView.swift */,
 				FBC582F97510279AD91D1E64 /* StatusItemController.swift */,
 				EC16E9E47650EEB874667644 /* Theme.swift */,
+				7A8FCBB06A89AC1170E288A2 /* UpdateChecker.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -196,6 +201,7 @@
 				40D06787CC59BB3A09C84FC4 /* PlacePersistenceTests.swift */,
 				2C4C26866D2F56AC10117FCA /* PrayerEngineTests.swift */,
 				D158F2D941969A4B48CAE102 /* ReminderSchedulerTests.swift */,
+				7FDF63A43D7A354A8803601B /* UpdateCheckerTests.swift */,
 			);
 			path = MiqatTests;
 			sourceTree = "<group>";
@@ -340,7 +346,7 @@
 				5C7AD9E521DF7EDD02CF09FD /* DesignSystem.swift in Sources */,
 				01FF2E6D3D0F31BF0B7E931B /* Format.swift in Sources */,
 				436726AE8C68ACFEE14004D5 /* IqamaCalculator.swift in Sources */,
-				B1B2C3D4E5F60718293A4B6A /* IqamaSettingsView.swift in Sources */,
+				F1B3401572C4D8219F6A6AC9 /* IqamaSettingsView.swift in Sources */,
 				EDA07005C19E2B18D917E118 /* Localization.swift in Sources */,
 				4DE211067583EEF7EE9FA529 /* LocationChooser.swift in Sources */,
 				A9F0C5B9DCC8ADF208F5806D /* LocationManager.swift in Sources */,
@@ -354,6 +360,7 @@
 				9C9A73A4C402BC963D32A189 /* SettingsView.swift in Sources */,
 				ED5D18BF5EA582A6F2B88B0E /* StatusItemController.swift in Sources */,
 				E4ADE97DEC0836ED690F0CB8 /* Theme.swift in Sources */,
+				4824681CFC6F921B99D4D1B8 /* UpdateChecker.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -370,6 +377,7 @@
 				A36AE020A56C904B5D319338 /* PlacePersistenceTests.swift in Sources */,
 				4ACC5BDE39FFD7330E4C3DF7 /* PrayerEngineTests.swift in Sources */,
 				E728456C4C640836C3977AB6 /* ReminderSchedulerTests.swift in Sources */,
+				55587CE186433522BCAB0A35 /* UpdateCheckerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -411,7 +419,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.2.0;
+				MARKETING_VERSION = 1.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = personal.hamza.miqat;
 				PRODUCT_NAME = Miqat;
 				SDKROOT = macosx;
@@ -552,7 +560,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.2.0;
+				MARKETING_VERSION = 1.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = personal.hamza.miqat;
 				PRODUCT_NAME = Miqat;
 				SDKROOT = macosx;

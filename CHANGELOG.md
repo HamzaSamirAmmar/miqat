@@ -4,6 +4,17 @@ All notable changes to Miqat are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and the project uses [Semantic Versioning](https://semver.org).
 
+## [1.3.0] — 2026-10-13
+
+### Added
+- Check for updates: once a day (switchable in Settings › General) and on
+  demand via a small button beside the version in Settings, Miqat compares its
+  version with the latest GitHub release. The button shows the status, or
+  "Update to X" opening the release page when a newer one exists. English and
+  Arabic
+- The Quit button in Settings is now a power icon button that asks for
+  confirmation first
+
 ## [1.2.0] — 2026-10-12
 
 ### Added

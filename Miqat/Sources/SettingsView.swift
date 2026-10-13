@@ -11,6 +11,7 @@ struct SettingsView: View {
     @ObservedObject var player: AdhanPlayer
     @ObservedObject var notifier: SystemAdhanNotifier
     @ObservedObject private var localization = Localization.shared
+    @ObservedObject private var updates = UpdateChecker.shared
     var onDismiss: () -> Void
     var onOpenIqamaSettings: () -> Void
 
@@ -608,6 +609,19 @@ struct SettingsView: View {
                         startsAtLogin = LoginItemManager.isEnabled
                     }
             }
+
+            FormDivider()
+
+            FormRow(
+                title: localization.string("settings.update.auto"),
+                subtitle: localization.string("settings.update.auto.subtitle")
+            ) {
+                Toggle("", isOn: $updates.automaticChecksEnabled)
+                    .toggleStyle(.switch)
+                    .labelsHidden()
+                    .controlSize(.small)
+            }
+
         }
     }
 
@@ -636,6 +650,69 @@ struct SettingsView: View {
 
     // MARK: - About
 
+    /// Small pill beside the version: "Update to X" when a release is newer,
+    /// otherwise the check status (tap to check again).
+    private var updateButton: some View {
+        let available: (version: String, url: URL)? = {
+            if case .available(let version, let url) = updates.status { return (version, url) }
+            return nil
+        }()
+        let label: String
+        switch updates.status {
+        case .idle: label = localization.string("settings.update.check")
+        case .checking: label = localization.string("settings.update.checking")
+        case .upToDate: label = localization.string("settings.update.upToDate")
+        case .available(let version, _): label = localization.string("settings.update.available", version)
+        case .failed: label = localization.string("settings.update.failed")
+        }
+
+        return Button {
+            if let available {
+                NSWorkspace.shared.open(available.url)
+            } else {
+                updates.check()
+            }
+        } label: {
+            HStack(spacing: 3) {
+                if available != nil {
+                    Image(systemName: "arrow.down.circle.fill")
+                } else if updates.status == .upToDate {
+                    Image(systemName: "checkmark.circle.fill")
+                } else if updates.status == .checking {
+                    ProgressView().controlSize(.mini)
+                }
+                Text(label)
+            }
+            .font(.system(size: 10, weight: .medium))
+            .foregroundStyle(available != nil ? AnyShapeStyle(.white) : AnyShapeStyle(.secondary))
+            .padding(.horizontal, 7)
+            .padding(.vertical, 2)
+            .background(
+                Capsule().fill(available != nil ? AnyShapeStyle(Brand.accent) : AnyShapeStyle(Color.primary.opacity(0.07)))
+            )
+        }
+        .buttonStyle(.plain)
+        .disabled(updates.status == .checking)
+    }
+
+    /// Asks before quitting — a menu bar app that stops silently would also
+    /// stop the adhan and reminders. A modal alert outlives the popover,
+    /// which closes when it loses focus.
+    private func confirmQuit() {
+        let alert = NSAlert()
+        alert.alertStyle = .warning
+        alert.messageText = localization.string("settings.quit.confirm.title")
+        alert.informativeText = localization.string("settings.quit.confirm.message")
+        let quit = alert.addButton(withTitle: localization.string("settings.quit"))
+        quit.hasDestructiveAction = true
+        alert.addButton(withTitle: localization.string("settings.quit.cancel"))
+
+        NSApp.activate(ignoringOtherApps: true)
+        if alert.runModal() == .alertFirstButtonReturn {
+            NSApplication.shared.terminate(nil)
+        }
+    }
+
     private var aboutSection: some View {
         VStack(spacing: 12) {
             HStack(spacing: 12) {
@@ -644,20 +721,27 @@ struct SettingsView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Miqat")
                         .font(.headline)
-                    Text(localization.string("settings.version", versionString))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    HStack(spacing: 6) {
+                        Text(localization.string("settings.version", versionString))
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        updateButton
+                    }
                 }
 
                 Spacer()
 
-                Button(role: .destructive) {
-                    NSApplication.shared.terminate(nil)
+                Button {
+                    confirmQuit()
                 } label: {
-                    Text(localization.string("settings.quit"))
+                    Image(systemName: "power")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(.red)
                 }
-                .controlSize(.small)
+                .buttonStyle(IconButtonStyle())
                 .keyboardShortcut("q", modifiers: .command)
+                .help(localization.string("settings.quit"))
+                .accessibilityLabel(localization.string("settings.quit"))
             }
 
             Label(localization.string("settings.offlineNote"), systemImage: "lock.shield")

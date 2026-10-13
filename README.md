@@ -135,11 +135,16 @@ cp -R build/Build/Products/Release/Miqat.app /Applications/
 
 ## Privacy
 
-Location is used only to resolve your city and never leaves the Mac. Only
-Automatic mode can ever touch the network (Macs locate via Wi-Fi
+Location is used only to resolve your city and never leaves the Mac. Apart
+from the update check below, only Automatic mode can ever touch the network (Macs locate via Wi-Fi
 positioning, an online Apple lookup — offline, the fix itself fails and the
 error says so). City search, manual coordinates, and all time calculations
 are pure local math and work fully offline.
+
+The optional update check (Settings › General, on by default) makes one request
+a day to GitHub's public "latest release" API to compare version numbers. It
+sends no personal data and can be switched off; the small button beside the
+version in Settings still checks on demand.
 
 ## Credits
 
