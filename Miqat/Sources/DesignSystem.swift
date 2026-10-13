@@ -280,3 +280,29 @@ extension View {
         }
     }
 }
+
+// MARK: - Hex colors
+
+extension NSColor {
+    /// `RRGGBB` hex (sRGB); falls back to red on malformed input.
+    convenience init(hex: String) {
+        let value = UInt32(hex, radix: 16) ?? 0xFF3B30
+        self.init(
+            srgbRed: CGFloat((value >> 16) & 0xFF) / 255,
+            green: CGFloat((value >> 8) & 0xFF) / 255,
+            blue: CGFloat(value & 0xFF) / 255,
+            alpha: 1
+        )
+    }
+
+    /// `RRGGBB` hex of this color in sRGB.
+    var hexString: String {
+        let c = usingColorSpace(.sRGB) ?? self
+        return String(
+            format: "%02X%02X%02X",
+            Int((c.redComponent * 255).rounded()),
+            Int((c.greenComponent * 255).rounded()),
+            Int((c.blueComponent * 255).rounded())
+        )
+    }
+}

@@ -27,6 +27,7 @@ final class StatusItemController: NSObject, NSPopoverDelegate {
     private var resignKeyObserver: NSObjectProtocol?
     private var resignActiveObserver: NSObjectProtocol?
     private var lastCloseTime: TimeInterval = 0
+    private var pulseTimer: Timer?
 
     init(store: PrayerScheduleStore, locationManager: LocationManager, adhanPlayer: AdhanPlayer, adhanNotifier: SystemAdhanNotifier) {
         self.store = store
@@ -47,7 +48,7 @@ final class StatusItemController: NSObject, NSPopoverDelegate {
         }
 
         if let button = statusItem.button {
-            button.setAccessibilityLabel("Miqat prayer times")
+            button.setAccessibilityLabel(Localization.shared.string("tooltip.base"))
             button.target = self
             button.action = #selector(togglePopover(_:))
         }
@@ -65,6 +66,7 @@ final class StatusItemController: NSObject, NSPopoverDelegate {
     }
 
     deinit {
+        pulseTimer?.invalidate()
         tearDownEventMonitors()
         if let openSettingsObserver {
             NotificationCenter.default.removeObserver(openSettingsObserver)
@@ -83,6 +85,7 @@ final class StatusItemController: NSObject, NSPopoverDelegate {
         let base = Localization.shared.string("tooltip.base")
 
         guard let next = store.next else {
+            setPulsing(false)
             button.image = MenuBarIcon.image
             button.imagePosition = .imageLeft
             button.attributedTitle = NSAttributedString(string: " –:–", attributes: [.font: font])
@@ -96,24 +99,34 @@ final class StatusItemController: NSObject, NSPopoverDelegate {
             let remaining = iqama.iqama.timeIntervalSince(store.now)
             let clock = Format.clock(remaining)
             let label = Localization.shared.string("iqama.label")
+            // Near the iqama the countdown pulses between the normal text
+            // color and the user's warning color.
+            var attributes: [NSAttributedString.Key: Any] = [.font: font]
+            let warning = store.iqamaWarningEnabled
+                && remaining <= TimeInterval(store.iqamaWarningMinutes * 60)
+            if warning {
+                attributes[.foregroundColor] = pulseColor(for: button)
+            }
+            setPulsing(warning)
             switch store.titleStyle {
             case .icon:
                 button.image = MenuBarIcon.image
                 button.attributedTitle = NSAttributedString(string: "", attributes: [.font: font])
             case .countdown:
                 button.image = nil
-                button.attributedTitle = NSAttributedString(string: clock, attributes: [.font: font])
+                button.attributedTitle = NSAttributedString(string: clock, attributes: attributes)
             case .labeled:
                 button.image = nil
                 button.attributedTitle = NSAttributedString(
                     string: "\(label) \(clock)",
-                    attributes: [.font: font]
+                    attributes: attributes
                 )
             }
             button.toolTip = "\(base) — \(iqama.prayer.displayName) \(label) \(Format.remaining(remaining))"
             return
         }
 
+        setPulsing(false)
         let interval = next.date.timeIntervalSince(store.now)
         let countdown = Format.countdown(interval)
 
@@ -133,6 +146,40 @@ final class StatusItemController: NSObject, NSPopoverDelegate {
         }
 
         button.toolTip = "\(base) — \(next.key.displayName) \(Format.remaining(interval))"
+    }
+
+    // MARK: - Warning pulse
+
+    /// Seconds for one full fade out and back.
+    private static let pulsePeriod: TimeInterval = 1.6
+
+    /// Blend of the menu bar's normal text color and the warning color,
+    /// following a smooth sine over time.
+    private func pulseColor(for button: NSStatusBarButton) -> NSColor {
+        var base = NSColor.white
+        button.effectiveAppearance.performAsCurrentDrawingAppearance {
+            base = NSColor(cgColor: NSColor.labelColor.cgColor) ?? .white
+        }
+        let phase = (1 - cos(2 * .pi * Date().timeIntervalSinceReferenceDate / Self.pulsePeriod)) / 2
+        return base.blended(
+            withFraction: CGFloat(phase),
+            of: NSColor(hex: store.iqamaWarningColorHex)
+        ) ?? base
+    }
+
+    /// Runs a fast redraw timer only while the warning is showing; the
+    /// store's one-second tick is too coarse for a smooth fade.
+    private func setPulsing(_ pulsing: Bool) {
+        if pulsing, pulseTimer == nil {
+            let timer = Timer(timeInterval: 1.0 / 20, repeats: true) { [weak self] _ in
+                self?.renderTitle()
+            }
+            RunLoop.main.add(timer, forMode: .common)
+            pulseTimer = timer
+        } else if !pulsing, let timer = pulseTimer {
+            timer.invalidate()
+            pulseTimer = nil
+        }
     }
 
     // MARK: - Content Management

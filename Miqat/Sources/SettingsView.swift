@@ -12,6 +12,7 @@ struct SettingsView: View {
     @ObservedObject var notifier: SystemAdhanNotifier
     @ObservedObject private var localization = Localization.shared
     var onDismiss: () -> Void
+    var onOpenIqamaSettings: () -> Void
 
     /// Mirrors the login item so the switch redraws after toggling.
     @State private var startsAtLogin = LoginItemManager.isEnabled
@@ -28,6 +29,9 @@ struct SettingsView: View {
                 VStack(alignment: .leading, spacing: 16) {
                     adhanSection
                     remindersSection
+                    if PrayerScheduleStore.isDevBuild {
+                        devSection
+                    }
                     calculationSection
                     appearanceSection
                     generalSection
@@ -277,16 +281,65 @@ struct SettingsView: View {
 
             FormDivider()
 
-            FormRow(
-                title: localization.string("settings.iqama.countdown"),
-                subtitle: localization.string("settings.iqama.countdown.subtitle")
-            ) {
-                Toggle("", isOn: $store.iqamaCountdownEnabled)
-                    .toggleStyle(.switch)
-                    .labelsHidden()
-                    .controlSize(.small)
-            }
+            iqamaRow
+
+            FormDivider()
+
+            iqamaSettingsLink
         }
+    }
+
+    /// Master switch for the iqama countdown, styled like the Duha row.
+    private var iqamaRow: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "timer")
+                .font(.system(size: 12, weight: .medium))
+                .foregroundStyle(
+                    store.iqamaCountdownEnabled ? AnyShapeStyle(Brand.accent) : AnyShapeStyle(.tertiary)
+                )
+                .frame(width: 18)
+
+            VStack(alignment: .leading, spacing: 1) {
+                Text(localization.string("settings.iqama.countdown"))
+                Text(localization.string("settings.iqama.countdown.subtitle"))
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            Spacer(minLength: 4)
+
+            Toggle("", isOn: $store.iqamaCountdownEnabled)
+                .toggleStyle(.switch)
+                .labelsHidden()
+                .controlSize(.small)
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+    }
+
+    /// Opens the dedicated iqama screen (gaps, low-time warning).
+    private var iqamaSettingsLink: some View {
+        Button(action: onOpenIqamaSettings) {
+            HStack(spacing: 8) {
+                Image(systemName: "slider.horizontal.3")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(AnyShapeStyle(Brand.accent))
+                    .frame(width: 18)
+
+                Text(localization.string("settings.iqama.open"))
+
+                Spacer(minLength: 4)
+
+                Image(systemName: localization.isRTL ? "chevron.left" : "chevron.right")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(.tertiary)
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 8)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
     }
 
     /// Lead-time control shared by all five prayers (default 30 minutes).
@@ -554,6 +607,29 @@ struct SettingsView: View {
                         // Reflect the real state if registration failed.
                         startsAtLogin = LoginItemManager.isEnabled
                     }
+            }
+        }
+    }
+
+    // MARK: - Developer (Miqat Dev build only)
+
+    private var devSection: some View {
+        FormSection(title: localization.string("settings.dev.section"), systemImage: "hammer.fill") {
+            FormRow(
+                title: localization.string("settings.dev.offset"),
+                subtitle: localization.string("settings.dev.offset.subtitle")
+            ) {
+                HStack(spacing: 6) {
+                    TextField("0", value: $store.debugTimeOffsetMinutes, format: .number)
+                        .textFieldStyle(.roundedBorder)
+                        .multilineTextAlignment(.trailing)
+                        .frame(width: 64)
+                    Stepper("", value: $store.debugTimeOffsetMinutes, step: 5)
+                        .labelsHidden()
+                    Button(localization.string("settings.dev.reset")) { store.debugTimeOffsetMinutes = 0 }
+                        .controlSize(.small)
+                        .disabled(store.debugTimeOffsetMinutes == 0)
+                }
             }
         }
     }
