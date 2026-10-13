@@ -157,9 +157,62 @@ final class PrayerScheduleStore: ObservableObject {
         }
     }
 
+    /// Per-prayer overrides of the adhan→iqama gap, in minutes. Only values
+    /// that differ from the defaults are stored.
+    @Published var iqamaGaps: [PrayerKey: Int] = [:] {
+        didSet {
+            guard oldValue != iqamaGaps else { return }
+            UserDefaults.standard.set(
+                Dictionary(uniqueKeysWithValues: iqamaGaps.map { ($0.key.rawValue, $0.value) }),
+                forKey: Keys.iqamaGaps
+            )
+        }
+    }
+
+    /// Minutes between a prayer's adhan and its iqama (custom or default).
+    func iqamaGap(for prayer: PrayerKey) -> Int {
+        iqamaGaps[prayer] ?? IqamaCalculator.defaultGapMinutes(for: prayer) ?? 0
+    }
+
+    /// Sets a prayer's gap; the default value clears the override.
+    func setIqamaGap(_ minutes: Int, for prayer: PrayerKey) {
+        let clamped = min(max(minutes, IqamaCalculator.gapRange.lowerBound), IqamaCalculator.gapRange.upperBound)
+        if clamped == IqamaCalculator.defaultGapMinutes(for: prayer) {
+            iqamaGaps[prayer] = nil
+        } else {
+            iqamaGaps[prayer] = clamped
+        }
+    }
+
+    /// Recolors the menu bar countdown once the iqama is near. On by default.
+    @Published var iqamaWarningEnabled: Bool = true {
+        didSet {
+            guard oldValue != iqamaWarningEnabled else { return }
+            UserDefaults.standard.set(iqamaWarningEnabled, forKey: Keys.iqamaWarningEnabled)
+        }
+    }
+
+    /// The warning starts when this many minutes (or fewer) are left.
+    @Published var iqamaWarningMinutes: Int = IqamaDefaults.warningMinutes {
+        didSet {
+            guard oldValue != iqamaWarningMinutes else { return }
+            UserDefaults.standard.set(iqamaWarningMinutes, forKey: Keys.iqamaWarningMinutes)
+        }
+    }
+
+    /// The warning color as `RRGGBB` hex.
+    @Published var iqamaWarningColorHex: String = IqamaDefaults.warningColorHex {
+        didSet {
+            guard oldValue != iqamaWarningColorHex else { return }
+            UserDefaults.standard.set(iqamaWarningColorHex, forKey: Keys.iqamaWarningColor)
+        }
+    }
+
     /// The prayer awaiting its iqama right now, when the countdown is enabled.
     var pendingIqama: IqamaCalculator.Pending? {
-        iqamaCountdownEnabled ? IqamaCalculator.pending(today: today, now: now) : nil
+        iqamaCountdownEnabled
+            ? IqamaCalculator.pending(today: today, now: now, customGaps: iqamaGaps)
+            : nil
     }
 
     /// Whether a prayer's window-end should post a reminder notification.
@@ -168,6 +221,18 @@ final class PrayerScheduleStore: ObservableObject {
     }
 
     // MARK: - Live state
+
+    /// True only in the side-by-side "Miqat Dev" build (see scripts/run-dev.sh).
+    static let isDevBuild = Bundle.main.bundleIdentifier?.hasSuffix(".dev") == true
+
+    /// Dev builds only: minutes added to the system clock, to test timings
+    /// (iqama, adhan, reminders) without waiting. Never persisted.
+    @Published var debugTimeOffsetMinutes: Int = 0 {
+        didSet {
+            guard Self.isDevBuild, oldValue != debugTimeOffsetMinutes else { return }
+            invalidateSchedule()
+        }
+    }
 
     /// The instant countdowns are measured against; ticks every second.
     @Published private(set) var now = Date()
@@ -230,11 +295,21 @@ final class PrayerScheduleStore: ObservableObject {
         static let reminderPrayers = "miqat.reminder.prayers"
         static let duhaReminderEnabled = "miqat.reminder.duha"
         static let iqamaCountdownEnabled = "miqat.iqama.countdown"
+        static let iqamaGaps = "miqat.iqama.gaps"
+        static let iqamaWarningEnabled = "miqat.iqama.warning.enabled"
+        static let iqamaWarningMinutes = "miqat.iqama.warning.minutes"
+        static let iqamaWarningColor = "miqat.iqama.warning.color"
     }
 
     private enum AdhanDefaults {
         /// On out of the box for the five prayers — never sunrise.
         static let enabledPrayers: Set<PrayerKey> = [.fajr, .dhuhr, .asr, .maghrib, .isha]
+    }
+
+    enum IqamaDefaults {
+        static let warningMinutes = 5
+        static let warningRange: ClosedRange<Int> = 1...15
+        static let warningColorHex = "FF3B30"
     }
 
     private enum ReminderDefaults {
@@ -320,6 +395,30 @@ final class PrayerScheduleStore: ObservableObject {
         if UserDefaults.standard.object(forKey: Keys.iqamaCountdownEnabled) != nil {
             iqamaCountdownEnabled = UserDefaults.standard.bool(forKey: Keys.iqamaCountdownEnabled)
         }
+        if UserDefaults.standard.object(forKey: Keys.iqamaWarningEnabled) != nil {
+            iqamaWarningEnabled = UserDefaults.standard.bool(forKey: Keys.iqamaWarningEnabled)
+        }
+        if UserDefaults.standard.object(forKey: Keys.iqamaWarningMinutes) != nil {
+            let stored = UserDefaults.standard.integer(forKey: Keys.iqamaWarningMinutes)
+            iqamaWarningMinutes = min(
+                max(stored, IqamaDefaults.warningRange.lowerBound),
+                IqamaDefaults.warningRange.upperBound
+            )
+        }
+        if let stored = UserDefaults.standard.string(forKey: Keys.iqamaWarningColor),
+           stored.count == 6, UInt32(stored, radix: 16) != nil {
+            iqamaWarningColorHex = stored
+        }
+        if let stored = UserDefaults.standard.dictionary(forKey: Keys.iqamaGaps) as? [String: Int] {
+            var restored: [PrayerKey: Int] = [:]
+            for (raw, minutes) in stored {
+                guard let prayer = PrayerKey(rawValue: raw),
+                      let standard = IqamaCalculator.defaultGapMinutes(for: prayer) else { continue }
+                let clamped = min(max(minutes, IqamaCalculator.gapRange.lowerBound), IqamaCalculator.gapRange.upperBound)
+                if clamped != standard { restored[prayer] = clamped }
+            }
+            iqamaGaps = restored
+        }
 
         tick()
 
@@ -360,7 +459,9 @@ final class PrayerScheduleStore: ObservableObject {
     }
 
     private func tick() {
-        now = Date()
+        now = Date().addingTimeInterval(
+            Self.isDevBuild ? TimeInterval(debugTimeOffsetMinutes * 60) : 0
+        )
 
         guard let place else {
             todayEntries = []

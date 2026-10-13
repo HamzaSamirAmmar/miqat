@@ -4,7 +4,7 @@ All notable changes to Miqat are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and the project uses [Semantic Versioning](https://semver.org).
 
-## [Unreleased]
+## [1.3.0] — 2026-10-13
 
 ### Added
 - Check for updates: once a day (switchable in Settings › General) and on
@@ -15,13 +15,25 @@ and the project uses [Semantic Versioning](https://semver.org).
 - The Quit button in Settings is now a power icon button that asks for
   confirmation first
 
+## [1.2.0] — 2026-10-12
+
+### Added
+- Iqama settings screen (opened from Settings › Reminders) with per-prayer
+  adhan→iqama gaps (1–60 minutes) and a reset to the defaults
+- Low-time warning: the menu bar iqama countdown pulses between the normal text
+  color and a chosen color (red by default) when 5 minutes or fewer remain; the
+  threshold (1–15 minutes) and color are configurable
+- `scripts/run-dev.sh` builds a side-by-side "Miqat Dev" app (own bundle id and
+  settings) with a time-offset input in Settings for testing timings
+
 ## [1.1.0] — 2026-10-12
 
 ### Added
 - Iqama countdown (on by default): a toggle under Reminders, "Time left until
   Iqama" (الباقي للإقامة). Between each adhan and its iqama the menu bar shows
   the time left to the iqama instead of the next-prayer countdown. Gaps follow
-  common Saudi practice: Fajr 25, Dhuhr 20, Asr 20, Maghrib 10, Isha 20 minutes
+  common Saudi practice: Fajr 25, Dhuhr 20, Asr 20, Maghrib 10, Isha 20 minutes,
+  and each prayer's gap can be customized in Settings (1–60 minutes)
 
 ## [1.0.1] — 2026-09-25
 
